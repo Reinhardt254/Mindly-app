@@ -23,19 +23,18 @@ export default function TabLayout() {
             // Use a transparent background on iOS to show the blur effect
             position: "absolute",
           },
+          android: {
+            backgroundColor: "red",
+            height: 60,
+            width: "100%",
+            display: "none",
+            justifyContent: "center",
+            alignItems: "center",
+          },
           default: {},
         }),
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Affirmations",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="heart.fill" color={color} />
-          ),
-        }}
-      />
     </Tabs>
   );
 }
