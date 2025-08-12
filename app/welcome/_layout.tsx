@@ -2,7 +2,14 @@ import { Stack } from "expo-router";
 
 export default function WelcomeLayout() {
   return (
-    <Stack>
+    <Stack initialRouteName="quote">
+      <Stack.Screen
+        name="quote"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
       <Stack.Screen
         name="index"
         options={{

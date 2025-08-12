@@ -13,6 +13,7 @@ import "@/global.css";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Colors } from "@/constants/Colors";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -32,7 +33,12 @@ export default function RootLayout() {
         <SafeAreaView style={{ flex: 1 }}>
           <Stack>
             {userProfile ? (
-              <Stack.Screen name="(tabs)" options={{ headerShown: false, contentStyle: { backgroundColor: 'white' } }} />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                }}
+              />
             ) : (
               <Stack.Screen name="welcome" options={{ headerShown: false }} />
             )}

@@ -1,8 +1,8 @@
 export interface UserProfile {
   name: string;
-  ageRange: "18-25" | "26-35" | "36-45" | "46+";
-  gender: "Male" | "Female" | "Non-binary" | "Prefer not to say";
-  affirmationFrequency: 1 | 2 | 3 | 5;
+  ageRange: "13-17" | "18-24" | "25-34" | "35-44" | "45-54" | "55-64" | "65+";
+  gender: "male" | "female" | "non-binary" | "prefer-not-to-say";
+  affirmationFrequency: 1 | 3 | 5;
   isFirstTime: boolean;
   lastAffirmationDate?: string;
   dailyAffirmationsShown: number;
