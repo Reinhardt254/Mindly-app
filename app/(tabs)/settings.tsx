@@ -1,41 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [hapticFeedback, setHapticFeedback] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { themeMode, setThemeMode, isDark } = useTheme();
   const colorScheme = useColorScheme();
   const router = useRouter();
 
-  useEffect(() => {
-    loadThemePreference();
-  }, []);
-
-  const loadThemePreference = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem("theme-preference");
-      if (savedTheme === "dark") {
-        setIsDarkMode(true);
-      }
-    } catch (error) {
-      console.error("Error loading theme preference:", error);
-    }
-  };
-
   const handleThemeToggle = async (value: boolean) => {
-    setIsDarkMode(value);
-    try {
-      await AsyncStorage.setItem("theme-preference", value ? "dark" : "light");
-      // Note: In a real app, you'd want to update the global theme context here
-    } catch (error) {
-      console.error("Error saving theme preference:", error);
-    }
+    const newMode = value ? "dark" : "light";
+    await setThemeMode(newMode);
   };
 
   return (
@@ -96,7 +76,10 @@ export default function SettingsScreen() {
                 <Ionicons name="notifications" size={24} color="#3B82F6" />
                 <Text
                   className="ml-4 text-lg"
-                  style={{ color: Colors[colorScheme ?? "light"].text, paddingLeft: 10 }}
+                  style={{
+                    color: Colors[colorScheme ?? "light"].text,
+                    paddingLeft: 10,
+                  }}
                 >
                   Push Notifications
                 </Text>
@@ -114,7 +97,10 @@ export default function SettingsScreen() {
                 <Ionicons name="time" size={24} color="#3B82F6" />
                 <Text
                   className="ml-4 text-lg"
-                  style={{ color: Colors[colorScheme ?? "light"].text,paddingLeft: 10 }}
+                  style={{
+                    color: Colors[colorScheme ?? "light"].text,
+                    paddingLeft: 10,
+                  }}
                 >
                   Daily Reminders
                 </Text>
@@ -162,16 +148,19 @@ export default function SettingsScreen() {
                 <Ionicons name="moon" size={24} color="#3B82F6" />
                 <Text
                   className="ml-4 text-lg"
-                  style={{ color: Colors[colorScheme ?? "light"].text, paddingLeft: 10 }}
+                  style={{
+                    color: Colors[colorScheme ?? "light"].text,
+                    paddingLeft: 10,
+                  }}
                 >
                   Dark Mode
                 </Text>
               </View>
               <Switch
-                value={isDarkMode}
+                value={isDark}
                 onValueChange={handleThemeToggle}
                 trackColor={{ false: "#767577", true: "#3B82F6" }}
-                thumbColor={isDarkMode ? "#ffffff" : "#f4f3f4"}
+                thumbColor={isDark ? "#ffffff" : "#f4f3f4"}
               />
             </View>
           </View>
@@ -199,7 +188,7 @@ export default function SettingsScreen() {
         >
           <Text
             className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text,  }}
+            style={{ color: Colors[colorScheme ?? "light"].text }}
           >
             Interaction
           </Text>
@@ -210,7 +199,10 @@ export default function SettingsScreen() {
                 <Ionicons name="phone-portrait" size={24} color="#3B82F6" />
                 <Text
                   className="ml-4 text-lg"
-                  style={{ color: Colors[colorScheme ?? "light"].text , paddingLeft: 10}}
+                  style={{
+                    color: Colors[colorScheme ?? "light"].text,
+                    paddingLeft: 10,
+                  }}
                 >
                   Haptic Feedback
                 </Text>

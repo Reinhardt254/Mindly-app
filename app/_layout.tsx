@@ -11,13 +11,14 @@ import "react-native-reanimated";
 
 import "@/global.css";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
+import { ThemeProvider as CustomThemeProvider } from "@/contexts/ThemeContext";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function AppContent() {
   const { userProfile, isLoading } = useLocalStorage();
+  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -48,5 +49,13 @@ export default function RootLayout() {
         </SafeAreaView>
       </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <CustomThemeProvider>
+      <AppContent />
+    </CustomThemeProvider>
   );
 }
