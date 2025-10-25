@@ -26,11 +26,11 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-      <ScrollView className="flex-1 px-6 py-8">
+      <ScrollView className="flex-1 px-4 py-0">
         <View style={{ height: 20 }}></View>
 
         {/* Header */}
-        <View className="mb-8">
+        <View className="mb-0">
           {showBackButton && (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -63,20 +63,20 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({
             borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
             borderRadius: 10,
             borderStyle: "solid",
-            paddingVertical: 20,
-            paddingHorizontal: colorScheme === "dark" ? 0 : 15,
+            paddingVertical: 0,
+            paddingHorizontal: colorScheme === "dark" ? 0 : 0,
             margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? ""
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            marginBottom: 5,
+            // boxShadow:
+            //   colorScheme === "dark"
+            //     ? ""
+            //     : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
           }}
           className="rounded-lg"
         >
           <Text
-            className="text-base leading-6 whitespace-pre-line"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
+            className="leading-6 whitespace-pre-line text-md"
+            style={{ color: Colors[colorScheme ?? "light"].text, fontSize: 16 }}
           >
             {content}
           </Text>
@@ -86,7 +86,7 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({
           className="flex-1"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 50,
+            height: 120,
           }}
         ></View>
       </ScrollView>

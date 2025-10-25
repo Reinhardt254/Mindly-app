@@ -6,13 +6,13 @@
 const tintColorLight = "#cddad1";
 const tintColorDark = "#fff";
 
-const backgroundColorLight = "#cddad1";
+const backgroundColorLight = "#f9f9f9";
 const backgroundColorDark = "#000";
 
 // Gradient colors for light mode
-export const gradientColorsLight = ["#fcfcfc", "#cddad1",  "#cddad1"];
-export const gradientColorsDark = ["#000000"];
-
+export const gradientColorsLight = ["#fcfcfc", "#fcfcfc",  "#cddad1"];
+export const gradientColorsDark = ["#000000", "#000000", "#000000"];
+ 
 export const Colors = {
   light: {
     text: "#11181C",
@@ -21,7 +21,11 @@ export const Colors = {
     icon: "#687076",
     tabIconDefault: "#687076",
     tabIconSelected: "#000",
-    tabbarBackground: "#cddad1",
+    tabbarBackground: "#ffffff",
+    tabbarText: "#000000",
+    sidebarBackground: "#ffffff",
+    quoteText: "#ffffff",
+    highlight: "#279089",
   },
   dark: {
     text: "#ECEDEE",
@@ -31,5 +35,9 @@ export const Colors = {
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
     tabbarBackground: "#000000",
+    tabbarText: "#fff",
+    sidebarBackground: "#000000",
+    quoteText: "#ffffff",
+    highlight: "#279089",
   },
 };

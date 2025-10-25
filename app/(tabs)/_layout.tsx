@@ -12,7 +12,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-
+ 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -31,13 +31,27 @@ export default function TabLayout() {
               height: 80,
               paddingBottom: 20,
               paddingTop: 10,
+              display: "none",
             },
             android: {
               backgroundColor: Colors[colorScheme ?? "light"].tabbarBackground,
               borderTopWidth: 0,
               height: 80,
-              paddingBottom: 20,
+              paddingBottom: 10,
               paddingTop: 10,
+              marginTop: 10,
+              marginBottom: 20,
+              marginLeft: 10,
+              marginRight: 10,
+              borderRadius: 40,
+              paddingHorizontal: 20,
+              overflow: "hidden",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1000,
+              display: "none",
             },
             default: {
               backgroundColor: Colors[colorScheme ?? "light"].tabbarBackground,
@@ -45,6 +59,7 @@ export default function TabLayout() {
               height: 80,
               paddingBottom: 20,
               paddingTop: 10,
+              display: "none",
             },
           }),
         }}
@@ -53,10 +68,11 @@ export default function TabLayout() {
           name="index"
           options={{
             headerShown: false,
-            title: "Affirmations",
+            title: "Home",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="heart" color={color} size={size} />
+              <Ionicons name="home" color={color} size={size} />
             ),
+            href: null,
           }}
         />
         <Tabs.Screen
@@ -66,6 +82,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="person" color={color} size={size} />
             ),
+            href: null,
           }}
         />
         <Tabs.Screen
@@ -75,6 +92,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings" color={color} size={size} />
             ),
+            href: null,
           }}
         />
         <Tabs.Screen
@@ -84,6 +102,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="bar-chart" color={color} size={size} />
             ),
+            href: null,
           }}
         />
         <Tabs.Screen

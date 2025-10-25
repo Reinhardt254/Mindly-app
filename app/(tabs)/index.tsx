@@ -4,23 +4,26 @@ import { timeUtils } from "@/utils/timeUtils";
 import React, { useState } from "react";
 import {
   Alert,
-  TouchableOpacity,
   View,
   Text,
   Dimensions,
-  StatusBar,
+  TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-reanimated-carousel";
-import { GradientBackground } from "@/components/GradientBackground";
+import { Sidebar } from "@/components/Sidebar";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useBackground } from "@/contexts/BackgroundContext";
 
 export default function AffirmationScreen() {
   const { userProfile, saveAppState } = useLocalStorage();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
   const [dailyShown, setDailyShown] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { customBackground } = useBackground();
   const colorScheme = useColorScheme();
 
   const screenWidth = Dimensions.get("window").width;
@@ -33,6 +36,28 @@ export default function AffirmationScreen() {
     );
   };
 
+  const handleRefreshPress = () => {
+    const randomIndex = Math.floor(Math.random() * AFFIRMATIONS.length);
+    setCurrentIndex(randomIndex);
+    setDailyShown((prev) => prev + 1);
+    setIsLiked(false);
+
+    // Save progress
+    saveAppState({
+      userProfile: userProfile!,
+      currentAffirmationIndex: randomIndex,
+      dailyAffirmationsShown: dailyShown + 1,
+      lastAffirmationDate: timeUtils.getCurrentDateString(),
+    });
+  };
+
+  const handleSharePress = () => {
+    Alert.alert("Share", "Share this affirmation with others!");
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   // Handle carousel index change
   const handleIndexChange = (index: number) => {
@@ -57,11 +82,14 @@ export default function AffirmationScreen() {
     item: any;
     index: number;
   }) => (
-    <View className="flex-col flex-1 justify-end items-end px-8 w-full h-full" style={{
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    }}>
+    <View
+      className="flex-col items-end justify-end flex-1 w-full h-full px-8"
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <View className="items-center space-y-6">
         {/* Quote Text */}
         <Text
@@ -74,7 +102,7 @@ export default function AffirmationScreen() {
             fontSize: 40,
             lineHeight: 50,
             letterSpacing: 1,
-            color: Colors[colorScheme ?? "light"].text,
+            color: Colors[colorScheme ?? "light"].quoteText,
           }}
         >
           &ldquo;{item.text}&rdquo;
@@ -84,7 +112,7 @@ export default function AffirmationScreen() {
         <Text
           className="pt-10 text-xl font-bold text-center"
           style={{
-            color: "#279089",
+            color: Colors[colorScheme ?? "light"].tint,
           }}
         >
           - {item.category.toUpperCase()}
@@ -93,32 +121,9 @@ export default function AffirmationScreen() {
     </View>
   );
 
-  // const handleReset = () => {
-  //   Alert.alert(
-  //     "Reset App",
-  //     "This will clear all your data and take you back to the welcome screen. Are you sure?",
-  //     [
-  //       { text: "Cancel", style: "cancel" },
-  //       {
-  //         text: "Reset",
-  //         style: "destructive",
-  //         onPress: async () => {
-  //           try {
-  //             await storage.clearAllData();
-  //             // Force reload by updating the app state
-  //             window.location.reload();
-  //           } catch (error) {
-  //             console.error("Error resetting app:", error);
-  //           }
-  //         },
-  //       },
-  //     ]
-  //   );
-  // };
-
   if (!userProfile) {
     return (
-      <View className="flex-1 justify-center items-center bg-purple-900">
+      <View className="items-center justify-center flex-1 bg-purple-900">
         <Text className="text-lg text-white">Loading...</Text>
       </View>
     );
@@ -126,37 +131,61 @@ export default function AffirmationScreen() {
 
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={Colors[colorScheme ?? "light"].tabbarBackground}
-        translucent={true}
-        animated={true}
-      />
-      <GradientBackground>
-        <View className="flex flex-1 justify-center items-center h-full">
-          {/* Header */}
-          <View
-            className="flex-0.1 h-10"
+      <ImageBackground
+        source={
+          customBackground
+            ? { uri: customBackground }
+            : require("@/assets/images/home.jpg")
+        }
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+        {/* Dark Overlay */}
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.7)", // 50% dark overlay
+            zIndex: 1,
+          }}
+        />
+        <View
+          className="relative flex items-center justify-center flex-1 h-full"
+          style={{ zIndex: 2 }}
+        >
+          {/* Sidebar */}
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+
+          {/* Hamburger Menu */}
+          <TouchableOpacity
+            onPress={toggleSidebar}
+            className="absolute z-30 p-2 top-12 left-4"
             style={{
-              height: 100,
-              width: "90%",
+              backgroundColor: "rgba(0, 0, 0, 0)",
+              borderRadius: 8,
+              position: "absolute",
+              top: 12,
+              left: 4,
             }}
-          ></View>
-{/* 
-          <View className="flex justify-center items-center w-full h-full" style={{
-            height: 100,
-          }}>
-            <Text className="text-2xl text-center text-black">
-              Welcome Back! {userProfile.name}
-            </Text>
-          </View> */}
+          >
+            <Ionicons
+              name="menu"
+              size={30}
+              color={Colors[colorScheme ?? "light"].quoteText}
+            />
+          </TouchableOpacity>
 
           {/* Main Content - Centered Quote */}
           <View
-            className="flex-1 justify-center items-center w-full h-full"
+            className="items-center justify-center flex-1 w-full h-full"
             style={{
               flex: 1,
-              height: 100,
             }}
           >
             <Carousel
@@ -177,17 +206,18 @@ export default function AffirmationScreen() {
 
           {/* Bottom Interactive Elements */}
           <View
-            className="flex gap-y-6 justify-center items-center space-y-6 items-enter"
+            className="flex flex-row justify-center space-y-6 items-enter gap-y-6"
             style={{
               borderRadius: 20,
-              height: 180,
+              height: 100,
               width: "100%",
+              gap: 10,
             }}
           >
             {/* Like Button */}
             <TouchableOpacity
               onPress={handleLikePress}
-              className="flex justify-center items-center p-3"
+              className="flex items-center justify-center w-full h-full p-0"
               style={{
                 marginBottom: 10,
                 height: 60,
@@ -200,9 +230,43 @@ export default function AffirmationScreen() {
                 color={isLiked ? "#EF4444" : "#F87171"}
               />
             </TouchableOpacity>
+
+            {/* Refresh Button */}
+            <TouchableOpacity
+              onPress={handleRefreshPress}
+              className="flex items-center justify-center p-0"
+              style={{
+                marginBottom: 10,
+                height: 60,
+                width: 60,
+                backgroundColor: "#279089",
+                borderRadius: 30,
+              }}
+            >
+              <Ionicons name="refresh" size={30} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            {/* Share Button */}
+            <TouchableOpacity
+              onPress={handleSharePress}
+              className="flex items-center justify-center p-0"
+              style={{
+                marginBottom: 10,
+                height: 60,
+                width: 60,
+              }}
+            >
+              <Ionicons name="share-outline" size={45} color="#F87171" />
+            </TouchableOpacity>
           </View>
+
+          <View
+            style={{
+              height: 60,
+            }}
+          />
         </View>
-      </GradientBackground>
+      </ImageBackground>
     </>
   );
 }

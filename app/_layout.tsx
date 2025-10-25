@@ -14,6 +14,7 @@ import "@/global.css";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
 import { ThemeProvider as CustomThemeProvider } from "@/contexts/ThemeContext";
+import { BackgroundProvider } from "@/contexts/BackgroundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 function AppContent() {
@@ -32,7 +33,7 @@ function AppContent() {
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <SafeAreaView style={{ flex: 1 }}>
-          <Stack>
+          <Stack screenOptions={{ headerShown: false }}>
             {userProfile ? (
               <Stack.Screen
                 name="(tabs)"
@@ -43,9 +44,14 @@ function AppContent() {
             ) : (
               <Stack.Screen name="welcome" options={{ headerShown: false }} />
             )}
-            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
           </Stack>
-          <StatusBar style="auto" />
+          <StatusBar
+            style={colorScheme === "dark" ? "light" : "dark"}
+            backgroundColor={Colors[colorScheme ?? "light"].tabbarBackground}
+            translucent={true}
+            animated={true}
+          />
         </SafeAreaView>
       </ThemeProvider>
     </SafeAreaProvider>
@@ -55,7 +61,9 @@ function AppContent() {
 export default function RootLayout() {
   return (
     <CustomThemeProvider>
-      <AppContent />
+      <BackgroundProvider>
+        <AppContent />
+      </BackgroundProvider>
     </CustomThemeProvider>
   );
 }

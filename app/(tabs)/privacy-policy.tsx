@@ -2,8 +2,7 @@ import React from "react";
 import { PolicyPage } from "@/components/PolicyPage";
 
 export default function PrivacyPolicyScreen() {
-  const privacyContent = `Privacy Policy
-
+  const privacyContent = `
 Welcome to our Mood Affirmation App. We respect your privacy and are committed to protecting your personal information.
 
 Information We Collect:

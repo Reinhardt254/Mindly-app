@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { SimpleHeader } from "@/components/ModernHeader";
 
 export default function StatsScreen() {
   const { userProfile } = useLocalStorage();
@@ -11,7 +12,7 @@ export default function StatsScreen() {
 
   if (!userProfile) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-900">
+      <View className="items-center justify-center flex-1 bg-gray-900">
         <Text className="text-lg">Loading...</Text>
       </View>
     );
@@ -24,30 +25,10 @@ export default function StatsScreen() {
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-      <ScrollView className="flex-1 px-6 py-8">
-        {/* Header */}
-        <View
-          className=""
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 30,
-          }}
-        ></View>
-        <View className="mb-8">
-          <Text
-            className="text-2xl font-bold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
-            Your Progress
-          </Text>
-          <Text
-            className="mt-2 text-md"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
-            Track your affirmation journey
-          </Text>
-        </View>
+      {/* Simple Header */}
+      <SimpleHeader title="Your Progress" />
 
+      <ScrollView className="flex-1 px-4 py-0">
         {/* Today's Progress */}
         <View
           className="mb-6 rounded-lg"
@@ -76,7 +57,7 @@ export default function StatsScreen() {
           </Text>
 
           <View
-            className="flex-row justify-between items-center"
+            className="flex-row items-center justify-between"
             style={{
               backgroundColor: Colors[colorScheme ?? "light"].background,
               paddingTop: 10,
@@ -172,7 +153,7 @@ export default function StatsScreen() {
               gap: 10,
             }}
           >
-            <View className="flex-row justify-between items-center w-full">
+            <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
                 <Ionicons name="calendar" size={24} color="#3B82F6" />
                 <Text
@@ -196,7 +177,7 @@ export default function StatsScreen() {
               </Text>
             </View>
 
-            <View className="flex-row justify-between items-center w-full">
+            <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
                 <Ionicons name="heart" size={24} color="#EF4444" />
                 <Text
@@ -220,7 +201,7 @@ export default function StatsScreen() {
               </Text>
             </View>
 
-            <View className="flex-row justify-between items-center w-full">
+            <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
                 <Ionicons name="trophy" size={24} color="#F59E0B" />
                 <Text
@@ -294,7 +275,7 @@ export default function StatsScreen() {
             }}
           >
             <View className="flex-row items-center">
-              <View className="justify-center items-center w-12 h-12 bg-green-500 rounded-full">
+              <View className="items-center justify-center w-12 h-12 bg-green-500 rounded-full">
                 <Ionicons name="checkmark" size={24} color="blue" />
               </View>
               <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
@@ -314,7 +295,7 @@ export default function StatsScreen() {
             </View>
 
             <View className="flex-row items-center">
-              <View className="justify-center items-center w-12 h-12 bg-blue-600 rounded-full">
+              <View className="items-center justify-center w-12 h-12 bg-blue-600 rounded-full">
                 <Ionicons name="flame" size={24} color="white" />
               </View>
               <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
@@ -334,7 +315,7 @@ export default function StatsScreen() {
             </View>
 
             <View className="flex-row items-center opacity-50">
-              <View className="justify-center items-center w-12 h-12 rounded-full">
+              <View className="items-center justify-center w-12 h-12 rounded-full">
                 <Ionicons name="star" size={24} color="white" />
               </View>
               <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
@@ -429,7 +410,7 @@ export default function StatsScreen() {
           className="flex-1"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 20,
+            height: 100,
           }}
         ></View>
       </ScrollView>

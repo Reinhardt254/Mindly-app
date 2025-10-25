@@ -31,12 +31,6 @@ export default function QuotePage() {
 
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={Colors[colorScheme ?? "light"].tabbarBackground}
-        translucent={true}
-        animated={true}
-      />
       <GradientBackground>
         <View className="flex-1 justify-center items-center px-8 w-full h-full">
           <View className="items-center space-y-6">

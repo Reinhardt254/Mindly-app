@@ -16,12 +16,6 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
 
   return (
     <>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={Colors[colorScheme ?? "light"].tabbarBackground}
-        translucent={true}
-        animated={true}
-      />
       <ThemedView className="flex-1 justify-center items-center px-6">
         <View className="items-center space-y-8">
           {/* App Logo/Icon */}
@@ -31,7 +25,11 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
 
           {/* Welcome Text */}
           <View className="items-center pb-2 space-y-4">
-            <ThemedText style={{ fontSize: 45, lineHeight: 50 }} type="title" className="text-center">
+            <ThemedText
+              style={{ fontSize: 45, lineHeight: 50 }}
+              type="title"
+              className="text-center"
+            >
               Welcome to Moodly
             </ThemedText>
 
@@ -48,25 +46,33 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
               <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">Personalized daily affirmations</ThemedText>
+              <ThemedText className="text-md">
+                Personalized daily affirmations
+              </ThemedText>
             </View>
             <View className="flex-row gap-2 items-center space-x-3">
               <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">Track your daily progress</ThemedText>
+              <ThemedText className="text-md">
+                Track your daily progress
+              </ThemedText>
             </View>
             <View className="flex-row gap-2 items-center space-x-3">
               <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">Beautiful, calming interface</ThemedText>
+              <ThemedText className="text-md">
+                Beautiful, calming interface
+              </ThemedText>
             </View>
             <View className="flex-row gap-2 items-center space-x-3">
               <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">Save your favorite affirmations</ThemedText>
+              <ThemedText className="text-md">
+                Save your favorite affirmations
+              </ThemedText>
             </View>
           </View>
 

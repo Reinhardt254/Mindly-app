@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { SimpleHeader } from "@/components/ModernHeader";
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
@@ -15,7 +16,7 @@ export default function ProfileScreen() {
 
   if (!userProfile) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-900">
+      <View className="items-center justify-center flex-1 bg-gray-900">
         <Text className="text-lg">Loading...</Text>
       </View>
     );
@@ -26,19 +27,13 @@ export default function ProfileScreen() {
       className="flex-1"
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
-      <ScrollView className="flex-1 px-4 py-8">
-        <View
-          className="flex-1"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 5,
-          }}
-        ></View>
-        {/* Header */}
+      {/* Simple Header */}
+      <SimpleHeader title="Profile" />
 
+      <ScrollView className="flex-1 px-4">
         {/* Profile Info */}
         <View
-          className="p-6 mb-6 rounded-lg"
+          className="p-6 mb-0 rounded-lg"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
             borderWidth: 0,
@@ -57,9 +52,9 @@ export default function ProfileScreen() {
                 : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
           }}
         >
-          <View className="items-center mt-20 mb-8 h-auto">
+          <View className="items-center h-auto mt-20 mb-8">
             <View
-              className="justify-center items-center mb-4 w-24 h-24 bg-blue-500 rounded-full"
+              className="items-center justify-center w-24 h-24 mb-4 bg-blue-500 rounded-full"
               style={{
                 marginBottom: 10,
                 height: 120,
@@ -99,14 +94,14 @@ export default function ProfileScreen() {
             </Text>
 
             <View
-              className="flex flex-col gap-10 justify-center items-center space-y-4 w-full h-auto"
+              className="flex flex-col items-center justify-center w-full h-auto gap-10 space-y-4"
               style={{
                 width: "100%",
                 gap: 5,
                 marginTop: 10,
               }}
             >
-              <View className="flex-row justify-between items-center my-10 w-full">
+              <View className="flex-row items-center justify-between w-full my-10">
                 <Text
                   className="text-xl"
                   style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -121,7 +116,7 @@ export default function ProfileScreen() {
                 </Text>
               </View>
 
-              <View className="flex-row justify-between items-center w-full">
+              <View className="flex-row items-center justify-between w-full">
                 <Text
                   className="text-xl"
                   style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -136,7 +131,7 @@ export default function ProfileScreen() {
                 </Text>
               </View>
 
-              <View className="flex-row justify-between items-center w-full">
+              <View className="flex-row items-center justify-between w-full">
                 <Text
                   className="text-xl"
                   style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -161,16 +156,13 @@ export default function ProfileScreen() {
             backgroundColor: Colors[colorScheme ?? "light"].background,
             borderWidth: 0,
             borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
+            borderRadius: 0,
             borderStyle: "solid",
             paddingVertical: 20,
             paddingHorizontal: 10,
             margin: 0,
             marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            boxShadow: "none",
             flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "flex-start",
@@ -179,7 +171,7 @@ export default function ProfileScreen() {
           }}
         >
           <TouchableOpacity
-            className="flex-row items-center p-4 w-full rounded-lg"
+            className="flex-row items-center w-full p-4 rounded-lg"
             style={{
               backgroundColor: Colors[colorScheme ?? "light"].background,
               borderWidth: 0,
@@ -215,7 +207,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center p-4 w-full rounded-lg"
+            className="flex-row items-center w-full p-4 rounded-lg"
             style={{
               backgroundColor: Colors[colorScheme ?? "light"].background,
               borderWidth: 0,
@@ -251,7 +243,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center p-4 w-full rounded-lg"
+            className="flex-row items-center w-full p-4 rounded-lg"
             style={{
               backgroundColor: Colors[colorScheme ?? "light"].background,
               borderWidth: 0,
@@ -322,7 +314,7 @@ export default function ProfileScreen() {
           className="flex-1"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 50,
+            height: 120,
           }}
         ></View>
       </ScrollView>

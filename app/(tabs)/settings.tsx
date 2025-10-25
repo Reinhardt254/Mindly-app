@@ -5,11 +5,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
+import { SimpleHeader } from "@/components/ModernHeader";
 
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
   const [hapticFeedback, setHapticFeedback] = useState(true);
-  const { themeMode, setThemeMode, isDark } = useTheme();
+  const { setThemeMode, isDark } = useTheme();
   const colorScheme = useColorScheme();
   const router = useRouter();
 
@@ -25,24 +26,10 @@ export default function SettingsScreen() {
         backgroundColor: Colors[colorScheme ?? "light"].background,
       }}
     >
-      <ScrollView className="flex-1 px-6 py-8">
-        <View style={{ height: 50 }}></View>
-        {/* Header */}
-        <View className="mb-8">
-          <Text
-            className="text-2xl font-bold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
-            Settings
-          </Text>
-          <Text
-            className="mt-2 text-md"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
-            Customize your experience
-          </Text>
-        </View>
+      {/* Simple Header */}
+      <SimpleHeader title="Settings" />
 
+      <ScrollView className="flex-1 px-4 py-0">
         {/* Notifications */}
         <View className="p-6 mb-6 rounded-lg">
           <Text
@@ -71,7 +58,7 @@ export default function SettingsScreen() {
             }}
             className="space-y-4"
           >
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <Ionicons name="notifications" size={24} color="#3B82F6" />
                 <Text
@@ -92,7 +79,7 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <Ionicons name="time" size={24} color="#3B82F6" />
                 <Text
@@ -143,7 +130,7 @@ export default function SettingsScreen() {
           </Text>
 
           <View className="space-y-4">
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <Ionicons name="moon" size={24} color="#3B82F6" />
                 <Text
@@ -163,6 +150,29 @@ export default function SettingsScreen() {
                 thumbColor={isDark ? "#ffffff" : "#f4f3f4"}
               />
             </View>
+
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/theme")}
+              className="flex-row items-center justify-between"
+            >
+              <View className="flex-row items-center">
+                <Ionicons name="color-palette" size={24} color="#3B82F6" />
+                <Text
+                  className="ml-4 text-lg"
+                  style={{
+                    color: Colors[colorScheme ?? "light"].text,
+                    paddingLeft: 10,
+                  }}
+                >
+                  Customize Background
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={Colors[colorScheme ?? "light"].text}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -194,7 +204,7 @@ export default function SettingsScreen() {
           </Text>
 
           <View className="space-y-4">
-            <View className="flex-row justify-between items-center">
+            <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <Ionicons name="phone-portrait" size={24} color="#3B82F6" />
                 <Text
@@ -371,7 +381,7 @@ export default function SettingsScreen() {
           className="flex-1"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 20,
+            height: 120,
           }}
         ></View>
       </ScrollView>
