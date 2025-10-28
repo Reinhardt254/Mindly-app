@@ -5,10 +5,21 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SimpleHeader } from "@/components/ModernHeader";
+import { useStatsStore } from "@/stores/statsStore";
 
 export default function StatsScreen() {
   const { userProfile } = useLocalStorage();
   const colorScheme = useColorScheme();
+  const {
+    totalAffirmationsViewed,
+    daysActive,
+    achievements,
+    getTodayStats,
+    getStreakInfo,
+  } = useStatsStore();
+
+  const todayStats = getTodayStats();
+  const streakInfo = getStreakInfo();
 
   if (!userProfile) {
     return (
@@ -65,7 +76,7 @@ export default function StatsScreen() {
           >
             <View className="items-center">
               <Text className="text-3xl font-bold text-blue-500">
-                {userProfile.dailyAffirmationsShown}
+                {todayStats?.affirmationsViewed || 0}
               </Text>
               <Text
                 className=""
@@ -89,11 +100,13 @@ export default function StatsScreen() {
 
             <View className="items-center">
               <Text className="text-3xl font-bold text-yellow-500">
-                {Math.round(
-                  (userProfile.dailyAffirmationsShown /
-                    userProfile.affirmationFrequency) *
-                    100
-                )}
+                {todayStats
+                  ? Math.round(
+                      (todayStats.affirmationsViewed /
+                        userProfile.affirmationFrequency) *
+                        100
+                    )
+                  : 0}
                 %
               </Text>
               <Text
@@ -155,7 +168,16 @@ export default function StatsScreen() {
           >
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
-                <Ionicons name="calendar" size={24} color="#3B82F6" />
+                <Ionicons
+                  name="calendar"
+                  size={20}
+                  color={Colors[colorScheme ?? "light"].background}
+                  style={{
+                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
+                    borderRadius: 100,
+                    padding: 7,
+                  }}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -173,13 +195,22 @@ export default function StatsScreen() {
                 }}
                 className="ml-auto text-lg font-semibold"
               >
-                7
+                {daysActive}
               </Text>
             </View>
 
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
-                <Ionicons name="heart" size={24} color="#EF4444" />
+                <Ionicons
+                  name="heart"
+                  size={20}
+                  color={Colors[colorScheme ?? "light"].background}
+                  style={{
+                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
+                    borderRadius: 100,
+                    padding: 7,
+                  }}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -197,13 +228,22 @@ export default function StatsScreen() {
                 }}
                 className="text-lg font-semibold"
               >
-                21
+                {totalAffirmationsViewed}
               </Text>
             </View>
 
             <View className="flex-row items-center justify-between w-full">
               <View className="flex-row items-center">
-                <Ionicons name="trophy" size={24} color="#F59E0B" />
+                <Ionicons
+                  name="trophy"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].background}
+                  style={{
+                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
+                    borderRadius: 100,
+                    padding: 7,
+                  }}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -221,7 +261,7 @@ export default function StatsScreen() {
                   color: Colors[colorScheme ?? "light"].text,
                 }}
               >
-                5 days
+                {streakInfo.current} days
               </Text>
             </View>
           </View>
@@ -229,19 +269,19 @@ export default function StatsScreen() {
 
         {/* Achievements */}
         <View
-          className="p-6 mb-6 rounded-lg"
           style={{
             backgroundColor: Colors[colorScheme ?? "light"].background,
             borderWidth: 0,
             borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
             borderRadius: 10,
             borderStyle: "solid",
-            paddingVertical: 30,
-            paddingHorizontal: 10,
-            paddingBottom: 10,
             height: "auto",
             margin: 0,
             marginTop: 0,
+            paddingVertical: 30,
+            paddingHorizontal: 20,
+            paddingBottom: 10,
+            marginBottom: 20,
             boxShadow:
               colorScheme === "dark"
                 ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
@@ -274,65 +314,61 @@ export default function StatsScreen() {
               gap: 10,
             }}
           >
-            <View className="flex-row items-center">
-              <View className="items-center justify-center w-12 h-12 bg-green-500 rounded-full">
-                <Ionicons name="checkmark" size={24} color="blue" />
-              </View>
-              <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
-                <Text
-                  className="text-lg font-semibold"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
+            {achievements.map((achievement) => (
+              <View
+                key={achievement.id}
+                className={`flex-row items-center ${achievement.unlocked ? "" : "opacity-50"}`}
+              >
+                <View
+                  className={`items-center justify-center w-12 h-12 rounded-full ${
+                    achievement.unlocked
+                      ? achievement.id === "first_steps"
+                        ? "bg-green-500"
+                        : achievement.id === "on_fire"
+                          ? "bg-blue-600"
+                          : achievement.id === "affirmation_master"
+                            ? "bg-purple-600"
+                            : achievement.id === "heart_lover"
+                              ? "bg-red-500"
+                              : achievement.id === "social_butterfly"
+                                ? "bg-pink-500"
+                                : "bg-yellow-500"
+                      : "bg-gray-500"
+                  }`}
                 >
-                  First Steps
-                </Text>
-                <Text
-                  className=""
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
-                  Complete your first affirmation
-                </Text>
+                  <Ionicons
+                    name={achievement.icon as any}
+                    size={24}
+                    color={
+                      achievement.unlocked
+                        ? "#FFFFFF" // White icon for unlocked achievements
+                        : "#FFFFFF" // White icon for locked achievements too
+                    }
+                    style={{
+                      backgroundColor: achievement.unlocked
+                        ? Colors[colorScheme ?? "light"].highlight // No background for unlocked (the parent View provides the colored background)
+                        : Colors[colorScheme ?? "light"].text, // No background for locked either
+                      borderRadius: 100,
+                      padding: 7,
+                    }}
+                  />
+                </View>
+                <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
+                  <Text
+                    className="text-lg font-semibold"
+                    style={{ color: Colors[colorScheme ?? "light"].text }}
+                  >
+                    {achievement.title}
+                  </Text>
+                  <Text
+                    className=""
+                    style={{ color: Colors[colorScheme ?? "light"].text }}
+                  >
+                    {achievement.description}
+                  </Text>
+                </View>
               </View>
-            </View>
-
-            <View className="flex-row items-center">
-              <View className="items-center justify-center w-12 h-12 bg-blue-600 rounded-full">
-                <Ionicons name="flame" size={24} color="white" />
-              </View>
-              <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
-                <Text
-                  className="text-lg font-semibold"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
-                  On Fire
-                </Text>
-                <Text
-                  className=""
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
-                  Complete 7 days in a row
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row items-center opacity-50">
-              <View className="items-center justify-center w-12 h-12 rounded-full">
-                <Ionicons name="star" size={24} color="white" />
-              </View>
-              <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
-                <Text
-                  className="text-lg font-semibold"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
-                  Affirmation Master
-                </Text>
-                <Text
-                  className=""
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
-                  Complete 30 days in a row
-                </Text>
-              </View>
-            </View>
+            ))}
           </View>
         </View>
 
@@ -398,8 +434,11 @@ export default function StatsScreen() {
                 style={{ color: Colors[colorScheme ?? "light"].text }}
               >
                 You&apos;re{" "}
-                {userProfile.affirmationFrequency -
-                  userProfile.dailyAffirmationsShown}{" "}
+                {Math.max(
+                  0,
+                  userProfile.affirmationFrequency -
+                    (todayStats?.affirmationsViewed || 0)
+                )}{" "}
                 affirmations away from today&apos;s goal!
               </Text>
             </View>

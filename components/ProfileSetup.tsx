@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -136,9 +135,9 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   };
 
   const renderFormContent = () => (
-    <View className="flex-1 px-3 py-20 pb-0 w-full h-full bg-gray-800">
+    <View className="flex-1 w-full h-full px-3 py-20 pb-0 bg-gray-800">
       {/* Header */}
-      <View className="flex-col gap-3 items-center mb-0">
+      <View className="flex-col items-center gap-3 mb-0">
         <Text className="w-full text-4xl font-bold text-center text-white">
           Welcome to Moodly
         </Text>
@@ -148,7 +147,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
       </View>
 
       {/* Form Container */}
-      <View className="flex flex-col gap-4 p-4 pt-10 pb-2 mb-32 space-y-6 w-full rounded-xl">
+      <View className="flex flex-col w-full gap-4 p-4 pt-10 pb-2 mb-32 space-y-6 rounded-xl">
         {/* First Name */}
         <View className="space-y-2">
           <Text className="pb-1 text-lg font-medium text-white">
@@ -159,7 +158,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             onChangeText={(text) => updateFormData("firstName", text)}
             placeholder="Enter your first name"
             placeholderTextColor="#6B7280"
-            className="px-4 py-3 h-16 text-base text-white bg-gray-700 rounded-lg"
+            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
           />
           {errors.firstName && (
             <Text className="text-sm text-red-400">{errors.firstName}</Text>
@@ -174,7 +173,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             onChangeText={(text) => updateFormData("lastName", text)}
             placeholder="Enter your last name"
             placeholderTextColor="#6B7280"
-            className="px-4 py-3 h-16 text-base text-white bg-gray-700 rounded-lg"
+            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
           />
           {errors.lastName && (
             <Text className="text-sm text-red-400">{errors.lastName}</Text>
@@ -343,7 +342,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             placeholderTextColor="#6B7280"
             keyboardType="email-address"
             autoCapitalize="none"
-            className="px-4 py-3 h-16 text-base text-white bg-gray-700 rounded-lg"
+            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
             style={{
               height: 55,
             }}
@@ -363,7 +362,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               placeholder="Enter your password"
               placeholderTextColor="#6B7280"
               secureTextEntry={!showPassword}
-              className="px-4 py-3 pr-12 h-14 text-base text-white bg-gray-700 rounded-lg"
+              className="px-4 py-3 pr-12 text-base text-white bg-gray-700 rounded-lg h-14"
               style={{
                 height: 55,
               }}

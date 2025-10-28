@@ -45,8 +45,8 @@ export default function NameSetupScreen() {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View className="relative flex-1 justify-start px-8 pt-10">
-          <View className="flex-row justify-between items-center pb-10 w-full">     
+        <View className="relative justify-start flex-1 px-8 pt-0">
+          <View className="flex-row items-center justify-between w-full pb-10">     
           {/* Back Button */}
           <TouchableOpacity
             onPress={handleBack}
@@ -100,7 +100,7 @@ export default function NameSetupScreen() {
             </View>
 
             {/* Name Input */}
-            <View className="space-y-4 w-full">
+            <View className="w-full space-y-4">
               <TextInput
                 value={name}
                 onChangeText={(text) => {
@@ -111,7 +111,7 @@ export default function NameSetupScreen() {
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "60"
                 }
-                className="px-6 py-4 w-full text-lg rounded-2xl"
+                className="w-full px-6 py-4 text-lg rounded-2xl"
                 style={{
                   backgroundColor: Colors[colorScheme ?? "light"].background,
                   borderWidth: 1,
@@ -137,7 +137,7 @@ export default function NameSetupScreen() {
             {/* Next Button */}
             <TouchableOpacity
               onPress={handleNext}
-              className="py-4 mt-8 w-full rounded-2xl"
+              className="w-full py-4 mt-8 rounded-2xl"
               style={{
                 backgroundColor: name.trim()
                   ? Colors[colorScheme ?? "light"].tabIconSelected

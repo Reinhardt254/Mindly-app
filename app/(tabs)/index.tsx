@@ -1,14 +1,14 @@
 import { AFFIRMATIONS } from "@/constants/Affirmations";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { timeUtils } from "@/utils/timeUtils";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
-  Alert,
   View,
   Text,
   Dimensions,
   TouchableOpacity,
   ImageBackground,
+  Share,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-reanimated-carousel";
@@ -16,23 +16,62 @@ import { Sidebar } from "@/components/Sidebar";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useBackground } from "@/contexts/BackgroundContext";
+import { useStatsStore } from "@/stores/statsStore";
+import { Popup } from "@/components/Popup";
+import ViewShot from "react-native-view-shot";
 
 export default function AffirmationScreen() {
   const { userProfile, saveAppState } = useLocalStorage();
-  const [, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [dailyShown, setDailyShown] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
   const { customBackground } = useBackground();
   const colorScheme = useColorScheme();
+  const { logActivity } = useStatsStore();
+  const viewShotRef = useRef<ViewShot>(null);
 
   const screenWidth = Dimensions.get("window").width;
 
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
+
   const handleLikePress = () => {
-    setIsLiked(!isLiked);
-    Alert.alert(
-      isLiked ? "Unliked" : "Liked!",
-      isLiked ? "Removed from favorites" : "Added to favorites"
+    const newLikedState = !isLiked;
+    setIsLiked(newLikedState);
+
+    // Log activity
+    logActivity({
+      type: "affirmation_liked",
+      affirmationId: AFFIRMATIONS[currentIndex]?.id?.toString(),
+      affirmationText: AFFIRMATIONS[currentIndex]?.text,
+      affirmationCategory: AFFIRMATIONS[currentIndex]?.category,
+    });
+
+    showPopup(
+      newLikedState ? "Liked!" : "Unliked",
+      newLikedState ? "Added to favorites" : "Removed from favorites",
+      [{ text: "OK", onPress: () => {} }]
     );
   };
 
@@ -41,6 +80,14 @@ export default function AffirmationScreen() {
     setCurrentIndex(randomIndex);
     setDailyShown((prev) => prev + 1);
     setIsLiked(false);
+
+    // Log activity
+    logActivity({
+      type: "affirmation_refreshed",
+      affirmationId: AFFIRMATIONS[randomIndex]?.id?.toString(),
+      affirmationText: AFFIRMATIONS[randomIndex]?.text,
+      affirmationCategory: AFFIRMATIONS[randomIndex]?.category,
+    });
 
     // Save progress
     saveAppState({
@@ -51,8 +98,36 @@ export default function AffirmationScreen() {
     });
   };
 
-  const handleSharePress = () => {
-    Alert.alert("Share", "Share this affirmation with others!");
+  const handleSharePress = async () => {
+    // Log activity
+    logActivity({
+      type: "affirmation_shared",
+      affirmationId: AFFIRMATIONS[currentIndex]?.id?.toString(),
+      affirmationText: AFFIRMATIONS[currentIndex]?.text,
+      affirmationCategory: AFFIRMATIONS[currentIndex]?.category,
+    });
+
+    try {
+      // Capture the affirmation as an image
+      const uri = await viewShotRef.current?.capture();
+
+      if (uri) {
+        // Share the image
+        await Share.share({
+          url: uri,
+          message: `Check out this beautiful affirmation: "${AFFIRMATIONS[currentIndex]?.text}"`,
+        });
+      } else {
+        showPopup("Error", "Failed to create shareable image", [
+          { text: "OK", onPress: () => {} },
+        ]);
+      }
+    } catch (error) {
+      console.error("Share error:", error);
+      showPopup("Error", "Failed to share affirmation", [
+        { text: "OK", onPress: () => {} },
+      ]);
+    }
   };
 
   const toggleSidebar = () => {
@@ -64,6 +139,14 @@ export default function AffirmationScreen() {
     setCurrentIndex(index);
     setDailyShown((prev) => prev + 1);
     setIsLiked(false);
+
+    // Log activity for viewing affirmation
+    logActivity({
+      type: "affirmation_viewed",
+      affirmationId: AFFIRMATIONS[index]?.id?.toString(),
+      affirmationText: AFFIRMATIONS[index]?.text,
+      affirmationCategory: AFFIRMATIONS[index]?.category,
+    });
 
     // Save progress
     saveAppState({
@@ -82,43 +165,58 @@ export default function AffirmationScreen() {
     item: any;
     index: number;
   }) => (
-    <View
-      className="flex-col items-end justify-end flex-1 w-full h-full px-8"
+    <ViewShot
+      ref={index === currentIndex ? viewShotRef : null}
+      options={{ format: "jpg", quality: 0.9 }}
       style={{
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        width: "100%",
+        height: "100%",
       }}
     >
-      <View className="items-center space-y-6">
-        {/* Quote Text */}
-        <Text
-          className="text-6xl text-center text-yellow-400"
-          style={{
-            fontStyle: "italic",
-            fontFamily: "serif",
-            textAlign: "center",
-            fontWeight: "bold",
-            fontSize: 40,
-            lineHeight: 50,
-            letterSpacing: 1,
-            color: Colors[colorScheme ?? "light"].quoteText,
-          }}
-        >
-          &ldquo;{item.text}&rdquo;
-        </Text>
+      <View
+        className="flex-col items-end justify-end flex-1 w-full h-full px-8"
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          // backgroundColor: "rgba(0, 0, 0, 0.3)",
+          borderRadius: 20,
+          padding: 20,
+        }}
+      >
+        <View className="items-center space-y-6">
+          {/* Quote Text */}
+          <Text
+            className="text-6xl text-center"
+            style={{
+              fontStyle: "italic",
+              fontFamily: "serif",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: 40,
+              lineHeight: 50,
+              letterSpacing: 1,
+              color: Colors[colorScheme ?? "light"].quoteText,
+            }}
+          >
+            &ldquo;{item.text}&rdquo;
+          </Text>
 
-        {/* Attribution */}
-        <Text
-          className="pt-10 text-xl font-bold text-center"
-          style={{
-            color: Colors[colorScheme ?? "light"].tint,
-          }}
-        >
-          - {item.category.toUpperCase()}
-        </Text>
+          {/* Attribution */}
+          <Text
+            className="pt-10 text-xl font-bold text-center"
+            style={{
+              color: Colors[colorScheme ?? "light"].tint,
+            }}
+          >
+            - {item.category.toUpperCase()}
+          </Text>
+        </View>
       </View>
-    </View>
+    </ViewShot>
   );
 
   if (!userProfile) {
@@ -172,6 +270,7 @@ export default function AffirmationScreen() {
               position: "absolute",
               top: 12,
               left: 4,
+              zIndex: 30,
             }}
           >
             <Ionicons
@@ -185,13 +284,15 @@ export default function AffirmationScreen() {
           <View
             className="items-center justify-center flex-1 w-full h-full"
             style={{
-              flex: 1,
+              flex: 0.9,
+              height: "100%",
             }}
           >
             <Carousel
               loop
+              vertical={true}
               width={screenWidth}
-              height={screenWidth * 1.2}
+              height= {screenWidth * 1.65}
               data={AFFIRMATIONS}
               scrollAnimationDuration={1000}
               onSnapToItem={handleIndexChange}
@@ -209,7 +310,8 @@ export default function AffirmationScreen() {
             className="flex flex-row justify-center space-y-6 items-enter gap-y-6"
             style={{
               borderRadius: 20,
-              height: 100,
+              flex: 0.015,
+              minHeight: 100,
               width: "100%",
               gap: 10,
             }}
@@ -256,17 +358,26 @@ export default function AffirmationScreen() {
                 width: 60,
               }}
             >
-              <Ionicons name="share-outline" size={45} color="#F87171" />
+              <Ionicons name="share-social" size={45} color="#F87171" />
             </TouchableOpacity>
           </View>
 
           <View
             style={{
-              height: 60,
+              height: 10,
             }}
           />
         </View>
       </ImageBackground>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </>
   );
 }

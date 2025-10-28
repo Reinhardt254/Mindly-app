@@ -16,6 +16,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navigationItems = [
     { name: "Home", icon: "home", route: "/(tabs)/" as const },
+    { name: "Favorites", icon: "heart", route: "/(tabs)/favorites" as const },
+    { name: "Add", icon: "add-circle", route: "/(tabs)/add" as const },
     { name: "Profile", icon: "person", route: "/(tabs)/profile" as const },
     { name: "Settings", icon: "settings", route: "/(tabs)/settings" as const },
     { name: "Stats", icon: "bar-chart", route: "/(tabs)/stats" as const },

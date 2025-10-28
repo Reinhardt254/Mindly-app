@@ -12,7 +12,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
- 
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -91,6 +91,16 @@ export default function TabLayout() {
             title: "Settings",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings" color={color} size={size} />
+            ),
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="favorites"
+          options={{
+            title: "Favorites",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="heart" color={color} size={size} />
             ),
             href: null,
           }}
