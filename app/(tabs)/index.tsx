@@ -1,7 +1,7 @@
 import { AFFIRMATIONS } from "@/constants/Affirmations";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { timeUtils } from "@/utils/timeUtils";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -17,7 +17,10 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useBackground } from "@/contexts/BackgroundContext";
 import { useStatsStore } from "@/stores/statsStore";
+import { useCategoryStore } from "@/stores/categoryStore";
 import { Popup } from "@/components/Popup";
+import { AffirmationsPracticePopup } from "@/components/AffirmationsPracticePopup";
+import { AffirmationsPracticeSession } from "@/components/AffirmationsPracticeSession";
 import ViewShot from "react-native-view-shot";
 
 export default function AffirmationScreen() {
@@ -27,6 +30,11 @@ export default function AffirmationScreen() {
   const [isLiked, setIsLiked] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [isPracticePopupVisible, setIsPracticePopupVisible] = useState(false);
+  const [isPracticeSessionVisible, setIsPracticeSessionVisible] =
+    useState(false);
+  const [practiceDuration, setPracticeDuration] = useState(5);
   const [popupConfig, setPopupConfig] = useState({
     title: "",
     message: "",
@@ -39,7 +47,18 @@ export default function AffirmationScreen() {
   const { customBackground } = useBackground();
   const colorScheme = useColorScheme();
   const { logActivity } = useStatsStore();
+  const { selectedCategory } = useCategoryStore();
   const viewShotRef = useRef<ViewShot>(null);
+
+  // Filter affirmations based on selected category
+  const filteredAffirmations = useMemo(() => {
+    if (selectedCategory === "all") {
+      return AFFIRMATIONS;
+    }
+    return AFFIRMATIONS.filter(
+      (affirmation) => affirmation.category === selectedCategory
+    );
+  }, [selectedCategory]);
 
   const screenWidth = Dimensions.get("window").width;
 
@@ -63,9 +82,9 @@ export default function AffirmationScreen() {
     // Log activity
     logActivity({
       type: "affirmation_liked",
-      affirmationId: AFFIRMATIONS[currentIndex]?.id?.toString(),
-      affirmationText: AFFIRMATIONS[currentIndex]?.text,
-      affirmationCategory: AFFIRMATIONS[currentIndex]?.category,
+      affirmationId: filteredAffirmations[currentIndex]?.id?.toString(),
+      affirmationText: filteredAffirmations[currentIndex]?.text,
+      affirmationCategory: filteredAffirmations[currentIndex]?.category,
     });
 
     showPopup(
@@ -99,39 +118,72 @@ export default function AffirmationScreen() {
   };
 
   const handleSharePress = async () => {
-    // Log activity
-    logActivity({
-      type: "affirmation_shared",
-      affirmationId: AFFIRMATIONS[currentIndex]?.id?.toString(),
-      affirmationText: AFFIRMATIONS[currentIndex]?.text,
-      affirmationCategory: AFFIRMATIONS[currentIndex]?.category,
-    });
+    if (isSharing) {
+      console.log("Already sharing, ignoring duplicate tap");
+      return;
+    }
+
+    setIsSharing(true);
 
     try {
-      // Capture the affirmation as an image
-      const uri = await viewShotRef.current?.capture();
+      console.log("=== Starting share process ===");
 
-      if (uri) {
-        // Share the image
-        await Share.share({
-          url: uri,
-          message: `Check out this beautiful affirmation: "${AFFIRMATIONS[currentIndex]?.text}"`,
-        });
-      } else {
-        showPopup("Error", "Failed to create shareable image", [
-          { text: "OK", onPress: () => {} },
-        ]);
+      const currentAffirmation = filteredAffirmations[currentIndex];
+      const appName = "Mindly";
+      const playStoreUrl =
+        "https://play.google.com/store/apps/details?id=com.mindly.app"; // Replace with actual URL when available
+
+      // Create share message
+      const shareMessage = `💭 "${currentAffirmation?.text}"\n\n✨ Daily affirmations to transform your mindset!\n\n📱 Get ${appName} app:\n${playStoreUrl}`;
+
+      // Log activity
+      logActivity({
+        type: "affirmation_shared",
+        affirmationId: currentAffirmation?.id?.toString(),
+        affirmationText: currentAffirmation?.text,
+        affirmationCategory: currentAffirmation?.category,
+      });
+
+      console.log("Opening share dialog...");
+
+      // Share using native Share API
+      const result = await Share.share({
+        message: shareMessage,
+        title: `${appName} - Daily Affirmation`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        console.log("✅ Share completed successfully");
+        if (result.activityType) {
+          console.log("Shared via:", result.activityType);
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log("Share dismissed by user");
       }
-    } catch (error) {
-      console.error("Share error:", error);
-      showPopup("Error", "Failed to share affirmation", [
-        { text: "OK", onPress: () => {} },
-      ]);
+
+      setIsSharing(false);
+    } catch (error: any) {
+      console.error("❌ Share error:", error);
+      showPopup(
+        "Error",
+        `Failed to share: ${error?.message || "Unknown error"}`,
+        [{ text: "OK", onPress: () => {} }]
+      );
+      setIsSharing(false);
     }
   };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handlePracticePress = () => {
+    setIsPracticePopupVisible(true);
+  };
+
+  const handleStartPractice = (duration: number) => {
+    setPracticeDuration(duration);
+    setIsPracticeSessionVisible(true);
   };
 
   // Handle carousel index change
@@ -292,8 +344,8 @@ export default function AffirmationScreen() {
               loop
               vertical={true}
               width={screenWidth}
-              height= {screenWidth * 1.65}
-              data={AFFIRMATIONS}
+              height={screenWidth * 1.65}
+              data={filteredAffirmations}
               scrollAnimationDuration={1000}
               onSnapToItem={handleIndexChange}
               renderItem={renderCarouselItem}
@@ -333,8 +385,23 @@ export default function AffirmationScreen() {
               />
             </TouchableOpacity>
 
-            {/* Refresh Button */}
+            {/* Practice Button */}
             <TouchableOpacity
+              onPress={handlePracticePress}
+              className="flex items-center justify-center p-0"
+              style={{
+                marginBottom: 10,
+                height: 60,
+                width: 60,
+                backgroundColor: "#20B2AA",
+                borderRadius: 30,
+              }}
+            >
+              <Ionicons name="play" size={30} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            {/* Refresh Button */}
+            {/* <TouchableOpacity
               onPress={handleRefreshPress}
               className="flex items-center justify-center p-0"
               style={{
@@ -346,19 +413,25 @@ export default function AffirmationScreen() {
               }}
             >
               <Ionicons name="refresh" size={30} color="#FFFFFF" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Share Button */}
             <TouchableOpacity
               onPress={handleSharePress}
+              disabled={isSharing}
               className="flex items-center justify-center p-0"
               style={{
                 marginBottom: 10,
                 height: 60,
                 width: 60,
+                opacity: isSharing ? 0.5 : 1,
               }}
             >
-              <Ionicons name="share-social" size={45} color="#F87171" />
+              <Ionicons
+                name={isSharing ? "hourglass" : "share-social"}
+                size={45}
+                color="#F87171"
+              />
             </TouchableOpacity>
           </View>
 
@@ -377,6 +450,24 @@ export default function AffirmationScreen() {
         message={popupConfig.message}
         buttons={popupConfig.buttons}
         onClose={() => setIsPopupVisible(false)}
+      />
+
+      {/* Practice Popup */}
+      <AffirmationsPracticePopup
+        visible={isPracticePopupVisible}
+        onClose={() => setIsPracticePopupVisible(false)}
+        onStartPractice={handleStartPractice}
+      />
+
+      {/* Practice Session */}
+      <AffirmationsPracticeSession
+        visible={isPracticeSessionVisible}
+        duration={practiceDuration}
+        onClose={() => setIsPracticeSessionVisible(false)}
+        onRestart={() => {
+          setIsPracticeSessionVisible(false);
+          setIsPracticePopupVisible(true);
+        }}
       />
     </>
   );

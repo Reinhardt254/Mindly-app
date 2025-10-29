@@ -123,11 +123,71 @@ export const AFFIRMATIONS: Affirmation[] = [
   },
 ];
 
-export const CATEGORIES = {
-  confidence: "Confidence",
-  gratitude: "Gratitude",
-  strength: "Strength",
-  growth: "Growth",
-  "self-love": "Self-Love",
-  motivation: "Motivation",
-} as const;
+export type AffirmationCategory =
+  | "all"
+  | "confidence"
+  | "gratitude"
+  | "strength"
+  | "growth"
+  | "self-love"
+  | "motivation";
+
+export interface CategoryInfo {
+  id: AffirmationCategory;
+  name: string;
+  icon: string; // Ionicons name
+  color: string;
+  description: string;
+}
+
+export const CATEGORIES: CategoryInfo[] = [
+  {
+    id: "all",
+    name: "All Affirmations",
+    icon: "apps",
+    color: "#8B5CF6",
+    description: "View all affirmations",
+  },
+  {
+    id: "confidence",
+    name: "Confidence",
+    icon: "shield-checkmark",
+    color: "#3B82F6",
+    description: "Build self-confidence and belief",
+  },
+  {
+    id: "gratitude",
+    name: "Gratitude",
+    icon: "heart",
+    color: "#EC4899",
+    description: "Practice thankfulness and appreciation",
+  },
+  {
+    id: "strength",
+    name: "Strength",
+    icon: "fitness",
+    color: "#EF4444",
+    description: "Find inner strength and resilience",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    icon: "trending-up",
+    color: "#10B981",
+    description: "Embrace personal development",
+  },
+  {
+    id: "self-love",
+    name: "Self Love",
+    icon: "sparkles",
+    color: "#F59E0B",
+    description: "Nurture self-acceptance and love",
+  },
+  {
+    id: "motivation",
+    name: "Motivation",
+    icon: "flame",
+    color: "#F97316",
+    description: "Stay motivated and driven",
+  },
+];

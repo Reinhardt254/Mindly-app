@@ -1,17 +1,49 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useStatsStore } from "@/stores/statsStore";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SimpleHeader } from "@/components/ModernHeader";
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const { userProfile, clearAllData } = useLocalStorage();
+  const { resetStats } = useStatsStore();
 
   const handleLogout = () => {
-    clearAllData();
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout? All your data will be cleared.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Clear all data
+              await clearAllData();
+
+              // Reset stats
+              resetStats();
+
+              // Navigate to welcome screen
+              router.replace("/welcome");
+            } catch (error) {
+              console.error("Error during logout:", error);
+              Alert.alert("Error", "Failed to logout. Please try again.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (!userProfile) {
@@ -145,6 +177,22 @@ export default function ProfileScreen() {
                   {userProfile.affirmationFrequency} times
                 </Text>
               </View>
+
+              <View className="flex-row items-center justify-between w-full">
+                <Text
+                  className="text-xl"
+                  style={{ color: Colors[colorScheme ?? "light"].text }}
+                >
+                  Reminder Hours
+                </Text>
+                <Text
+                  className="text-xl"
+                  style={{ color: Colors[colorScheme ?? "light"].text }}
+                >
+                  {userProfile.reminderStartHour || 8}:00 -{" "}
+                  {userProfile.reminderEndHour || 20}:00
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -171,6 +219,7 @@ export default function ProfileScreen() {
           }}
         >
           <TouchableOpacity
+            onPress={() => router.push("/(tabs)/edit-profile")}
             className="flex-row items-center w-full p-4 rounded-lg"
             style={{
               backgroundColor: Colors[colorScheme ?? "light"].background,

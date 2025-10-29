@@ -9,14 +9,28 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE"
+      ],
       "edgeToEdgeEnabled": true
+    },
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#3B82F6",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Mindly"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +46,15 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#3B82F6",
+          "defaultChannel": "affirmations",
+          "sounds": ["default"]
         }
       ]
     ],

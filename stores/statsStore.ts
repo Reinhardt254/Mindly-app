@@ -8,11 +8,14 @@ export interface ActivityLog {
     | "affirmation_viewed"
     | "affirmation_liked"
     | "affirmation_shared"
-    | "affirmation_refreshed";
+    | "affirmation_refreshed"
+    | "practice_session_completed";
   timestamp: number;
   affirmationId?: string;
   affirmationText?: string;
   affirmationCategory?: string;
+  affirmationCount?: number;
+  duration?: number;
 }
 
 export interface DailyStats {
@@ -21,6 +24,7 @@ export interface DailyStats {
   affirmationsLiked: number;
   affirmationsShared: number;
   affirmationsRefreshed: number;
+  practiceSessionsCompleted: number;
   goalMet: boolean;
   streakDay: number;
 }
@@ -61,6 +65,7 @@ export interface StatsState {
   totalAffirmationsLiked: number;
   totalAffirmationsShared: number;
   totalAffirmationsRefreshed: number;
+  totalPracticeSessionsCompleted: number;
   currentStreak: number;
   longestStreak: number;
   daysActive: number;
@@ -153,6 +158,7 @@ export const useStatsStore = create<StatsState>()(
       totalAffirmationsLiked: 0,
       totalAffirmationsShared: 0,
       totalAffirmationsRefreshed: 0,
+      totalPracticeSessionsCompleted: 0,
       currentStreak: 0,
       longestStreak: 0,
       daysActive: 0,
@@ -189,6 +195,10 @@ export const useStatsStore = create<StatsState>()(
               updates.totalAffirmationsRefreshed =
                 state.totalAffirmationsRefreshed + 1;
               break;
+            case "practice_session_completed":
+              updates.totalPracticeSessionsCompleted =
+                state.totalPracticeSessionsCompleted + 1;
+              break;
           }
 
           return updates;
@@ -220,6 +230,9 @@ export const useStatsStore = create<StatsState>()(
           const affirmationsRefreshed = todayActivities.filter(
             (a) => a.type === "affirmation_refreshed"
           ).length;
+          const practiceSessionsCompleted = todayActivities.filter(
+            (a) => a.type === "practice_session_completed"
+          ).length;
 
           // Check if daily goal is met (assuming goal is 3 affirmations per day)
           const goalMet = affirmationsViewed >= 3;
@@ -250,6 +263,7 @@ export const useStatsStore = create<StatsState>()(
             affirmationsLiked,
             affirmationsShared,
             affirmationsRefreshed,
+            practiceSessionsCompleted,
             goalMet,
             streakDay,
           };
@@ -393,6 +407,7 @@ export const useStatsStore = create<StatsState>()(
           totalAffirmationsLiked: 0,
           totalAffirmationsShared: 0,
           totalAffirmationsRefreshed: 0,
+          totalPracticeSessionsCompleted: 0,
           currentStreak: 0,
           longestStreak: 0,
           daysActive: 0,

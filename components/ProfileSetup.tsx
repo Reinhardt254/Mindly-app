@@ -24,7 +24,9 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     password: "",
     ageRange: "" as UserProfile["ageRange"],
     gender: "" as UserProfile["gender"],
-    affirmationFrequency: 3 as UserProfile["affirmationFrequency"],
+    affirmationFrequency: 3 as number,
+    reminderStartHour: 8,
+    reminderEndHour: 20,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,24 +38,34 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   const [frequencyOpen, setFrequencyOpen] = useState(false);
 
   const ageRanges: UserProfile["ageRange"][] = [
-    "18-25",
-    "26-35",
-    "36-45",
-    "46+",
+    "13-17",
+    "18-24",
+    "25-34",
+    "35-44",
+    "45-54",
+    "55-64",
+    "65+",
   ];
 
   const genders: UserProfile["gender"][] = [
-    "Male",
-    "Female",
-    "Non-binary",
-    "Prefer not to say",
+    "male",
+    "female",
+    "non-binary",
+    "prefer-not-to-say",
   ];
 
-  const frequencies: UserProfile["affirmationFrequency"][] = [1, 2, 3, 5];
+  const frequencies: number[] = [1, 2, 3, 4, 5];
 
   // Dropdown items
   const genderItems = genders.map((gender) => ({
-    label: gender,
+    label:
+      gender === "male"
+        ? "Male"
+        : gender === "female"
+          ? "Female"
+          : gender === "non-binary"
+            ? "Non-binary"
+            : "Prefer not to say",
     value: gender,
   }));
 
@@ -120,6 +132,8 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
         ageRange: formData.ageRange,
         gender: formData.gender,
         affirmationFrequency: formData.affirmationFrequency,
+        reminderStartHour: formData.reminderStartHour,
+        reminderEndHour: formData.reminderEndHour,
         isFirstTime: false,
         dailyAffirmationsShown: 0,
       };

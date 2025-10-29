@@ -6,6 +6,9 @@ const STORAGE_KEYS = {
   APP_STATE: "@app_state",
   LAST_AFFIRMATION_DATE: "@last_affirmation_date",
   DAILY_AFFIRMATIONS_SHOWN: "@daily_affirmations_shown",
+  STATS_STORAGE: "stats-storage", // Zustand persist key
+  THEME_PREFERENCE: "theme-preference", // Theme context key
+  CUSTOM_BACKGROUND: "customBackground", // Background context key
 } as const;
 
 export const storage = {
@@ -91,12 +94,16 @@ export const storage = {
     }
   },
 
-  // Clear all data (for testing/reset)
+  // Clear all data (for logout/reset)
   async clearAllData(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove(Object.values(STORAGE_KEYS));
+      // Get all keys and clear everything
+      const allKeys = await AsyncStorage.getAllKeys();
+      await AsyncStorage.multiRemove(allKeys);
+      console.log("All data cleared successfully");
     } catch (error) {
       console.error("Error clearing all data:", error);
+      throw error;
     }
   },
 };

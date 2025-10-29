@@ -1,22 +1,103 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Switch } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
 import { SimpleHeader } from "@/components/ModernHeader";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { notificationService } from "@/services/notificationService";
 
 export default function SettingsScreen() {
-  const [notifications, setNotifications] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [hapticFeedback, setHapticFeedback] = useState(true);
+  const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
   const { setThemeMode, isDark } = useTheme();
+  const { userProfile } = useLocalStorage();
   const colorScheme = useColorScheme();
   const router = useRouter();
+
+  useEffect(() => {
+    checkNotificationStatus();
+  }, []);
+
+  const checkNotificationStatus = async () => {
+    setIsCheckingPermissions(true);
+    try {
+      const enabled = await notificationService.areNotificationsEnabled();
+      setNotificationsEnabled(enabled);
+    } catch (error) {
+      console.error("Error checking notification status:", error);
+    } finally {
+      setIsCheckingPermissions(false);
+    }
+  };
 
   const handleThemeToggle = async (value: boolean) => {
     const newMode = value ? "dark" : "light";
     await setThemeMode(newMode);
+  };
+
+  const handleNotificationToggle = async (value: boolean) => {
+    if (value) {
+      // Enable notifications
+      try {
+        const hasPermission = await notificationService.requestPermissions();
+        if (hasPermission && userProfile) {
+          await notificationService.scheduleAffirmationNotifications({
+            frequency: userProfile.affirmationFrequency,
+            startHour: userProfile.reminderStartHour || 8,
+            endHour: userProfile.reminderEndHour || 20,
+          });
+          setNotificationsEnabled(true);
+          Alert.alert(
+            "Notifications Enabled",
+            `You'll receive ${userProfile.affirmationFrequency} affirmation reminder${
+              userProfile.affirmationFrequency > 1 ? "s" : ""
+            } per day.`
+          );
+        } else {
+          Alert.alert(
+            "Permission Denied",
+            "Please enable notifications in your device settings to receive affirmation reminders.",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Open Settings",
+                onPress: () => {
+                  // This would open device settings in a real app
+                  console.log("Open device settings");
+                },
+              },
+            ]
+          );
+        }
+      } catch (error) {
+        console.error("Error enabling notifications:", error);
+        Alert.alert("Error", "Failed to enable notifications");
+      }
+    } else {
+      // Disable notifications
+      try {
+        await notificationService.cancelAllNotifications();
+        setNotificationsEnabled(false);
+        Alert.alert(
+          "Notifications Disabled",
+          "You won't receive any more affirmation reminders."
+        );
+      } catch (error) {
+        console.error("Error disabling notifications:", error);
+        Alert.alert("Error", "Failed to disable notifications");
+      }
+    }
   };
 
   return (
@@ -59,44 +140,38 @@ export default function SettingsScreen() {
             className="space-y-4"
           >
             <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
+              <View className="flex-row items-center flex-1">
                 <Ionicons name="notifications" size={24} color="#3B82F6" />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    paddingLeft: 10,
-                  }}
-                >
-                  Push Notifications
-                </Text>
+                <View className="flex-1 ml-4" style={{ paddingLeft: 10 }}>
+                  <Text
+                    className="text-lg"
+                    style={{
+                      color: Colors[colorScheme ?? "light"].text,
+                    }}
+                  >
+                    Affirmation Reminders
+                  </Text>
+                  {userProfile && notificationsEnabled && (
+                    <Text
+                      className="text-xs mt-1"
+                      style={{
+                        color: Colors[colorScheme ?? "light"].text,
+                        opacity: 0.6,
+                      }}
+                    >
+                      {userProfile.affirmationFrequency}x daily,{" "}
+                      {userProfile.reminderStartHour || 8}:00 -{" "}
+                      {userProfile.reminderEndHour || 20}:00
+                    </Text>
+                  )}
+                </View>
               </View>
               <Switch
-                value={notifications}
-                onValueChange={setNotifications}
+                value={notificationsEnabled}
+                onValueChange={handleNotificationToggle}
                 trackColor={{ false: "#767577", true: "#3B82F6" }}
-                thumbColor={notifications ? "#ffffff" : "#f4f3f4"}
-              />
-            </View>
-
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
-                <Ionicons name="time" size={24} color="#3B82F6" />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    paddingLeft: 10,
-                  }}
-                >
-                  Daily Reminders
-                </Text>
-              </View>
-              <Switch
-                value={notifications}
-                onValueChange={setNotifications}
-                trackColor={{ false: "#767577", true: "#3B82F6" }}
-                thumbColor={notifications ? "#ffffff" : "#f4f3f4"}
+                thumbColor={notificationsEnabled ? "#ffffff" : "#f4f3f4"}
+                disabled={isCheckingPermissions}
               />
             </View>
           </View>
