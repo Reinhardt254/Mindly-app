@@ -444,14 +444,6 @@ export default function StatsScreen() {
             </View>
           </View>
         </View>
-
-        <View
-          className="flex-1"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 100,
-          }}
-        ></View>
       </ScrollView>
     </View>
   );

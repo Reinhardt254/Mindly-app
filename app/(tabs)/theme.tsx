@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  Alert,
   StyleSheet,
   Dimensions,
 } from "react-native";
@@ -14,6 +13,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useBackground } from "@/contexts/BackgroundContext";
 import { SimpleHeader } from "@/components/ModernHeader";
+import { Popup } from "@/components/Popup";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -21,16 +21,40 @@ const { width } = Dimensions.get("window");
 
 export default function ThemeScreen() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
   const { customBackground, setCustomBackground, resetBackground } =
     useBackground();
   const colorScheme = useColorScheme();
 
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
+
   const requestPermissions = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert(
+      showPopup(
         "Permission Required",
-        "Please grant permission to access your photo library to change the background."
+        "Please grant permission to access your photo library to change the background.",
+        [{ text: "OK", onPress: () => {} }]
       );
       return false;
     }
@@ -44,7 +68,7 @@ export default function ThemeScreen() {
     setIsLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [9, 16],
         quality: 0.8,
@@ -57,13 +81,18 @@ export default function ThemeScreen() {
         await AsyncStorage.setItem("customBackground", asset.uri);
         setCustomBackground(asset.uri);
 
-        Alert.alert("Success", "Background image updated successfully!");
+        showPopup(
+          "Success! ✨",
+          "Your background image has been updated successfully!",
+          [{ text: "Great!", onPress: () => {} }]
+        );
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      Alert.alert(
-        "Error",
-        "Failed to update background image. Please try again."
+      showPopup(
+        "Oops! 😕",
+        "Failed to update background image. Please try again.",
+        [{ text: "OK", onPress: () => {} }]
       );
     } finally {
       setIsLoading(false);
@@ -71,23 +100,28 @@ export default function ThemeScreen() {
   };
 
   const resetToDefault = async () => {
-    Alert.alert(
+    showPopup(
       "Reset Background",
       "Are you sure you want to reset to the default background?",
       [
-        { text: "Cancel", style: "cancel" },
+        { text: "Cancel", onPress: () => {}, style: "cancel" },
         {
           text: "Reset",
           style: "destructive",
           onPress: async () => {
             try {
               await resetBackground();
-              Alert.alert("Success", "Background reset to default!");
+              showPopup(
+                "Success! 🎉",
+                "Background has been reset to default!",
+                [{ text: "OK", onPress: () => {} }]
+              );
             } catch (error) {
               console.error("Error resetting background:", error);
-              Alert.alert(
+              showPopup(
                 "Error",
-                "Failed to reset background. Please try again."
+                "Failed to reset background. Please try again.",
+                [{ text: "OK", onPress: () => {} }]
               );
             }
           },
@@ -228,6 +262,15 @@ export default function ThemeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </View>
   );
 }

@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
 import { SimpleHeader } from "@/components/ModernHeader";
+import { Popup } from "@/components/Popup";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { notificationService } from "@/services/notificationService";
 
@@ -20,10 +14,33 @@ export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [hapticFeedback, setHapticFeedback] = useState(true);
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
   const { setThemeMode, isDark } = useTheme();
   const { userProfile } = useLocalStorage();
   const colorScheme = useColorScheme();
   const router = useRouter();
+
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
 
   useEffect(() => {
     checkNotificationStatus();
@@ -58,18 +75,19 @@ export default function SettingsScreen() {
             endHour: userProfile.reminderEndHour || 20,
           });
           setNotificationsEnabled(true);
-          Alert.alert(
-            "Notifications Enabled",
+          showPopup(
+            "Notifications Enabled! 🔔",
             `You'll receive ${userProfile.affirmationFrequency} affirmation reminder${
               userProfile.affirmationFrequency > 1 ? "s" : ""
-            } per day.`
+            } per day.`,
+            [{ text: "Great!", onPress: () => {} }]
           );
         } else {
-          Alert.alert(
+          showPopup(
             "Permission Denied",
             "Please enable notifications in your device settings to receive affirmation reminders.",
             [
-              { text: "Cancel", style: "cancel" },
+              { text: "Cancel", onPress: () => {}, style: "cancel" },
               {
                 text: "Open Settings",
                 onPress: () => {
@@ -82,20 +100,29 @@ export default function SettingsScreen() {
         }
       } catch (error) {
         console.error("Error enabling notifications:", error);
-        Alert.alert("Error", "Failed to enable notifications");
+        showPopup(
+          "Error",
+          "Failed to enable notifications. Please try again.",
+          [{ text: "OK", onPress: () => {} }]
+        );
       }
     } else {
       // Disable notifications
       try {
         await notificationService.cancelAllNotifications();
         setNotificationsEnabled(false);
-        Alert.alert(
+        showPopup(
           "Notifications Disabled",
-          "You won't receive any more affirmation reminders."
+          "You won't receive any more affirmation reminders.",
+          [{ text: "OK", onPress: () => {} }]
         );
       } catch (error) {
         console.error("Error disabling notifications:", error);
-        Alert.alert("Error", "Failed to disable notifications");
+        showPopup(
+          "Error",
+          "Failed to disable notifications. Please try again.",
+          [{ text: "OK", onPress: () => {} }]
+        );
       }
     }
   };
@@ -141,7 +168,11 @@ export default function SettingsScreen() {
           >
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
-                <Ionicons name="notifications" size={24} color="#3B82F6" />
+                <Ionicons
+                  name="notifications"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].highlight}
+                />
                 <View className="flex-1 ml-4" style={{ paddingLeft: 10 }}>
                   <Text
                     className="text-lg"
@@ -153,7 +184,7 @@ export default function SettingsScreen() {
                   </Text>
                   {userProfile && notificationsEnabled && (
                     <Text
-                      className="text-xs mt-1"
+                      className="mt-1 text-xs"
                       style={{
                         color: Colors[colorScheme ?? "light"].text,
                         opacity: 0.6,
@@ -169,7 +200,10 @@ export default function SettingsScreen() {
               <Switch
                 value={notificationsEnabled}
                 onValueChange={handleNotificationToggle}
-                trackColor={{ false: "#767577", true: "#3B82F6" }}
+                trackColor={{
+                  false: "#767577",
+                  true: Colors[colorScheme ?? "light"].highlight,
+                }}
                 thumbColor={notificationsEnabled ? "#ffffff" : "#f4f3f4"}
                 disabled={isCheckingPermissions}
               />
@@ -207,7 +241,11 @@ export default function SettingsScreen() {
           <View className="space-y-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <Ionicons name="moon" size={24} color="#3B82F6" />
+                <Ionicons
+                  name="moon"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].highlight}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -221,7 +259,10 @@ export default function SettingsScreen() {
               <Switch
                 value={isDark}
                 onValueChange={handleThemeToggle}
-                trackColor={{ false: "#767577", true: "#3B82F6" }}
+                trackColor={{
+                  false: "#767577",
+                  true: Colors[colorScheme ?? "light"].highlight,
+                }}
                 thumbColor={isDark ? "#ffffff" : "#f4f3f4"}
               />
             </View>
@@ -231,7 +272,11 @@ export default function SettingsScreen() {
               className="flex-row items-center justify-between"
             >
               <View className="flex-row items-center">
-                <Ionicons name="color-palette" size={24} color="#3B82F6" />
+                <Ionicons
+                  name="color-palette"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].highlight}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -281,7 +326,11 @@ export default function SettingsScreen() {
           <View className="space-y-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <Ionicons name="phone-portrait" size={24} color="#3B82F6" />
+                <Ionicons
+                  name="phone-portrait"
+                  size={24}
+                  color={Colors[colorScheme ?? "light"].highlight}
+                />
                 <Text
                   className="ml-4 text-lg"
                   style={{
@@ -295,7 +344,10 @@ export default function SettingsScreen() {
               <Switch
                 value={hapticFeedback}
                 onValueChange={setHapticFeedback}
-                trackColor={{ false: "#767577", true: "#3B82F6" }}
+                trackColor={{
+                  false: "#767577",
+                  true: Colors[colorScheme ?? "light"].highlight,
+                }}
                 thumbColor={hapticFeedback ? "#ffffff" : "#f4f3f4"}
               />
             </View>
@@ -367,7 +419,11 @@ export default function SettingsScreen() {
               className="flex-row items-center w-full"
               onPress={() => router.push("/(tabs)/version")}
             >
-              <Ionicons name="information-circle" size={24} color="#3B82F6" />
+              <Ionicons
+                name="information-circle"
+                size={24}
+                color={Colors[colorScheme ?? "light"].highlight}
+              />
               <Text
                 className="ml-4 text-lg"
                 style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -401,7 +457,11 @@ export default function SettingsScreen() {
               className="flex-row items-center w-full"
               onPress={() => router.push("/(tabs)/terms-of-service")}
             >
-              <Ionicons name="document-text" size={24} color="#3B82F6" />
+              <Ionicons
+                name="document-text"
+                size={24}
+                color={Colors[colorScheme ?? "light"].highlight}
+              />
               <Text
                 className="ml-4 text-lg"
                 style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -435,7 +495,11 @@ export default function SettingsScreen() {
               className="flex-row items-center w-full"
               onPress={() => router.push("/(tabs)/privacy-policy")}
             >
-              <Ionicons name="shield-checkmark" size={24} color="#3B82F6" />
+              <Ionicons
+                name="shield-checkmark"
+                size={24}
+                color={Colors[colorScheme ?? "light"].highlight}
+              />
               <Text
                 className="ml-4 text-lg"
                 style={{ color: Colors[colorScheme ?? "light"].text }}
@@ -460,6 +524,15 @@ export default function SettingsScreen() {
           }}
         ></View>
       </ScrollView>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </View>
   );
 }

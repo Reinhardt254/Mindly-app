@@ -196,14 +196,14 @@ export default function FavoritesScreen() {
       </ScrollView>
 
       {/* Bottom indicator */}
-      <View
+      {/* <View
         style={{
           height: 1,
           backgroundColor: Colors[colorScheme ?? "light"].tabIconDefault,
           marginHorizontal: 20,
           marginBottom: 20,
         }}
-      />
+      /> */}
 
       {/* Popup */}
       <Popup

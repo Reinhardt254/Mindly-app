@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  Alert,
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -16,6 +15,8 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { UserProfile } from "@/constants/UserTypes";
 import { notificationService } from "@/services/notificationService";
+import { SimpleHeader } from "@/components/ModernHeader";
+import { Popup } from "@/components/Popup";
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -33,6 +34,29 @@ export default function EditProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
+
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
 
   useEffect(() => {
     if (userProfile) {
@@ -100,12 +124,16 @@ export default function EditProfileScreen() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert("Error", "Please enter your name");
+      showPopup("Error", "Please enter your name", [
+        { text: "OK", onPress: () => {} },
+      ]);
       return;
     }
 
     if (startHour >= endHour) {
-      Alert.alert("Error", "End time must be after start time");
+      showPopup("Error", "End time must be after start time", [
+        { text: "OK", onPress: () => {} },
+      ]);
       return;
     }
 
@@ -148,15 +176,17 @@ export default function EditProfileScreen() {
         }
       }
 
-      Alert.alert("Success", "Profile updated successfully", [
+      showPopup("Success! 🎉", "Your profile has been updated successfully!", [
         {
-          text: "OK",
+          text: "Done",
           onPress: () => router.back(),
         },
       ]);
     } catch (error) {
       console.error("Error saving profile:", error);
-      Alert.alert("Error", "Failed to update profile");
+      showPopup("Error", "Failed to update profile. Please try again.", [
+        { text: "OK", onPress: () => {} },
+      ]);
     } finally {
       setIsSaving(false);
     }
@@ -181,35 +211,13 @@ export default function EditProfileScreen() {
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
       {/* Header */}
-      <View
-        className="flex-row items-center justify-between px-4 pt-12 pb-4"
-        style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
-          borderBottomWidth: 1,
-          borderBottomColor: Colors[colorScheme ?? "light"].text + "10",
-        }}
-      >
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color={Colors[colorScheme ?? "light"].text}
-          />
-        </TouchableOpacity>
-        <Text
-          className="text-xl font-bold"
-          style={{ color: Colors[colorScheme ?? "light"].text }}
-        >
-          Edit Profile
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
+      <SimpleHeader title="Edit Profile" />
 
       <ScrollView className="flex-1 px-4 py-6">
         {/* Name Section */}
         <View className="mb-6">
           <Text
-            className="text-lg font-semibold mb-3"
+            className="mb-3 text-lg font-semibold"
             style={{
               color: Colors[colorScheme ?? "light"].text,
               fontSize: 18,
@@ -237,7 +245,7 @@ export default function EditProfileScreen() {
         {/* Age Range Section */}
         <View className="mb-6">
           <Text
-            className="text-lg font-semibold mb-3"
+            className="mb-3 text-lg font-semibold"
             style={{
               color: Colors[colorScheme ?? "light"].text,
               fontSize: 18,
@@ -283,7 +291,7 @@ export default function EditProfileScreen() {
         {/* Gender Section */}
         <View className="mb-6">
           <Text
-            className="text-lg font-semibold mb-3"
+            className="mb-3 text-lg font-semibold"
             style={{
               color: Colors[colorScheme ?? "light"].text,
               fontSize: 18,
@@ -297,7 +305,7 @@ export default function EditProfileScreen() {
               <TouchableOpacity
                 key={option.value}
                 onPress={() => setSelectedGender(option.value)}
-                className="p-4 rounded-xl flex-row items-center justify-between"
+                className="flex-row items-center justify-between p-4 rounded-xl"
                 style={{
                   backgroundColor:
                     selectedGender === option.value
@@ -336,7 +344,7 @@ export default function EditProfileScreen() {
         {/* Frequency Section */}
         <View className="mb-6">
           <Text
-            className="text-lg font-semibold mb-3"
+            className="mb-3 text-lg font-semibold"
             style={{
               color: Colors[colorScheme ?? "light"].text,
               fontSize: 18,
@@ -350,7 +358,7 @@ export default function EditProfileScreen() {
               <TouchableOpacity
                 key={option.value}
                 onPress={() => setSelectedFrequency(option.value)}
-                className="p-4 rounded-xl flex-row items-center justify-between"
+                className="flex-row items-center justify-between p-4 rounded-xl"
                 style={{
                   backgroundColor:
                     selectedFrequency === option.value
@@ -390,7 +398,7 @@ export default function EditProfileScreen() {
         {/* Time Range Section */}
         <View className="mb-6">
           <Text
-            className="text-lg font-semibold mb-3"
+            className="mb-3 text-lg font-semibold"
             style={{
               color: Colors[colorScheme ?? "light"].text,
               fontSize: 18,
@@ -404,7 +412,7 @@ export default function EditProfileScreen() {
             {/* Start Time */}
             <View className="flex-1">
               <Text
-                className="text-sm mb-2"
+                className="mb-2 text-sm"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
                   opacity: 0.7,
@@ -414,7 +422,7 @@ export default function EditProfileScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => setShowStartPicker(true)}
-                className="p-4 rounded-xl flex-row items-center justify-between"
+                className="flex-row items-center justify-between p-4 rounded-xl"
                 style={{
                   backgroundColor: Colors[colorScheme ?? "light"].background,
                   borderWidth: 1,
@@ -440,7 +448,7 @@ export default function EditProfileScreen() {
             {/* End Time */}
             <View className="flex-1">
               <Text
-                className="text-sm mb-2"
+                className="mb-2 text-sm"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
                   opacity: 0.7,
@@ -450,7 +458,7 @@ export default function EditProfileScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => setShowEndPicker(true)}
-                className="p-4 rounded-xl flex-row items-center justify-between"
+                className="flex-row items-center justify-between p-4 rounded-xl"
                 style={{
                   backgroundColor: Colors[colorScheme ?? "light"].background,
                   borderWidth: 1,
@@ -500,7 +508,7 @@ export default function EditProfileScreen() {
           {/* Info Text */}
           {startHour < endHour && (
             <View
-              className="mt-4 p-3 rounded-lg"
+              className="p-3 mt-4 rounded-lg"
               style={{
                 backgroundColor:
                   Colors[colorScheme ?? "light"].tabIconSelected + "10",
@@ -518,7 +526,7 @@ export default function EditProfileScreen() {
                 {formatHour(startHour)} and {formatHour(endHour)}
               </Text>
               <Text
-                className="text-xs text-center mt-1"
+                className="mt-1 text-xs text-center"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
                   opacity: 0.6,
@@ -539,8 +547,8 @@ export default function EditProfileScreen() {
           style={{
             backgroundColor:
               !isSaving && startHour < endHour
-                ? Colors[colorScheme ?? "light"].tabIconSelected
-                : Colors[colorScheme ?? "light"].tabIconSelected + "40",
+                ? Colors[colorScheme ?? "light"].highlight
+                : Colors[colorScheme ?? "light"].highlight + "40",
             paddingVertical: 16,
           }}
         >
@@ -555,7 +563,18 @@ export default function EditProfileScreen() {
             {isSaving ? "Saving..." : "Save Changes"}
           </Text>
         </TouchableOpacity>
+
+        <View className="h-5"></View>
       </ScrollView>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </View>
   );
 }

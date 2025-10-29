@@ -107,47 +107,40 @@ class NotificationService {
       // Get random affirmations for variety
       const selectedAffirmations = this.getRandomAffirmations(frequency * 7); // 7 days worth
 
-      // Schedule notifications
-      let affirmationIndex = 0;
+      // Schedule notifications - one for each time slot, repeating daily
+      for (let i = 0; i < frequency; i++) {
+        const hour = Math.floor(startHour + i * intervalHours);
+        const minute = Math.floor(Math.random() * 60); // Random minute for variety
 
-      for (let day = 0; day < 7; day++) {
-        for (let i = 0; i < frequency; i++) {
-          const hour = Math.floor(startHour + i * intervalHours);
-          const minute = Math.floor(Math.random() * 60); // Random minute for variety
+        const affirmation =
+          selectedAffirmations[i % selectedAffirmations.length];
 
-          const affirmation =
-            selectedAffirmations[
-              affirmationIndex % selectedAffirmations.length
-            ];
-          affirmationIndex++;
+        // Use DailyTriggerInput for Android compatibility
+        const trigger: Notifications.DailyTriggerInput = {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour,
+          minute,
+        };
 
-          const trigger: Notifications.CalendarTriggerInput = {
-            type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-            hour,
-            minute,
-            repeats: true,
-          };
-
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: "✨ Your Daily Affirmation",
-              body: affirmation.text,
-              sound: "default",
-              priority: Notifications.AndroidNotificationPriority.HIGH,
-              categoryIdentifier: "affirmation",
-              data: {
-                affirmationId: affirmation.id,
-                category: affirmation.category,
-                type: "daily_affirmation",
-              },
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "✨ Your Daily Affirmation",
+            body: affirmation.text,
+            sound: "default",
+            priority: Notifications.AndroidNotificationPriority.HIGH,
+            categoryIdentifier: "affirmation",
+            data: {
+              affirmationId: affirmation.id,
+              category: affirmation.category,
+              type: "daily_affirmation",
             },
-            trigger,
-          });
+          },
+          trigger,
+        });
 
-          console.log(
-            `Scheduled notification for ${hour}:${minute.toString().padStart(2, "0")} - "${affirmation.text.substring(0, 30)}..."`
-          );
-        }
+        console.log(
+          `Scheduled daily notification for ${hour}:${minute.toString().padStart(2, "0")} - "${affirmation.text.substring(0, 30)}..."`
+        );
       }
 
       const totalScheduled = await this.getScheduledNotifications();

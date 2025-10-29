@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
-  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -13,6 +12,7 @@ import { GradientBackground } from "@/components/GradientBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
+import { Popup } from "@/components/Popup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserProfile } from "@/constants/UserTypes";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -28,7 +28,30 @@ export default function FrequencySetupScreen() {
   const [endHour, setEndHour] = useState<number>(20); // Default 8 PM
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
   const { saveUserProfile } = useLocalStorage();
+
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
 
   const frequencyOptions = [
     {
@@ -96,7 +119,9 @@ export default function FrequencySetupScreen() {
 
     // Validate time range
     if (startHour >= endHour) {
-      Alert.alert("Invalid Time Range", "End time must be after start time");
+      showPopup("Invalid Time Range", "End time must be after start time", [
+        { text: "OK", onPress: () => {} },
+      ]);
       return;
     }
 
@@ -132,10 +157,10 @@ export default function FrequencySetupScreen() {
           });
           console.log("✅ Notifications scheduled successfully");
         } else {
-          Alert.alert(
+          showPopup(
             "Notifications Disabled",
             "You can enable notifications later in Settings to receive affirmation reminders.",
-            [{ text: "OK" }]
+            [{ text: "OK", onPress: () => {} }]
           );
         }
       } catch (notificationError) {
@@ -154,7 +179,9 @@ export default function FrequencySetupScreen() {
       router.replace("/(tabs)");
     } catch (error) {
       console.error("Error completing setup:", error);
-      Alert.alert("Error", "Failed to complete setup. Please try again.");
+      showPopup("Error", "Failed to complete setup. Please try again.", [
+        { text: "OK", onPress: () => {} },
+      ]);
     }
   };
 
@@ -165,8 +192,8 @@ export default function FrequencySetupScreen() {
   return (
     <GradientBackground>
       <ScrollView className="flex-1">
-        <View className="relative flex-1 justify-start px-8 pt-10">
-          <View className="flex-row justify-between items-center pb-10 w-full">
+        <View className="relative justify-start flex-1 px-8 pt-10">
+          <View className="flex-row items-center justify-between w-full pb-10">
             {/* Back Button */}
             <TouchableOpacity
               onPress={handleBack}
@@ -223,7 +250,7 @@ export default function FrequencySetupScreen() {
             {/* Frequency Options */}
             <View className="w-full">
               <Text
-                className="text-lg font-semibold mb-3"
+                className="mb-3 text-lg font-semibold"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
                   fontSize: 18,
@@ -232,12 +259,12 @@ export default function FrequencySetupScreen() {
               >
                 How many times per day?
               </Text>
-              <View className="flex flex-col gap-2 justify-center items-center w-full">
+              <View className="flex flex-col items-center justify-center w-full gap-2">
                 {frequencyOptions.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     onPress={() => setSelectedFrequency(option.value)}
-                    className="p-5 w-full rounded-2xl"
+                    className="w-full p-5 rounded-2xl"
                     style={{
                       backgroundColor:
                         selectedFrequency === option.value
@@ -252,7 +279,7 @@ export default function FrequencySetupScreen() {
                       padding: 8,
                     }}
                   >
-                    <View className="flex-row gap-2 items-center">
+                    <View className="flex-row items-center gap-2">
                       <Ionicons
                         name={option.icon as any}
                         size={28}
@@ -307,7 +334,7 @@ export default function FrequencySetupScreen() {
             {/* Time Range Selection */}
             <View className="w-full mt-6">
               <Text
-                className="text-lg font-semibold mb-3"
+                className="mb-3 text-lg font-semibold"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
                   fontSize: 18,
@@ -317,11 +344,11 @@ export default function FrequencySetupScreen() {
                 Active hours
               </Text>
 
-              <View className="flex-row gap-4 w-full">
+              <View className="flex-row w-full gap-4">
                 {/* Start Time */}
                 <View className="flex-1">
                   <Text
-                    className="text-sm mb-2"
+                    className="mb-2 text-sm"
                     style={{
                       color: Colors[colorScheme ?? "light"].text,
                       opacity: 0.7,
@@ -331,7 +358,7 @@ export default function FrequencySetupScreen() {
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowStartPicker(true)}
-                    className="p-4 rounded-xl flex-row items-center justify-between"
+                    className="flex-row items-center justify-between p-4 rounded-xl"
                     style={{
                       backgroundColor:
                         Colors[colorScheme ?? "light"].background,
@@ -358,7 +385,7 @@ export default function FrequencySetupScreen() {
                 {/* End Time */}
                 <View className="flex-1">
                   <Text
-                    className="text-sm mb-2"
+                    className="mb-2 text-sm"
                     style={{
                       color: Colors[colorScheme ?? "light"].text,
                       opacity: 0.7,
@@ -368,7 +395,7 @@ export default function FrequencySetupScreen() {
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowEndPicker(true)}
-                    className="p-4 rounded-xl flex-row items-center justify-between"
+                    className="flex-row items-center justify-between p-4 rounded-xl"
                     style={{
                       backgroundColor:
                         Colors[colorScheme ?? "light"].background,
@@ -419,7 +446,7 @@ export default function FrequencySetupScreen() {
               {/* Info Text */}
               {selectedFrequency && startHour < endHour && (
                 <View
-                  className="mt-4 p-3 rounded-lg"
+                  className="p-3 mt-4 rounded-lg"
                   style={{
                     backgroundColor:
                       Colors[colorScheme ?? "light"].tabIconSelected + "10",
@@ -437,7 +464,7 @@ export default function FrequencySetupScreen() {
                     {formatHour(startHour)} and {formatHour(endHour)}
                   </Text>
                   <Text
-                    className="text-xs text-center mt-1"
+                    className="mt-1 text-xs text-center"
                     style={{
                       color: Colors[colorScheme ?? "light"].text,
                       opacity: 0.6,
@@ -454,7 +481,7 @@ export default function FrequencySetupScreen() {
             {/* Complete Button */}
             <TouchableOpacity
               onPress={handleComplete}
-              className="py-4 mt-8 w-full rounded-2xl mb-10"
+              className="w-full py-4 mt-8 mb-10 rounded-2xl"
               style={{
                 backgroundColor:
                   selectedFrequency !== null && startHour < endHour
@@ -478,6 +505,15 @@ export default function FrequencySetupScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </GradientBackground>
   );
 }

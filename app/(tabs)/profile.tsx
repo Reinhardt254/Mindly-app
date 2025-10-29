@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -7,20 +7,45 @@ import { useStatsStore } from "@/stores/statsStore";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { SimpleHeader } from "@/components/ModernHeader";
+import { Popup } from "@/components/Popup";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const { userProfile, clearAllData } = useLocalStorage();
   const { resetStats } = useStatsStore();
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: "",
+    message: "",
+    buttons: [] as {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[],
+  });
+
+  const showPopup = (
+    title: string,
+    message: string,
+    buttons: {
+      text: string;
+      onPress: () => void;
+      style?: "default" | "destructive" | "cancel";
+    }[]
+  ) => {
+    setPopupConfig({ title, message, buttons });
+    setIsPopupVisible(true);
+  };
 
   const handleLogout = () => {
-    Alert.alert(
+    showPopup(
       "Logout",
       "Are you sure you want to logout? All your data will be cleared.",
       [
         {
           text: "Cancel",
+          onPress: () => {},
           style: "cancel",
         },
         {
@@ -38,7 +63,9 @@ export default function ProfileScreen() {
               router.replace("/welcome");
             } catch (error) {
               console.error("Error during logout:", error);
-              Alert.alert("Error", "Failed to logout. Please try again.");
+              showPopup("Error", "Failed to logout. Please try again.", [
+                { text: "OK", onPress: () => {} },
+              ]);
             }
           },
         },
@@ -86,12 +113,13 @@ export default function ProfileScreen() {
         >
           <View className="items-center h-auto mt-20 mb-8">
             <View
-              className="items-center justify-center w-24 h-24 mb-4 bg-blue-500 rounded-full"
+              className="items-center justify-center w-24 h-24 mb-4 rounded-full"
               style={{
                 marginBottom: 10,
                 height: 120,
                 width: 120,
                 borderRadius: 100,
+                backgroundColor: Colors[colorScheme ?? "light"].highlight,
               }}
             >
               <Ionicons name="person" size={48} color="white" />
@@ -237,7 +265,11 @@ export default function ProfileScreen() {
                   : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Ionicons name="person" size={24} color="#3B82F6" />
+            <Ionicons
+              name="person"
+              size={24}
+              color={Colors[colorScheme ?? "light"].highlight}
+            />
             <Text
               className="ml-4 text-lg"
               style={{
@@ -273,7 +305,11 @@ export default function ProfileScreen() {
                   : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Ionicons name="notifications" size={24} color="#3B82F6" />
+            <Ionicons
+              name="notifications"
+              size={24}
+              color={Colors[colorScheme ?? "light"].highlight}
+            />
             <Text
               className="ml-4 text-lg"
               style={{
@@ -309,7 +345,11 @@ export default function ProfileScreen() {
                   : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Ionicons name="shield-checkmark" size={24} color="#3B82F6" />
+            <Ionicons
+              name="shield-checkmark"
+              size={24}
+              color={Colors[colorScheme ?? "light"].highlight}
+            />
             <Text
               className="ml-4 text-lg"
               style={{
@@ -358,15 +398,16 @@ export default function ProfileScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        <View
-          className="flex-1"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 120,
-          }}
-        ></View>
       </ScrollView>
+
+      {/* Popup */}
+      <Popup
+        visible={isPopupVisible}
+        title={popupConfig.title}
+        message={popupConfig.message}
+        buttons={popupConfig.buttons}
+        onClose={() => setIsPopupVisible(false)}
+      />
     </View>
   );
 }
