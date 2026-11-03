@@ -7,6 +7,7 @@ import {
   Modal,
   TextInput,
   Switch,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
@@ -205,53 +206,51 @@ export default function AddScreen() {
 
   return (
     <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+      ]}
     >
       {/* Header */}
       <SimpleHeader title="Add" />
 
       {/* Content */}
       <ScrollView
-        className="flex-1"
-        style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
-        }}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 20,
-        }}
+        style={[
+          styles.scrollView,
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].background,
+          },
+        ]}
+        contentContainerStyle={styles.scrollContent}
       >
         {customAffirmations.length === 0 ? (
-          <View
-            className="items-center justify-center flex-1"
-            style={{
-              paddingVertical: 60,
-            }}
-          >
+          <View style={styles.emptyContainer}>
             <Ionicons
               name="add-circle-outline"
               size={64}
               color={Colors[colorScheme ?? "light"].tabIconDefault}
-              style={{ marginBottom: 16 }}
+              style={styles.emptyIcon}
             />
             <Text
-              className="text-lg font-semibold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                marginBottom: 8,
-              }}
+              style={[
+                styles.emptyTitle,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               No Custom Affirmations Yet
             </Text>
             <Text
-              className="text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].tabIconDefault,
-                lineHeight: 20,
-              }}
+              style={[
+                styles.emptySubtitle,
+                {
+                  color: Colors[colorScheme ?? "light"].tabIconDefault,
+                },
+              ]}
             >
               Add your own affirmations to personalize your experience
             </Text>
@@ -260,47 +259,43 @@ export default function AddScreen() {
           customAffirmations.map((affirmation) => (
             <View
               key={affirmation.id}
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-                paddingVertical: 0,
-                paddingHorizontal: 0,
-                paddingBottom: 10,
-                borderBottomWidth: 1,
-                borderBottomColor:
-                  Colors[colorScheme ?? "light"].tabIconDefault,
-              }}
+              style={[
+                styles.affirmationItem,
+                {
+                  backgroundColor: Colors[colorScheme ?? "light"].background,
+                  borderBottomColor:
+                    Colors[colorScheme ?? "light"].tabIconDefault,
+                },
+              ]}
             >
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1" style={{ marginRight: 16 }}>
+              <View style={styles.affirmationRow}>
+                <View style={styles.affirmationTextContainer}>
                   <Text
-                    className="text-base leading-6"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      marginBottom: 8,
-                    }}
+                    style={[
+                      styles.affirmationText,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     {affirmation.text}
                   </Text>
                   <Text
-                    className="text-sm"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].tabIconDefault,
-                    }}
+                    style={[
+                      styles.affirmationDate,
+                      {
+                        color: Colors[colorScheme ?? "light"].tabIconDefault,
+                      },
+                    ]}
                   >
                     {formatDate(affirmation.createdAt)}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center">
+                <View style={styles.actionsRow}>
                   <TouchableOpacity
                     onPress={() => handleToggleAffirmation(affirmation.id)}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingVertical: 8,
-                      paddingHorizontal: 8,
-                      borderRadius: 8,
-                    }}
+                    style={styles.toggleButton}
                   >
 
                   </TouchableOpacity>
@@ -309,9 +304,7 @@ export default function AddScreen() {
                       setSelectedAffirmationId(affirmation.id);
                       setIsSideMenuVisible(true);
                     }}
-                    style={{
-                      padding: 8,
-                    }}
+                    style={styles.menuButton}
                   >
                     <Ionicons
                       name="ellipsis-vertical"
@@ -329,23 +322,14 @@ export default function AddScreen() {
       {/* Add Affirmation Button */}
       <TouchableOpacity
         onPress={() => setIsModalVisible(true)}
-        style={{
-          backgroundColor: Colors[colorScheme ?? "light"].highlight,
-          marginHorizontal: 20,
-          marginBottom: 20,
-          paddingVertical: 16,
-          borderRadius: 12,
-          alignItems: "center",
-        }}
+        style={[
+          styles.addButton,
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].highlight,
+          },
+        ]}
       >
-        <Text
-          className="text-lg font-semibold"
-          style={{
-            color: "#FFFFFF",
-          }}
-        >
-          Add affirmation
-        </Text>
+        <Text style={styles.addButtonText}>Add affirmation</Text>
       </TouchableOpacity>
 
       {/* Add Affirmation Modal */}
@@ -355,37 +339,22 @@ export default function AddScreen() {
         animationType="fade"
         onRequestClose={() => setIsModalVisible(false)}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingHorizontal: 20,
-          }}
-        >
+        <View style={styles.modalOverlay}>
           <View
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderRadius: 16,
-              padding: 24,
-              width: "100%",
-              maxWidth: 400,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
+            style={[
+              styles.modalContent,
+              {
+                backgroundColor: Colors[colorScheme ?? "light"].background,
               },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-            }}
+            ]}
           >
             <Text
-              className="mb-6 text-xl font-bold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-              }}
+              style={[
+                styles.modalTitle,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               {editingAffirmation
                 ? "Edit affirmation"
@@ -402,23 +371,22 @@ export default function AddScreen() {
               multiline
               numberOfLines={4}
               maxLength={1000}
-              style={{
-                borderBottomWidth: 2,
-                borderBottomColor: Colors[colorScheme ?? "light"].highlight,
-                paddingVertical: 12,
-                paddingHorizontal: 0,
-                fontSize: 16,
-                color: Colors[colorScheme ?? "light"].text,
-                textAlignVertical: "top",
-                minHeight: "auto",
-              }}
+              style={[
+                styles.textInput,
+                {
+                  borderBottomColor: Colors[colorScheme ?? "light"].highlight,
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             />
 
             <Text
-              className="mt-2 text-sm text-right"
-              style={{
-                color: Colors[colorScheme ?? "light"].tabIconDefault,
-              }}
+              style={[
+                styles.charCount,
+                {
+                  color: Colors[colorScheme ?? "light"].tabIconDefault,
+                },
+              ]}
             >
               {newAffirmationText.length}/1000
             </Text>
@@ -429,20 +397,14 @@ export default function AddScreen() {
                   ? handleUpdateAffirmation
                   : handleSaveAffirmation
               }
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].highlight,
-                paddingVertical: 12,
-                borderRadius: 8,
-                marginTop: 20,
-                alignItems: "center",
-              }}
+              style={[
+                styles.saveButton,
+                {
+                  backgroundColor: Colors[colorScheme ?? "light"].highlight,
+                },
+              ]}
             >
-              <Text
-                className="text-lg font-semibold"
-                style={{
-                  color: "#FFFFFF",
-                }}
-              >
+              <Text style={styles.saveButtonText}>
                 {editingAffirmation ? "Update" : "Save"}
               </Text>
             </TouchableOpacity>
@@ -477,3 +439,135 @@ export default function AddScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    paddingVertical: 60,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  affirmationItem: {
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+  },
+  affirmationRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  affirmationTextContainer: {
+    flex: 1,
+    marginRight: 16,
+  },
+  affirmationText: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 8,
+  },
+  affirmationDate: {
+    fontSize: 14,
+  },
+  actionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  toggleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  menuButton: {
+    padding: 8,
+  },
+  addButton: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  addButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  modalContent: {
+    borderRadius: 16,
+    padding: 24,
+    width: "100%",
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalTitle: {
+    marginBottom: 24,
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  textInput: {
+    borderBottomWidth: 2,
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    fontSize: 16,
+    textAlignVertical: "top",
+    minHeight: "auto",
+  },
+  charCount: {
+    marginTop: 8,
+    fontSize: 14,
+    textAlign: "right",
+  },
+  saveButton: {
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+});

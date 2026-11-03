@@ -132,15 +132,17 @@ export default function ThemeScreen() {
 
   return (
     <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+      ]}
     >
       {/* Simple Header */}
       <SimpleHeader title="Theme" />
 
-      <ScrollView className="flex-1 px-0 py-0">
+      <ScrollView style={styles.scrollView}>
         {/* Current Background Card */}
         <View style={styles.cardContainer}>
           <View style={styles.cardHeader}>
@@ -276,6 +278,14 @@ export default function ThemeScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
   // Header Styles
   headerContainer: {
     backgroundColor: "#279089",

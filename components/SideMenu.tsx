@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -92,10 +98,12 @@ export const SideMenu: React.FC<SideMenuProps> = ({
                 style={{ marginRight: 12 }}
               />
               <Text
-                className="text-base font-medium"
-                style={{
-                  color: getTextColor(option.style),
-                }}
+                style={[
+                  styles.optionText,
+                  {
+                    color: getTextColor(option.style),
+                  },
+                ]}
               >
                 {option.text}
               </Text>
@@ -106,3 +114,10 @@ export const SideMenu: React.FC<SideMenuProps> = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  optionText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+});

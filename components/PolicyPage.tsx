@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
@@ -21,35 +27,38 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({
 
   return (
     <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+      ]}
     >
-      <ScrollView className="flex-1 px-4 py-0">
+      <ScrollView style={styles.scroll}>
         <View style={{ height: 20 }}></View>
 
         {/* Header */}
-        <View className="mb-0">
+        <View style={styles.header}>
           {showBackButton && (
             <TouchableOpacity
               onPress={() => router.back()}
-              className="flex-row items-center mb-4"
+              style={styles.backButton}
             >
               <Ionicons name="arrow-back" size={24} color="#3B82F6" />
-              <Text className="ml-2 text-lg text-blue-500">Back</Text>
+              <Text style={styles.backText}>Back</Text>
             </TouchableOpacity>
           )}
 
           <Text
-            className="text-2xl font-bold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
+            style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
           >
             {title}
           </Text>
           <Text
-            className="mt-2 text-md"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
+            style={[
+              styles.updated,
+              { color: Colors[colorScheme ?? "light"].text },
+            ]}
           >
             Last updated: {new Date().toLocaleDateString()}
           </Text>
@@ -57,39 +66,87 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({
 
         {/* Content */}
         <View
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 0,
-            paddingHorizontal: colorScheme === "dark" ? 0 : 0,
-            margin: 0,
-            marginBottom: 5,
-            // boxShadow:
-            //   colorScheme === "dark"
-            //     ? ""
-            //     : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
-          className="rounded-lg"
+          style={[
+            styles.contentBox,
+            {
+              backgroundColor: Colors[colorScheme ?? "light"].background,
+              borderWidth: 0,
+              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
+              borderRadius: 10,
+              borderStyle: "solid",
+              paddingVertical: 0,
+              paddingHorizontal: colorScheme === "dark" ? 0 : 0,
+              margin: 0,
+              marginBottom: 5,
+              // boxShadow:
+              //   colorScheme === "dark"
+              //     ? ""
+              //     : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            },
+          ]}
         >
           <Text
-            className="leading-6 whitespace-pre-line text-md"
-            style={{ color: Colors[colorScheme ?? "light"].text, fontSize: 16 }}
+            style={[
+              styles.contentText,
+              { color: Colors[colorScheme ?? "light"].text, fontSize: 16 },
+            ]}
           >
             {content}
           </Text>
         </View>
 
         <View
-          className="flex-1"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 120,
-          }}
+          style={[
+            styles.spacer,
+            {
+              backgroundColor: Colors[colorScheme ?? "light"].background,
+              height: 120,
+            },
+          ]}
         ></View>
       </ScrollView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 0,
+  },
+  header: {
+    marginBottom: 0,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  backText: {
+    marginLeft: 8,
+    fontSize: 18,
+    color: "#3b82f6",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+  },
+  updated: {
+    marginTop: 8,
+    fontSize: 16,
+  },
+  contentBox: {
+    borderRadius: 8,
+  },
+  contentText: {
+    lineHeight: 24,
+    fontSize: 16,
+  },
+  spacer: {
+    flex: 1,
+  },
+});

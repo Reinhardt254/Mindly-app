@@ -1,6 +1,6 @@
 import { useGreeting } from "@/hooks/useGreeting";
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 
@@ -18,35 +18,35 @@ export const Header: React.FC<HeaderProps> = ({
   const greeting = useGreeting(userName);
 
   return (
-    <ThemedView className="flex-row justify-between items-center px-6 py-4 border-b border-gray-200">
+    <ThemedView style={styles.container}>
       {/* Greeting */}
-      <View className="flex-1">
-        <ThemedText type="subtitle" className="text-lg">
+      <View style={styles.greetingWrapper}>
+        <ThemedText type="subtitle" style={styles.greeting}>
           {greeting}
         </ThemedText>
       </View>
 
       {/* Icons */}
-      <View className="flex-row items-center space-x-4">
+      <View style={styles.icons}>
         {/* Notification Bell */}
         <TouchableOpacity
           onPress={onNotificationPress}
-          className="w-10 h-10 items-center justify-center"
+          style={styles.iconButton}
           activeOpacity={0.7}
         >
-          <View className="w-6 h-6 items-center justify-center">
-            <ThemedText className="text-xl">🔔</ThemedText>
+          <View style={styles.bellWrapper}>
+            <ThemedText style={styles.bellText}>🔔</ThemedText>
           </View>
         </TouchableOpacity>
 
         {/* Profile Icon */}
         <TouchableOpacity
           onPress={onProfilePress}
-          className="w-10 h-10 items-center justify-center"
+          style={styles.iconButton}
           activeOpacity={0.7}
         >
-          <View className="w-8 h-8 bg-blue-500 rounded-full items-center justify-center">
-            <ThemedText className="text-white font-semibold text-sm">
+          <View style={styles.avatar}>
+            <ThemedText style={styles.avatarText}>
               {userName.charAt(0).toUpperCase()}
             </ThemedText>
           </View>
@@ -55,3 +55,54 @@ export const Header: React.FC<HeaderProps> = ({
     </ThemedView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+  },
+  greetingWrapper: {
+    flex: 1,
+  },
+  greeting: {
+    fontSize: 18,
+  },
+  icons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bellWrapper: {
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bellText: {
+    fontSize: 20,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    backgroundColor: "#3b82f6",
+    borderRadius: 9999,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+});

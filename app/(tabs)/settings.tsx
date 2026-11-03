@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Switch } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
@@ -127,68 +134,48 @@ export default function SettingsScreen() {
     }
   };
 
+  const theme = Colors[colorScheme ?? "light"];
+  const cardShadow =
+    colorScheme === "dark"
+      ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
+      : "0 0 10px 0 rgba(0, 0, 0, 0.1)";
+  const cardColors = {
+    backgroundColor: theme.background,
+    borderColor: theme.tabIconSelected,
+    boxShadow: cardShadow,
+  };
+  const switchTrackColor = {
+    false: "#767577",
+    true: theme.highlight,
+  };
+
   return (
-    <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Simple Header */}
       <SimpleHeader title="Settings" />
 
-      <ScrollView className="flex-1 px-4 py-0">
+      <ScrollView style={styles.scrollView}>
         {/* Notifications */}
-        <View className="p-6 mb-6 rounded-lg">
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+        <View style={styles.notificationsSection}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Notifications
           </Text>
 
-          <View
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 10,
-
-              margin: 0,
-              marginTop: 0,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
-            className="space-y-4"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
+          <View style={[styles.card, cardColors]}>
+            <View style={styles.row}>
+              <View style={styles.rowLeftFlex}>
                 <Ionicons
                   name="notifications"
                   size={24}
-                  color={Colors[colorScheme ?? "light"].highlight}
+                  color={theme.highlight}
                 />
-                <View className="flex-1 ml-4" style={{ paddingLeft: 10 }}>
-                  <Text
-                    className="text-lg"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                    }}
-                  >
+                <View style={styles.notificationTextContainer}>
+                  <Text style={[styles.rowLabelPlain, { color: theme.text }]}>
                     Affirmation Reminders
                   </Text>
                   {userProfile && notificationsEnabled && (
                     <Text
-                      className="mt-1 text-xs"
-                      style={{
-                        color: Colors[colorScheme ?? "light"].text,
-                        opacity: 0.6,
-                      }}
+                      style={[styles.notificationSubtext, { color: theme.text }]}
                     >
                       {userProfile.affirmationFrequency}x daily,{" "}
                       {userProfile.reminderStartHour || 8}:00 -{" "}
@@ -200,10 +187,7 @@ export default function SettingsScreen() {
               <Switch
                 value={notificationsEnabled}
                 onValueChange={handleNotificationToggle}
-                trackColor={{
-                  false: "#767577",
-                  true: Colors[colorScheme ?? "light"].highlight,
-                }}
+                trackColor={switchTrackColor}
                 thumbColor={notificationsEnabled ? "#ffffff" : "#f4f3f4"}
                 disabled={isCheckingPermissions}
               />
@@ -212,142 +196,68 @@ export default function SettingsScreen() {
         </View>
 
         {/* Appearance */}
-        <View
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
-          className="p-6 mb-6 rounded-lg"
-        >
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+        <View style={[styles.card, styles.cardSpaced, cardColors]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Appearance
           </Text>
 
-          <View className="space-y-4">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
-                <Ionicons
-                  name="moon"
-                  size={24}
-                  color={Colors[colorScheme ?? "light"].highlight}
-                />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    paddingLeft: 10,
-                  }}
-                >
+          <View style={styles.sectionBody}>
+            <View style={styles.row}>
+              <View style={styles.rowLeft}>
+                <Ionicons name="moon" size={24} color={theme.highlight} />
+                <Text style={[styles.rowLabel, { color: theme.text }]}>
                   Dark Mode
                 </Text>
               </View>
               <Switch
                 value={isDark}
                 onValueChange={handleThemeToggle}
-                trackColor={{
-                  false: "#767577",
-                  true: Colors[colorScheme ?? "light"].highlight,
-                }}
+                trackColor={switchTrackColor}
                 thumbColor={isDark ? "#ffffff" : "#f4f3f4"}
               />
             </View>
 
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/theme")}
-              className="flex-row items-center justify-between"
+              style={styles.row}
             >
-              <View className="flex-row items-center">
+              <View style={styles.rowLeft}>
                 <Ionicons
                   name="color-palette"
                   size={24}
-                  color={Colors[colorScheme ?? "light"].highlight}
+                  color={theme.highlight}
                 />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    paddingLeft: 10,
-                  }}
-                >
+                <Text style={[styles.rowLabel, { color: theme.text }]}>
                   Customize Background
                 </Text>
               </View>
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={Colors[colorScheme ?? "light"].text}
-              />
+              <Ionicons name="chevron-forward" size={20} color={theme.text} />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Interaction */}
-        <View
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
-          className="p-6 mb-6 rounded-lg"
-        >
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+        <View style={[styles.card, styles.cardSpaced, cardColors]}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Interaction
           </Text>
 
-          <View className="space-y-4">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center">
+          <View style={styles.sectionBody}>
+            <View style={styles.row}>
+              <View style={styles.rowLeft}>
                 <Ionicons
                   name="phone-portrait"
                   size={24}
-                  color={Colors[colorScheme ?? "light"].highlight}
+                  color={theme.highlight}
                 />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    paddingLeft: 10,
-                  }}
-                >
+                <Text style={[styles.rowLabel, { color: theme.text }]}>
                   Haptic Feedback
                 </Text>
               </View>
               <Switch
                 value={hapticFeedback}
                 onValueChange={setHapticFeedback}
-                trackColor={{
-                  false: "#767577",
-                  true: Colors[colorScheme ?? "light"].highlight,
-                }}
+                trackColor={switchTrackColor}
                 thumbColor={hapticFeedback ? "#ffffff" : "#f4f3f4"}
               />
             </View>
@@ -355,173 +265,80 @@ export default function SettingsScreen() {
         </View>
 
         {/* About */}
-        <View
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
-          className="p-6 mb-6 rounded-lg"
-        >
-          <Text
-            className="pl-5 mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+        <View style={[styles.card, styles.cardSpaced, cardColors]}>
+          <Text style={[styles.sectionTitle, styles.aboutTitle, { color: theme.text }]}>
             About
           </Text>
 
           <View
-            className="space-y-4"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingTop: 10,
-              paddingHorizontal: 0,
-              margin: 0,
-              marginTop: 0,
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              width: "100%",
-              gap: 10,
-            }}
+            style={[
+              styles.aboutList,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+              },
+            ]}
           >
             <TouchableOpacity
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-                borderWidth: 0,
-                borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-                borderRadius: 10,
-                borderStyle: "solid",
-                paddingVertical: 20,
-                paddingHorizontal: 10,
-                margin: 0,
-                marginTop: 0,
-                boxShadow:
-                  colorScheme === "dark"
-                    ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                    : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-              }}
-              className="flex-row items-center w-full"
+              style={[styles.card, styles.linkRow, cardColors]}
               onPress={() => router.push("/(tabs)/version")}
             >
               <Ionicons
                 name="information-circle"
                 size={24}
-                color={Colors[colorScheme ?? "light"].highlight}
+                color={theme.highlight}
               />
-              <Text
-                className="ml-4 text-lg"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Text style={[styles.linkLabel, { color: theme.text }]}>
                 Version 1.0.0
               </Text>
               <Ionicons
                 name="chevron-forward"
                 size={24}
                 color="#6B7280"
-                style={{ marginLeft: "auto" }}
+                style={styles.chevron}
               />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-                borderWidth: 0,
-                borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-                borderRadius: 10,
-                borderStyle: "solid",
-                paddingVertical: 20,
-                paddingHorizontal: 10,
-                margin: 0,
-                marginTop: 0,
-                boxShadow:
-                  colorScheme === "dark"
-                    ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                    : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-              }}
-              className="flex-row items-center w-full"
+              style={[styles.card, styles.linkRow, cardColors]}
               onPress={() => router.push("/(tabs)/terms-of-service")}
             >
-              <Ionicons
-                name="document-text"
-                size={24}
-                color={Colors[colorScheme ?? "light"].highlight}
-              />
-              <Text
-                className="ml-4 text-lg"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Ionicons name="document-text" size={24} color={theme.highlight} />
+              <Text style={[styles.linkLabel, { color: theme.text }]}>
                 Terms of Service
               </Text>
               <Ionicons
                 name="chevron-forward"
                 size={24}
                 color="#6B7280"
-                style={{ marginLeft: "auto" }}
+                style={styles.chevron}
               />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-                borderWidth: 0,
-                borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-                borderRadius: 10,
-                borderStyle: "solid",
-                paddingVertical: 20,
-                paddingHorizontal: 10,
-                margin: 0,
-                marginTop: 0,
-                boxShadow:
-                  colorScheme === "dark"
-                    ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                    : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-              }}
-              className="flex-row items-center w-full"
+              style={[styles.card, styles.linkRow, cardColors]}
               onPress={() => router.push("/(tabs)/privacy-policy")}
             >
               <Ionicons
                 name="shield-checkmark"
                 size={24}
-                color={Colors[colorScheme ?? "light"].highlight}
+                color={theme.highlight}
               />
-              <Text
-                className="ml-4 text-lg"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Text style={[styles.linkLabel, { color: theme.text }]}>
                 Privacy Policy
               </Text>
               <Ionicons
                 name="chevron-forward"
                 size={24}
                 color="#6B7280"
-                style={{ marginLeft: "auto" }}
+                style={styles.chevron}
               />
             </TouchableOpacity>
           </View>
         </View>
 
         <View
-          className="flex-1"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            height: 120,
-          }}
+          style={[styles.bottomSpacer, { backgroundColor: theme.background }]}
         ></View>
       </ScrollView>
 
@@ -536,3 +353,104 @@ export default function SettingsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 0,
+  },
+  notificationsSection: {
+    padding: 24,
+    marginBottom: 24,
+    borderRadius: 8,
+  },
+  card: {
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    margin: 0,
+    marginTop: 0,
+  },
+  cardSpaced: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  aboutTitle: {
+    paddingLeft: 20,
+  },
+  sectionBody: {
+    gap: 16,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  rowLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  rowLeftFlex: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  rowLabel: {
+    marginLeft: 16,
+    fontSize: 18,
+    paddingLeft: 10,
+  },
+  rowLabelPlain: {
+    fontSize: 18,
+  },
+  notificationTextContainer: {
+    flex: 1,
+    marginLeft: 16,
+    paddingLeft: 10,
+  },
+  notificationSubtext: {
+    marginTop: 4,
+    fontSize: 12,
+    opacity: 0.6,
+  },
+  aboutList: {
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingTop: 10,
+    paddingHorizontal: 0,
+    margin: 0,
+    marginTop: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
+    gap: 10,
+  },
+  linkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  linkLabel: {
+    marginLeft: 16,
+    fontSize: 18,
+  },
+  chevron: {
+    marginLeft: "auto",
+  },
+  bottomSpacer: {
+    flex: 1,
+    height: 120,
+  },
+});

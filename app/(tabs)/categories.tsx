@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -21,31 +27,31 @@ export default function CategoriesScreen() {
 
   return (
     <View
-      className="flex-1"
-      style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme ?? "light"].background },
+      ]}
     >
       {/* Header */}
       <SimpleHeader title="Categories" />
 
-      <ScrollView className="flex-1 px-4 py-6">
+      <ScrollView style={styles.scrollView}>
         {/* Description */}
-        <View className="mb-6">
+        <View style={styles.descriptionContainer}>
           <Text
-            className="text-lg text-center"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              opacity: 0.8,
-            }}
+            style={[
+              styles.descriptionText,
+              {
+                color: Colors[colorScheme ?? "light"].text,
+              },
+            ]}
           >
             Choose a category to filter affirmations
           </Text>
         </View>
 
         {/* Categories Grid */}
-        <View
-          style={{ width: "100%", flexWrap: "wrap" }}
-          className="flex-row flex-wrap justify-between"
-        >
+        <View style={styles.grid}>
           {CATEGORIES.map((category) => {
             const isSelected = selectedCategory === category.id;
 
@@ -53,37 +59,28 @@ export default function CategoriesScreen() {
               <TouchableOpacity
                 key={category.id}
                 onPress={() => handleCategoryPress(category.id)}
-                className="mb-4 rounded-2xl overflow-hidden"
-                style={{
-                  width: "48%",
-                  backgroundColor: isSelected
-                    ? Colors[colorScheme ?? "light"].highlight + "20"
-                    : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor: isSelected
-                    ? Colors[colorScheme ?? "light"].text + "20"
-                    : Colors[colorScheme ?? "light"].text + "30",
-
-                  height: 180,
-                }}
+                style={[
+                  styles.categoryCard,
+                  {
+                    backgroundColor: isSelected
+                      ? Colors[colorScheme ?? "light"].highlight + "20"
+                      : Colors[colorScheme ?? "light"].background,
+                    borderColor: isSelected
+                      ? Colors[colorScheme ?? "light"].text + "20"
+                      : Colors[colorScheme ?? "light"].text + "30",
+                  },
+                ]}
               >
                 {/* Category Content */}
-                <View
-                  style={{ padding: 12 }}
-                  className=" items-center flex justify-center h-full w-full"
-                >
+                <View style={styles.categoryContent}>
                   {/* Icon Container */}
                   <View
-                    className="w-16 h-16 rounded-full items-center justify-center mb-3"
-                    style={{
-                      backgroundColor: category.color + "20",
-                      width: 64,
-                      height: 64,
-                      borderRadius: 32,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginBottom: 12,
-                    }}
+                    style={[
+                      styles.iconContainer,
+                      {
+                        backgroundColor: category.color + "20",
+                      },
+                    ]}
                   >
                     <Ionicons
                       name={category.icon as any}
@@ -94,30 +91,33 @@ export default function CategoriesScreen() {
 
                   {/* Category Name */}
                   <Text
-                    className="text-base font-semibold text-center mb-1"
-                    style={{
-                      color: isSelected
-                        ? category.color
-                        : Colors[colorScheme ?? "light"].text,
-                    }}
+                    style={[
+                      styles.categoryName,
+                      {
+                        color: isSelected
+                          ? category.color
+                          : Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     {category.name}
                   </Text>
 
                   {/* Description */}
                   <Text
-                    className="text-xs text-center"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      opacity: 0.6,
-                    }}
+                    style={[
+                      styles.categoryDescription,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     {category.description}
                   </Text>
 
                   {/* Selected Indicator */}
                   {isSelected && (
-                    <View className="mt-2">
+                    <View style={styles.selectedIndicator}>
                       <Ionicons
                         name="checkmark-circle"
                         size={24}
@@ -133,27 +133,30 @@ export default function CategoriesScreen() {
 
         {/* Current Selection Info */}
         <View
-          className="mt-6 p-4 rounded-xl"
-          style={{
-            backgroundColor:
-              Colors[colorScheme ?? "light"].tabIconSelected + "10",
-          }}
+          style={[
+            styles.selectionInfo,
+            {
+              backgroundColor:
+                Colors[colorScheme ?? "light"].tabIconSelected + "10",
+            },
+          ]}
         >
-          <View className="flex-row items-center">
+          <View style={styles.selectionRow}>
             <Ionicons
               name="information-circle"
               size={20}
               color={Colors[colorScheme ?? "light"].tabIconSelected}
             />
             <Text
-              className="ml-2 text-sm"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                opacity: 0.8,
-              }}
+              style={[
+                styles.selectionText,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               Currently showing:{" "}
-              <Text className="font-semibold">
+              <Text style={styles.selectionName}>
                 {CATEGORIES.find((c) => c.id === selectedCategory)?.name}
               </Text>
             </Text>
@@ -161,8 +164,90 @@ export default function CategoriesScreen() {
         </View>
 
         {/* Bottom Spacing */}
-        <View style={{ height: 40 }} />
+        <View style={styles.bottomSpacing} />
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  descriptionContainer: {
+    marginBottom: 24,
+  },
+  descriptionText: {
+    fontSize: 18,
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  grid: {
+    width: "100%",
+    flexWrap: "wrap",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  categoryCard: {
+    width: "48%",
+    height: 180,
+    borderWidth: 1,
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  categoryContent: {
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  categoryName: {
+    fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  categoryDescription: {
+    fontSize: 12,
+    textAlign: "center",
+    opacity: 0.6,
+  },
+  selectedIndicator: {
+    marginTop: 8,
+  },
+  selectionInfo: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 12,
+  },
+  selectionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  selectionText: {
+    marginLeft: 8,
+    fontSize: 14,
+    opacity: 0.8,
+  },
+  selectionName: {
+    fontWeight: "600",
+  },
+  bottomSpacing: {
+    height: 40,
+  },
+});

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
@@ -42,65 +43,61 @@ export default function NameSetupScreen() {
   return (
     <GradientBackground>
       <KeyboardAvoidingView
-        className="flex-1"
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View className="relative justify-start flex-1 px-8 pt-0">
-          <View className="flex-row items-center justify-between w-full pb-10">     
-          {/* Back Button */}
-          <TouchableOpacity
-            onPress={handleBack}
-            className=""
-            style={{ zIndex: 1 }}
-          >
-            <Ionicons
-              name="arrow-back"
-              size={24}
-              color={Colors[colorScheme ?? "light"].text}
-            />
-          </TouchableOpacity>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            {/* Back Button */}
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={Colors[colorScheme ?? "light"].text}
+              />
+            </TouchableOpacity>
 
-          {/* Progress Indicator */}
-          <View className="">
-            <Text
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                opacity: 0.6,
-              }}
-            >
-              1 of 4
-            </Text>
-          </View>
-          </View>
-
-          <View className="items-center pt-10 space-y-8">
-            {/* Question */}
-            <View className="items-center space-y-4">
+            {/* Progress Indicator */}
+            <View>
               <Text
-                className="text-3xl font-bold text-center"
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 28,
-                  fontWeight: "bold",
+                  opacity: 0.6,
                 }}
+              >
+                1 of 4
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.content}>
+            {/* Question */}
+            <View style={styles.questionBlock}>
+              <Text
+                style={[
+                  styles.title,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 What do we call you?
               </Text>
 
               <Text
-                className="text-lg text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 16,
-                  opacity: 0.7,
-                }}
+                style={[
+                  styles.subtitle,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 We ll use this to personalize your affirmations
               </Text>
             </View>
 
             {/* Name Input */}
-            <View className="w-full space-y-4">
+            <View style={styles.inputBlock}>
               <TextInput
                 value={name}
                 onChangeText={(text) => {
@@ -111,48 +108,44 @@ export default function NameSetupScreen() {
                 placeholderTextColor={
                   Colors[colorScheme ?? "light"].text + "60"
                 }
-                className="w-full px-6 py-4 text-lg rounded-2xl"
-                style={{
-                  backgroundColor: Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor: error
-                    ? "#EF4444"
-                    : Colors[colorScheme ?? "light"].text + "20",
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 18,
-                  marginTop: 10,
-                }}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: Colors[colorScheme ?? "light"].background,
+                    borderColor: error
+                      ? "#EF4444"
+                      : Colors[colorScheme ?? "light"].text + "20",
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
                 autoFocus
                 returnKeyType="next"
                 onSubmitEditing={handleNext}
               />
 
-              {error ? (
-                <Text style={{ color: "#EF4444", fontSize: 14, marginLeft: 8 }}>
-                  {error}
-                </Text>
-              ) : null}
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>
 
             {/* Next Button */}
             <TouchableOpacity
               onPress={handleNext}
-              className="w-full py-4 mt-8 rounded-2xl"
-              style={{
-                backgroundColor: name.trim()
-                  ? Colors[colorScheme ?? "light"].tabIconSelected
-                  : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-                paddingVertical: 16,
-              }}
+              style={[
+                styles.nextButton,
+                {
+                  backgroundColor: name.trim()
+                    ? Colors[colorScheme ?? "light"].tabIconSelected
+                    : Colors[colorScheme ?? "light"].tabIconSelected + "40",
+                },
+              ]}
               disabled={!name.trim()}
             >
               <Text
-                className="text-lg font-semibold text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].background,
-                  fontSize: 18,
-                  fontWeight: "600",
-                }}
+                style={[
+                  styles.nextButtonText,
+                  {
+                    color: Colors[colorScheme ?? "light"].background,
+                  },
+                ]}
               >
                 Next
               </Text>
@@ -163,3 +156,74 @@ export default function NameSetupScreen() {
     </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  container: {
+    position: "relative",
+    justifyContent: "flex-start",
+    flex: 1,
+    paddingHorizontal: 32,
+    paddingTop: 0,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingBottom: 40,
+  },
+  backButton: {
+    zIndex: 1,
+  },
+  content: {
+    alignItems: "center",
+    paddingTop: 40,
+    gap: 32,
+  },
+  questionBlock: {
+    alignItems: "center",
+    gap: 16,
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  inputBlock: {
+    width: "100%",
+    gap: 16,
+  },
+  input: {
+    width: "100%",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    fontSize: 18,
+    marginTop: 10,
+  },
+  errorText: {
+    color: "#EF4444",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  nextButton: {
+    width: "100%",
+    paddingVertical: 16,
+    marginTop: 32,
+    borderRadius: 16,
+  },
+  nextButtonText: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

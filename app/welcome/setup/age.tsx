@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -39,14 +45,15 @@ export default function AgeSetupScreen() {
 
   return (
     <GradientBackground>
-      <View className="relative flex-1 justify-start px-8 pt-10">
-        <View className="flex-row justify-between items-center pb-10 w-full">
+      <ScrollView
+        style={styles.flex}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+      <View style={styles.container}>
+        <View style={styles.header}>
           {/* Back Button */}
-          <TouchableOpacity
-            onPress={handleBack}
-            className=""
-            style={{ zIndex: 1 }}
-          >
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Ionicons
               name="arrow-back"
               size={24}
@@ -55,7 +62,7 @@ export default function AgeSetupScreen() {
           </TouchableOpacity>
 
           {/* Progress Indicator */}
-          <View className="">
+          <View>
             <Text
               style={{
                 color: Colors[colorScheme ?? "light"].text,
@@ -66,50 +73,51 @@ export default function AgeSetupScreen() {
             </Text>
           </View>
         </View>
-        <View className="items-center pt-10 space-y-8">
+        <View style={styles.content}>
           {/* Question */}
-          <View className="items-center mt-5 mb-4 space-y-4">
+          <View style={styles.questionBlock}>
             <Text
-              className="text-3xl font-bold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 28,
-                fontWeight: "bold",
-              }}
+              style={[
+                styles.title,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               How old are you?
             </Text>
 
             <Text
-              className="text-lg text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 16,
-                opacity: 0.7,
-              }}
+              style={[
+                styles.subtitle,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               We ll customize affirmations for your life stage
             </Text>
           </View>
 
           {/* Age Options */}
-          <View className="flex flex-col gap-2 justify-center items-center mt-5 w-full">
+          <View style={styles.optionsList}>
             {ageRanges.map((range) => (
               <TouchableOpacity
                 key={range.id}
                 onPress={() => setSelectedAge(range.id)}
-                className="flex-row items-center p-4 w-full rounded-2xl"
-                style={{
-                  backgroundColor:
-                    selectedAge === range.id
-                      ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
-                      : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedAge === range.id
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].text + "30",
-                }}
+                style={[
+                  styles.option,
+                  {
+                    backgroundColor:
+                      selectedAge === range.id
+                        ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
+                        : Colors[colorScheme ?? "light"].background,
+                    borderColor:
+                      selectedAge === range.id
+                        ? Colors[colorScheme ?? "light"].tabIconSelected
+                        : Colors[colorScheme ?? "light"].text + "30",
+                  },
+                ]}
               >
                 <Ionicons
                   name={range.icon as any}
@@ -121,16 +129,16 @@ export default function AgeSetupScreen() {
                   }
                 />
                 <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color:
-                      selectedAge === range.id
-                        ? Colors[colorScheme ?? "light"].tabIconSelected
-                        : Colors[colorScheme ?? "light"].text,
-                    fontSize: 18,
-                    fontWeight: selectedAge === range.id ? "600" : "400",
-                    marginLeft: 10,
-                  }}
+                  style={[
+                    styles.optionText,
+                    {
+                      color:
+                        selectedAge === range.id
+                          ? Colors[colorScheme ?? "light"].tabIconSelected
+                          : Colors[colorScheme ?? "light"].text,
+                      fontWeight: selectedAge === range.id ? "600" : "400",
+                    },
+                  ]}
                 >
                   {range.label}
                 </Text>
@@ -150,28 +158,107 @@ export default function AgeSetupScreen() {
           {/* Next Button */}
           <TouchableOpacity
             onPress={handleNext}
-            className="py-4 mt-6 w-full rounded-2xl"
-            style={{
-              backgroundColor: selectedAge
-                ? Colors[colorScheme ?? "light"].tabIconSelected
-                : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-              paddingVertical: 16,
-            }}
+            style={[
+              styles.nextButton,
+              {
+                backgroundColor: selectedAge
+                  ? Colors[colorScheme ?? "light"].tabIconSelected
+                  : Colors[colorScheme ?? "light"].tabIconSelected + "40",
+              },
+            ]}
             disabled={!selectedAge}
           >
             <Text
-              className="text-lg font-semibold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].background,
-                fontSize: 18,
-                fontWeight: "600",
-              }}
+              style={[
+                styles.nextButtonText,
+                {
+                  color: Colors[colorScheme ?? "light"].background,
+                },
+              ]}
             >
               Next
             </Text>
           </TouchableOpacity>
         </View>
       </View>
+      </ScrollView>
     </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 32,
+  },
+  container: {
+    position: "relative",
+    flexGrow: 1,
+    justifyContent: "flex-start",
+    paddingHorizontal: 32,
+    paddingTop: 0,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 40,
+    width: "100%",
+  },
+  backButton: {
+    zIndex: 1,
+  },
+  content: {
+    alignItems: "center",
+    paddingTop: 40,
+    gap: 32,
+  },
+  questionBlock: {
+    alignItems: "center",
+    gap: 16,
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  optionsList: {
+    flexDirection: "column",
+    gap: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    width: "100%",
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    width: "100%",
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  optionText: {
+    fontSize: 18,
+    marginLeft: 10,
+  },
+  nextButton: {
+    paddingVertical: 16,
+    marginTop: 24,
+    width: "100%",
+    borderRadius: 16,
+  },
+  nextButtonText: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

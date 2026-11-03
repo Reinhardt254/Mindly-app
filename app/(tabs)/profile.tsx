@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
@@ -73,150 +79,100 @@ export default function ProfileScreen() {
     );
   };
 
+  const theme = Colors[colorScheme ?? "light"];
+  const actionShadow =
+    colorScheme === "dark"
+      ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
+      : "0 0 10px 0 rgba(0, 0, 0, 0.1)";
+
   if (!userProfile) {
     return (
-      <View className="items-center justify-center flex-1 bg-gray-900">
-        <Text className="text-lg">Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View
-      className="flex-1"
-      style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Simple Header */}
       <SimpleHeader title="Profile" />
 
-      <ScrollView className="flex-1 px-4">
+      <ScrollView style={styles.scrollView}>
         {/* Profile Info */}
         <View
-          className="p-6 mb-0 rounded-lg"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 30,
-            paddingHorizontal: 10,
-            paddingBottom: 10,
-            height: "auto",
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.05)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
+          style={[
+            styles.profileCard,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+              boxShadow:
+                colorScheme === "dark"
+                  ? "0 0 2px 0 rgba(255, 255, 255, 0.05)"
+                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+            },
+          ]}
         >
-          <View className="items-center h-auto mt-20 mb-8">
+          <View style={styles.profileHeader}>
             <View
-              className="items-center justify-center w-24 h-24 mb-4 rounded-full"
-              style={{
-                marginBottom: 10,
-                height: 120,
-                width: 120,
-                borderRadius: 100,
-                backgroundColor: Colors[colorScheme ?? "light"].highlight,
-              }}
+              style={[styles.avatar, { backgroundColor: theme.highlight }]}
             >
               <Ionicons name="person" size={48} color="white" />
             </View>
-            <Text
-              className="pt-5 text-xl font-bold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
-            >
+            <Text style={[styles.userName, { color: theme.text }]}>
               {userProfile.name}
             </Text>
-            <Text className="mt-2 text-gray-400 text-md">
-              Member since today
-            </Text>
+            <Text style={styles.memberSince}>Member since today</Text>
           </View>
 
           <View
-            style={{
-              borderRadius: 10,
-              padding: 25,
-              paddingHorizontal: 15,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
+            style={[
+              styles.infoCard,
+              {
+                boxShadow:
+                  colorScheme === "dark"
+                    ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
+                    : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
+              },
+            ]}
           >
-            <Text
-              className="mb-2 text-xl font-semibold"
-              style={{ color: Colors[colorScheme ?? "light"].text }}
-            >
+            <Text style={[styles.infoTitle, { color: theme.text }]}>
               Profile Information
             </Text>
 
-            <View
-              className="flex flex-col items-center justify-center w-full h-auto gap-10 space-y-4"
-              style={{
-                width: "100%",
-                gap: 5,
-                marginTop: 10,
-              }}
-            >
-              <View className="flex-row items-center justify-between w-full my-10">
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+            <View style={styles.infoList}>
+              <View style={[styles.infoRow, styles.infoRowFirst]}>
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   Age Range
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   {userProfile.ageRange}
                 </Text>
               </View>
 
-              <View className="flex-row items-center justify-between w-full">
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   Gender
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   {userProfile.gender}
                 </Text>
               </View>
 
-              <View className="flex-row items-center justify-between w-full">
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   Daily Affirmations
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   {userProfile.affirmationFrequency} times
                 </Text>
               </View>
 
-              <View className="flex-row items-center justify-between w-full">
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   Reminder Hours
                 </Text>
-                <Text
-                  className="text-xl"
-                  style={{ color: Colors[colorScheme ?? "light"].text }}
-                >
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
                   {userProfile.reminderStartHour || 8}:00 -{" "}
                   {userProfile.reminderEndHour || 20}:00
                 </Text>
@@ -227,173 +183,98 @@ export default function ProfileScreen() {
 
         {/* Actions */}
         <View
-          className="space-y-4"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 0,
-            borderStyle: "solid",
-            paddingVertical: 20,
-            paddingHorizontal: 10,
-            margin: 0,
-            marginTop: 0,
-            boxShadow: "none",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            width: "100%",
-            gap: 10,
-          }}
+          style={[
+            styles.actionsContainer,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+            },
+          ]}
         >
           <TouchableOpacity
             onPress={() => router.push("/(tabs)/edit-profile")}
-            className="flex-row items-center w-full p-4 rounded-lg"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 10,
-              margin: 0,
-              marginTop: 0,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
+            style={[
+              styles.actionButton,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+                boxShadow: actionShadow,
+              },
+            ]}
           >
-            <Ionicons
-              name="person"
-              size={24}
-              color={Colors[colorScheme ?? "light"].highlight}
-            />
-            <Text
-              className="ml-4 text-lg"
-              style={{
-                marginLeft: 10,
-                color: Colors[colorScheme ?? "light"].text,
-              }}
-            >
+            <Ionicons name="person" size={24} color={theme.highlight} />
+            <Text style={[styles.actionText, { color: theme.text }]}>
               Edit Profile
             </Text>
             <Ionicons
               name="chevron-forward"
               size={24}
               color="#6B7280"
-              style={{ marginLeft: "auto" }}
+              style={styles.chevron}
             />
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center w-full p-4 rounded-lg"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 10,
-              margin: 0,
-              marginTop: 0,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
+            style={[
+              styles.actionButton,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+                boxShadow: actionShadow,
+              },
+            ]}
           >
-            <Ionicons
-              name="notifications"
-              size={24}
-              color={Colors[colorScheme ?? "light"].highlight}
-            />
-            <Text
-              className="ml-4 text-lg"
-              style={{
-                marginLeft: 10,
-                color: Colors[colorScheme ?? "light"].text,
-              }}
-            >
+            <Ionicons name="notifications" size={24} color={theme.highlight} />
+            <Text style={[styles.actionText, { color: theme.text }]}>
               Notifications
             </Text>
             <Ionicons
               name="chevron-forward"
               size={24}
               color="#6B7280"
-              style={{ marginLeft: "auto" }}
+              style={styles.chevron}
             />
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center w-full p-4 rounded-lg"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 10,
-              margin: 0,
-              marginTop: 0,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
+            style={[
+              styles.actionButton,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+                boxShadow: actionShadow,
+              },
+            ]}
           >
             <Ionicons
               name="shield-checkmark"
               size={24}
-              color={Colors[colorScheme ?? "light"].highlight}
+              color={theme.highlight}
             />
-            <Text
-              className="ml-4 text-lg"
-              style={{
-                marginLeft: 10,
-                color: Colors[colorScheme ?? "light"].text,
-              }}
-            >
+            <Text style={[styles.actionText, { color: theme.text }]}>
               Privacy
             </Text>
             <Ionicons
               name="chevron-forward"
               size={24}
               color="#6B7280"
-              style={{ marginLeft: "auto" }}
+              style={styles.chevron}
             />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleLogout}
-            className="flex-row items-center p-4 !bg-red-600 rounded-lg w-full"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 10,
-              margin: 0,
-              marginTop: 0,
-              boxShadow:
-                colorScheme === "dark"
-                  ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                  : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-            }}
+            style={[
+              styles.actionButton,
+              {
+                borderColor: theme.tabIconSelected,
+                boxShadow: actionShadow,
+              },
+              styles.logoutButton,
+            ]}
           >
             <Ionicons name="log-out" size={24} color="red" />
-            <Text
-              className="ml-4 text-lg"
-              style={{
-                marginLeft: 10,
-                color: Colors[colorScheme ?? "light"].text,
-              }}
-            >
+            <Text style={[styles.actionText, { color: theme.text }]}>
               Logout
             </Text>
           </TouchableOpacity>
@@ -411,3 +292,124 @@ export default function ProfileScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    backgroundColor: "#111827",
+  },
+  loadingText: {
+    fontSize: 18,
+  },
+  profileCard: {
+    marginBottom: 0,
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    height: "auto",
+    margin: 0,
+    marginTop: 0,
+  },
+  profileHeader: {
+    alignItems: "center",
+    marginTop: 80,
+    marginBottom: 32,
+  },
+  avatar: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+    height: 120,
+    width: 120,
+    borderRadius: 100,
+  },
+  userName: {
+    paddingTop: 20,
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  memberSince: {
+    marginTop: 8,
+    fontSize: 16,
+    color: "#9ca3af",
+  },
+  infoCard: {
+    borderRadius: 10,
+    padding: 25,
+    paddingHorizontal: 15,
+  },
+  infoTitle: {
+    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  infoList: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    gap: 5,
+    marginTop: 10,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  infoRowFirst: {
+    marginVertical: 40,
+  },
+  infoLabel: {
+    fontSize: 20,
+  },
+  actionsContainer: {
+    borderWidth: 0,
+    borderRadius: 0,
+    borderStyle: "solid",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    margin: 0,
+    marginTop: 0,
+    boxShadow: "none",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
+    gap: 10,
+  },
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    margin: 0,
+    marginTop: 0,
+  },
+  logoutButton: {
+    backgroundColor: "#dc2626",
+  },
+  actionText: {
+    marginLeft: 10,
+    fontSize: 18,
+  },
+  chevron: {
+    marginLeft: "auto",
+  },
+});

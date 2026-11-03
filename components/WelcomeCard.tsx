@@ -1,5 +1,5 @@
 import React from "react";
-import { StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { IconSymbol } from "./ui/IconSymbol";
@@ -16,24 +16,23 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
 
   return (
     <>
-      <ThemedView className="flex-1 justify-center items-center px-6">
-        <View className="items-center space-y-8">
+      <ThemedView style={styles.container}>
+        <View style={styles.content}>
           {/* App Logo/Icon */}
-          {/* <View className="justify-center items-center mb-8 w-24 h-24 bg-blue-500 rounded-full">
-            <Text className="text-4xl font-bold text-white">✨</Text>
+          {/* <View style={{ justifyContent: "center", alignItems: "center", marginBottom: 32, width: 96, height: 96, backgroundColor: "#3b82f6", borderRadius: 9999 }}>
+            <Text style={{ fontSize: 36, fontWeight: "700", color: "#fff" }}>✨</Text>
           </View> */}
 
           {/* Welcome Text */}
-          <View className="items-center pb-2 space-y-4">
+          <View style={styles.textBlock}>
             <ThemedText
-              style={{ fontSize: 45, lineHeight: 50 }}
+              style={[styles.title, { fontSize: 45, lineHeight: 50 }]}
               type="title"
-              className="text-center"
             >
               Welcome to Moodly
             </ThemedText>
 
-            <ThemedText className="pt-4 max-w-sm text-xl leading-6 text-center">
+            <ThemedText style={styles.description}>
               Start your day with positive affirmations tailored just for you.
               Build confidence, gratitude, and inner strength one affirmation at
               a time.
@@ -41,36 +40,36 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
           </View>
 
           {/* Features */}
-          <View className="flex-col gap-1 space-y-3 w-full max-w-sm">
-            <View className="flex-row gap-2 items-center space-x-3">
-              <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
+          <View style={styles.features}>
+            <View style={styles.featureRow}>
+              <View style={styles.checkIcon}>
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">
+              <ThemedText style={styles.featureText}>
                 Personalized daily affirmations
               </ThemedText>
             </View>
-            <View className="flex-row gap-2 items-center space-x-3">
-              <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
+            <View style={styles.featureRow}>
+              <View style={styles.checkIcon}>
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">
+              <ThemedText style={styles.featureText}>
                 Track your daily progress
               </ThemedText>
             </View>
-            <View className="flex-row gap-2 items-center space-x-3">
-              <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
+            <View style={styles.featureRow}>
+              <View style={styles.checkIcon}>
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">
+              <ThemedText style={styles.featureText}>
                 Beautiful, calming interface
               </ThemedText>
             </View>
-            <View className="flex-row gap-2 items-center space-x-3">
-              <View className="justify-center items-center w-5 h-5 bg-blue-500 rounded-full">
+            <View style={styles.featureRow}>
+              <View style={styles.checkIcon}>
                 <Ionicons name="checkmark" size={10} color="#fff" />
               </View>
-              <ThemedText className="text-md">
+              <ThemedText style={styles.featureText}>
                 Save your favorite affirmations
               </ThemedText>
             </View>
@@ -79,15 +78,75 @@ export const WelcomeCard: React.FC<WelcomeCardProps> = ({ onGetStarted }) => {
           {/* Get Started Button */}
           <TouchableOpacity
             onPress={onGetStarted}
-            className="px-8 py-4 mt-8 bg-blue-500 rounded-full"
+            style={styles.button}
             activeOpacity={0.8}
           >
-            <ThemedText className="text-lg font-semibold text-white">
-              Get Started
-            </ThemedText>
+            <ThemedText style={styles.buttonText}>Get Started</ThemedText>
           </TouchableOpacity>
         </View>
       </ThemedView>
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  content: {
+    alignItems: "center",
+    gap: 32,
+  },
+  textBlock: {
+    alignItems: "center",
+    paddingBottom: 8,
+    gap: 16,
+  },
+  title: {
+    textAlign: "center",
+  },
+  description: {
+    paddingTop: 16,
+    maxWidth: 384,
+    fontSize: 20,
+    lineHeight: 24,
+    textAlign: "center",
+  },
+  features: {
+    flexDirection: "column",
+    gap: 16,
+    width: "100%",
+    maxWidth: 384,
+  },
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
+  },
+  checkIcon: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 20,
+    height: 20,
+    backgroundColor: "#3b82f6",
+    borderRadius: 9999,
+  },
+  featureText: {
+    fontSize: 16,
+  },
+  button: {
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    marginTop: 32,
+    backgroundColor: "#3b82f6",
+    borderRadius: 9999,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#fff",
+  },
+});

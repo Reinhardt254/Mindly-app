@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -93,53 +99,51 @@ export default function FavoritesScreen() {
 
   return (
     <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+      ]}
     >
       {/* Simple Header */}
       <SimpleHeader title="Favorites" />
 
       {/* Content */}
       <ScrollView
-        className="flex-1"
-        style={{
-          backgroundColor: Colors[colorScheme ?? "light"].background,
-        }}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 20,
-        }}
+        style={[
+          styles.scrollView,
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].background,
+          },
+        ]}
+        contentContainerStyle={styles.scrollContent}
       >
         {favorites.length === 0 ? (
-          <View
-            className="items-center justify-center flex-1"
-            style={{
-              paddingVertical: 60,
-            }}
-          >
+          <View style={styles.emptyContainer}>
             <Ionicons
               name="heart-outline"
               size={64}
               color={Colors[colorScheme ?? "light"].tabIconDefault}
-              style={{ marginBottom: 16 }}
+              style={styles.emptyIcon}
             />
             <Text
-              className="text-lg font-semibold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                marginBottom: 8,
-              }}
+              style={[
+                styles.emptyTitle,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               No Favorites Yet
             </Text>
             <Text
-              className="text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].tabIconDefault,
-                lineHeight: 20,
-              }}
+              style={[
+                styles.emptySubtitle,
+                {
+                  color: Colors[colorScheme ?? "light"].tabIconDefault,
+                },
+              ]}
             >
               Start liking affirmations to see them here
             </Text>
@@ -148,30 +152,33 @@ export default function FavoritesScreen() {
           favorites.map((favorite) => (
             <View
               key={favorite.id}
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-                paddingVertical: 16,
-                paddingHorizontal: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: Colors[colorScheme ?? "light"].tint,
-              }}
+              style={[
+                styles.favoriteItem,
+                {
+                  backgroundColor: Colors[colorScheme ?? "light"].background,
+                  borderBottomColor: Colors[colorScheme ?? "light"].tint,
+                },
+              ]}
             >
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1" style={{ marginRight: 16 }}>
+              <View style={styles.favoriteRow}>
+                <View style={styles.favoriteTextContainer}>
                   <Text
-                    className="text-base leading-6"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      marginBottom: 8,
-                    }}
+                    style={[
+                      styles.favoriteText,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     {favorite.text}
                   </Text>
                   <Text
-                    className="text-sm"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].tabIconDefault,
-                    }}
+                    style={[
+                      styles.favoriteDate,
+                      {
+                        color: Colors[colorScheme ?? "light"].tabIconDefault,
+                      },
+                    ]}
                   >
                     {formatDate(favorite.likedAt)}
                   </Text>
@@ -179,9 +186,7 @@ export default function FavoritesScreen() {
 
                 <TouchableOpacity
                   onPress={() => handleRemoveFavorite(favorite.id)}
-                  style={{
-                    padding: 8,
-                  }}
+                  style={styles.removeButton}
                 >
                   <Ionicons
                     name="ellipsis-vertical"
@@ -195,16 +200,6 @@ export default function FavoritesScreen() {
         )}
       </ScrollView>
 
-      {/* Bottom indicator */}
-      {/* <View
-        style={{
-          height: 1,
-          backgroundColor: Colors[colorScheme ?? "light"].tabIconDefault,
-          marginHorizontal: 20,
-          marginBottom: 20,
-        }}
-      /> */}
-
       {/* Popup */}
       <Popup
         visible={isPopupVisible}
@@ -216,3 +211,60 @@ export default function FavoritesScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    paddingVertical: 60,
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  favoriteItem: {
+    paddingVertical: 16,
+    paddingHorizontal: 0,
+    borderBottomWidth: 1,
+  },
+  favoriteRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+  },
+  favoriteTextContainer: {
+    flex: 1,
+    marginRight: 16,
+  },
+  favoriteText: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 8,
+  },
+  favoriteDate: {
+    fontSize: 14,
+  },
+  removeButton: {
+    padding: 8,
+  },
+});

@@ -1,7 +1,7 @@
 import { CATEGORIES } from "@/constants/Affirmations";
 import { Affirmation } from "@/constants/UserTypes";
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 
@@ -21,47 +21,43 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
   };
 
   return (
-    <ThemedView className="flex-1 justify-center items-center px-8">
-      <View className="w-full max-w-sm">
+    <ThemedView style={styles.container}>
+      <View style={styles.content}>
         {/* Category Badge */}
-        <View className="items-center mb-6">
-          <View className="bg-blue-100 px-4 py-2 rounded-full">
-            <ThemedText className="text-blue-600 font-medium">
+        <View style={styles.badgeWrapper}>
+          <View style={styles.badge}>
+            <ThemedText style={styles.badgeText}>
               {CATEGORIES[affirmation.category]}
             </ThemedText>
           </View>
         </View>
 
         {/* Affirmation Text */}
-        <View className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <ThemedText className="text-2xl font-semibold text-center leading-relaxed">
+        <View style={styles.card}>
+          <ThemedText style={styles.cardText}>
             &quot;{affirmation.text}&quot;
           </ThemedText>
         </View>
 
         {/* Swipe Instructions */}
         {isActive && (
-          <View className="flex-row justify-between items-center mt-8 px-4">
+          <View style={styles.instructions}>
             <TouchableOpacity
               onPress={() => handleSwipe("left")}
-              className="bg-red-100 px-6 py-3 rounded-full"
+              style={styles.skipButton}
               activeOpacity={0.7}
             >
-              <ThemedText className="text-red-600 font-medium">Skip</ThemedText>
+              <ThemedText style={styles.skipText}>Skip</ThemedText>
             </TouchableOpacity>
 
-            <ThemedText className="text-gray-500 text-sm">
-              Swipe up for more
-            </ThemedText>
+            <ThemedText style={styles.hintText}>Swipe up for more</ThemedText>
 
             <TouchableOpacity
               onPress={() => handleSwipe("right")}
-              className="bg-green-100 px-6 py-3 rounded-full"
+              style={styles.saveButton}
               activeOpacity={0.7}
             >
-              <ThemedText className="text-green-600 font-medium">
-                Save
-              </ThemedText>
+              <ThemedText style={styles.saveText}>Save</ThemedText>
             </TouchableOpacity>
           </View>
         )}
@@ -69,3 +65,79 @@ export const AffirmationCard: React.FC<AffirmationCardProps> = ({
     </ThemedView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+  },
+  content: {
+    width: "100%",
+    maxWidth: 384,
+  },
+  badgeWrapper: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  badge: {
+    backgroundColor: "#dbeafe",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+  },
+  badgeText: {
+    color: "#2563eb",
+    fontWeight: "500",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 32,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "#f3f4f6",
+  },
+  cardText: {
+    fontSize: 24,
+    fontWeight: "600",
+    textAlign: "center",
+    lineHeight: 28,
+  },
+  instructions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 32,
+    paddingHorizontal: 16,
+  },
+  skipButton: {
+    backgroundColor: "#fee2e2",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 9999,
+  },
+  skipText: {
+    color: "#dc2626",
+    fontWeight: "500",
+  },
+  hintText: {
+    color: "#6b7280",
+    fontSize: 14,
+  },
+  saveButton: {
+    backgroundColor: "#dcfce7",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 9999,
+  },
+  saveText: {
+    color: "#16a34a",
+    fontWeight: "500",
+  },
+});

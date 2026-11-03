@@ -1,7 +1,9 @@
 import { UserProfile } from "@/constants/UserTypes";
 import React, { useState } from "react";
 import {
+  Dimensions,
   FlatList,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -149,54 +151,50 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
   };
 
   const renderFormContent = () => (
-    <View className="flex-1 w-full h-full px-3 py-20 pb-0 bg-gray-800">
+    <View style={styles.formWrapper}>
       {/* Header */}
-      <View className="flex-col items-center gap-3 mb-0">
-        <Text className="w-full text-4xl font-bold text-center text-white">
-          Welcome to Moodly
-        </Text>
-        <Text className="w-full text-xl font-semibold text-center text-gray-300">
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Welcome to Moodly</Text>
+        <Text style={styles.headerSubtitle}>
           Let&apos;s Get to Know You, This helps us personalize your experience
         </Text>
       </View>
 
       {/* Form Container */}
-      <View className="flex flex-col w-full gap-4 p-4 pt-10 pb-2 mb-32 space-y-6 rounded-xl">
+      <View style={styles.formContainer}>
         {/* First Name */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">
-            First Name
-          </Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>First Name</Text>
           <TextInput
             value={formData.firstName}
             onChangeText={(text) => updateFormData("firstName", text)}
             placeholder="Enter your first name"
             placeholderTextColor="#6B7280"
-            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
+            style={styles.input}
           />
           {errors.firstName && (
-            <Text className="text-sm text-red-400">{errors.firstName}</Text>
+            <Text style={styles.errorText}>{errors.firstName}</Text>
           )}
         </View>
 
         {/* Last Name */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">Last Name</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Last Name</Text>
           <TextInput
             value={formData.lastName}
             onChangeText={(text) => updateFormData("lastName", text)}
             placeholder="Enter your last name"
             placeholderTextColor="#6B7280"
-            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
+            style={styles.input}
           />
           {errors.lastName && (
-            <Text className="text-sm text-red-400">{errors.lastName}</Text>
+            <Text style={styles.errorText}>{errors.lastName}</Text>
           )}
         </View>
 
         {/* Gender Dropdown */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">Gender</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Gender</Text>
           <DropDownPicker
             open={genderOpen}
             value={formData.gender}
@@ -241,13 +239,13 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             zIndexInverse={1000}
           />
           {errors.gender && (
-            <Text className="text-sm text-red-400">{errors.gender}</Text>
+            <Text style={styles.errorText}>{errors.gender}</Text>
           )}
         </View>
 
         {/* Age Dropdown */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">Age</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Age</Text>
           <DropDownPicker
             open={ageOpen}
             value={formData.ageRange}
@@ -292,15 +290,13 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             zIndexInverse={2000}
           />
           {errors.ageRange && (
-            <Text className="text-sm text-red-400">{errors.ageRange}</Text>
+            <Text style={styles.errorText}>{errors.ageRange}</Text>
           )}
         </View>
 
         {/* Affirmation Frequency */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">
-            Affirmation Frequency
-          </Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Affirmation Frequency</Text>
           <DropDownPicker
             open={frequencyOpen}
             value={formData.affirmationFrequency}
@@ -347,8 +343,8 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
         </View>
 
         {/* Email */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">Email ID</Text>
+        <View style={styles.field}>
+          <Text style={styles.label}>Email ID</Text>
           <TextInput
             value={formData.email}
             onChangeText={(text) => updateFormData("email", text)}
@@ -356,34 +352,37 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
             placeholderTextColor="#6B7280"
             keyboardType="email-address"
             autoCapitalize="none"
-            className="h-16 px-4 py-3 text-base text-white bg-gray-700 rounded-lg"
-            style={{
-              height: 55,
-            }}
+            style={[
+              styles.input,
+              {
+                height: 55,
+              },
+            ]}
           />
-          {errors.email && (
-            <Text className="text-sm text-red-400">{errors.email}</Text>
-          )}
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
         </View>
 
         {/* Password */}
-        <View className="space-y-2">
-          <Text className="pb-1 text-lg font-medium text-white">Password</Text>
-          <View className="relative">
+        <View style={styles.field}>
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.passwordWrapper}>
             <TextInput
               value={formData.password}
               onChangeText={(text) => updateFormData("password", text)}
               placeholder="Enter your password"
               placeholderTextColor="#6B7280"
               secureTextEntry={!showPassword}
-              className="px-4 py-3 pr-12 text-base text-white bg-gray-700 rounded-lg h-14"
-              style={{
-                height: 55,
-              }}
+              style={[
+                styles.input,
+                styles.passwordInput,
+                {
+                  height: 55,
+                },
+              ]}
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              className="absolute top-3 right-3"
+              style={styles.eyeButton}
             >
               <Ionicons
                 name={showPassword ? "eye-off" : "eye"}
@@ -394,8 +393,8 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
           </View>
 
           {/* Password Requirements */}
-          <View className="mt-3 space-y-2">
-            <View className="flex-row items-center space-x-2">
+          <View style={styles.requirements}>
+            <View style={styles.requirementRow}>
               <Ionicons
                 name={
                   passwordRequirements.length
@@ -405,11 +404,9 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                 size={16}
                 color={passwordRequirements.length ? "#10B981" : "#EF4444"}
               />
-              <Text className="text-sm text-gray-400">
-                At least 8 character
-              </Text>
+              <Text style={styles.requirementText}>At least 8 character</Text>
             </View>
-            <View className="flex-row items-center space-x-2">
+            <View style={styles.requirementRow}>
               <Ionicons
                 name={
                   passwordRequirements.special
@@ -419,9 +416,9 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                 size={16}
                 color={passwordRequirements.special ? "#10B981" : "#EF4444"}
               />
-              <Text className="text-sm text-gray-400">1 special character</Text>
+              <Text style={styles.requirementText}>1 special character</Text>
             </View>
-            <View className="flex-row items-center space-x-2">
+            <View style={styles.requirementRow}>
               <Ionicons
                 name={
                   passwordRequirements.number
@@ -431,31 +428,29 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
                 size={16}
                 color={passwordRequirements.number ? "#10B981" : "#EF4444"}
               />
-              <Text className="text-sm text-gray-400">1 number</Text>
+              <Text style={styles.requirementText}>1 number</Text>
             </View>
           </View>
           {errors.password && (
-            <Text className="text-sm text-red-400">{errors.password}</Text>
+            <Text style={styles.errorText}>{errors.password}</Text>
           )}
         </View>
 
         {/* Create Account Button */}
         <TouchableOpacity
           onPress={handleSubmit}
-          className="py-4 mt-4 bg-blue-500 rounded-lg"
+          style={styles.submitButton}
           activeOpacity={0.8}
         >
-          <Text className="text-lg font-semibold text-center text-white">
-            Create account
-          </Text>
+          <Text style={styles.submitButtonText}>Create account</Text>
         </TouchableOpacity>
 
         {/* Terms and Privacy */}
-        <View className="mt-6 mb-8">
-          <Text className="text-sm text-center text-gray-400">
+        <View style={styles.terms}>
+          <Text style={styles.termsText}>
             By clicking create account, I agree to the{" "}
-            <Text className="text-blue-500">Terms of service</Text> and{" "}
-            <Text className="text-blue-500">Privacy policy</Text>.
+            <Text style={styles.link}>Terms of service</Text> and{" "}
+            <Text style={styles.link}>Privacy policy</Text>.
           </Text>
         </View>
       </View>
@@ -464,11 +459,10 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 w-screen h-full bg-gray-900"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={[styles.root, { flex: 1 }]}
     >
-      <View className="flex-0.05 w-screen h-7 bg-gray-900"></View>
+      <View style={styles.topSpacer}></View>
       <FlatList
         data={[{ key: "form" }]}
         renderItem={() => renderFormContent()}
@@ -481,3 +475,128 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
     </KeyboardAvoidingView>
   );
 };
+
+const screenWidth = Dimensions.get("window").width;
+
+const styles = StyleSheet.create({
+  root: {
+    width: screenWidth,
+    height: "100%",
+    backgroundColor: "#111827",
+  },
+  topSpacer: {
+    width: screenWidth,
+    height: 28,
+    backgroundColor: "#111827",
+  },
+  formWrapper: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 80,
+    paddingBottom: 0,
+    backgroundColor: "#1f2937",
+  },
+  header: {
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 0,
+  },
+  headerTitle: {
+    width: "100%",
+    fontSize: 36,
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#fff",
+  },
+  headerSubtitle: {
+    width: "100%",
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#d1d5db",
+  },
+  formContainer: {
+    flexDirection: "column",
+    width: "100%",
+    // gap-4 (16) combined with space-y-6 (24)
+    gap: 40,
+    padding: 16,
+    paddingTop: 40,
+    paddingBottom: 8,
+    marginBottom: 128,
+    borderRadius: 12,
+  },
+  field: {
+    gap: 8,
+  },
+  label: {
+    paddingBottom: 4,
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#fff",
+  },
+  input: {
+    height: 64,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#fff",
+    backgroundColor: "#374151",
+    borderRadius: 8,
+  },
+  passwordWrapper: {
+    position: "relative",
+  },
+  passwordInput: {
+    paddingRight: 48,
+  },
+  eyeButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+  },
+  errorText: {
+    fontSize: 14,
+    color: "#f87171",
+  },
+  requirements: {
+    marginTop: 12,
+    gap: 8,
+  },
+  requirementRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  requirementText: {
+    fontSize: 14,
+    color: "#9ca3af",
+  },
+  submitButton: {
+    paddingVertical: 16,
+    marginTop: 16,
+    backgroundColor: "#3b82f6",
+    borderRadius: 8,
+  },
+  submitButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    color: "#fff",
+  },
+  terms: {
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  termsText: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#9ca3af",
+  },
+  link: {
+    color: "#3b82f6",
+  },
+});

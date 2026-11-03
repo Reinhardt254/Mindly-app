@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -52,14 +52,10 @@ export default function GenderSetupScreen() {
 
   return (
     <GradientBackground>
-      <View className="relative flex-1 justify-start px-8 pt-10">
-        <View className="flex-row justify-between items-center pb-10 w-full">
+      <View style={styles.container}>
+        <View style={styles.header}>
           {/* Back Button */}
-          <TouchableOpacity
-            onPress={handleBack}
-            className=""
-            style={{ zIndex: 1 }}
-          >
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Ionicons
               name="arrow-back"
               size={24}
@@ -68,7 +64,7 @@ export default function GenderSetupScreen() {
           </TouchableOpacity>
 
           {/* Progress Indicator */}
-          <View className="">
+          <View>
             <Text
               style={{
                 color: Colors[colorScheme ?? "light"].text,
@@ -80,50 +76,51 @@ export default function GenderSetupScreen() {
           </View>
         </View>
 
-        <View className="items-center pt-10 space-y-8">
+        <View style={styles.content}>
           {/* Question */}
-          <View className="items-center mb-4 space-y-4 w-full">
+          <View style={styles.questionBlock}>
             <Text
-              className="text-3xl font-bold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 28,
-                fontWeight: "bold",
-              }}
+              style={[
+                styles.title,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               Which option represents you, {userName}?
             </Text>
 
             <Text
-              className="text-lg text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 16,
-                opacity: 0.7,
-              }}
+              style={[
+                styles.subtitle,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               This helps us personalize your experience
             </Text>
           </View>
 
           {/* Gender Options */}
-          <View className="flex flex-col gap-3 justify-center items-center mt-5 w-full">
+          <View style={styles.optionsList}>
             {genderOptions.map((option) => (
               <TouchableOpacity
                 key={option.id}
                 onPress={() => setSelectedGender(option.id)}
-                className="flex-row items-center p-4 w-full rounded-2xl"
-                style={{
-                  backgroundColor:
-                    selectedGender === option.id
-                      ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
-                      : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedGender === option.id
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].text + "30",
-                }}
+                style={[
+                  styles.option,
+                  {
+                    backgroundColor:
+                      selectedGender === option.id
+                        ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
+                        : Colors[colorScheme ?? "light"].background,
+                    borderColor:
+                      selectedGender === option.id
+                        ? Colors[colorScheme ?? "light"].tabIconSelected
+                        : Colors[colorScheme ?? "light"].text + "30",
+                  },
+                ]}
               >
                 <Ionicons
                   name={option.icon as any}
@@ -135,15 +132,16 @@ export default function GenderSetupScreen() {
                   }
                 />
                 <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    color:
-                      selectedGender === option.id
-                        ? Colors[colorScheme ?? "light"].tabIconSelected
-                        : Colors[colorScheme ?? "light"].text,
-                    fontSize: 18,
-                    fontWeight: selectedGender === option.id ? "600" : "400",
-                  }}
+                  style={[
+                    styles.optionText,
+                    {
+                      color:
+                        selectedGender === option.id
+                          ? Colors[colorScheme ?? "light"].tabIconSelected
+                          : Colors[colorScheme ?? "light"].text,
+                      fontWeight: selectedGender === option.id ? "600" : "400",
+                    },
+                  ]}
                 >
                   {option.label}
                 </Text>
@@ -163,22 +161,23 @@ export default function GenderSetupScreen() {
           {/* Next Button */}
           <TouchableOpacity
             onPress={handleNext}
-            className="py-4 mt-8 w-full rounded-2xl"
-            style={{
-              backgroundColor: selectedGender
-                ? Colors[colorScheme ?? "light"].tabIconSelected
-                : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-              paddingVertical: 16,
-            }}
+            style={[
+              styles.nextButton,
+              {
+                backgroundColor: selectedGender
+                  ? Colors[colorScheme ?? "light"].tabIconSelected
+                  : Colors[colorScheme ?? "light"].tabIconSelected + "40",
+              },
+            ]}
             disabled={!selectedGender}
           >
             <Text
-              className="text-lg font-semibold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].background,
-                fontSize: 18,
-                fontWeight: "600",
-              }}
+              style={[
+                styles.nextButtonText,
+                {
+                  color: Colors[colorScheme ?? "light"].background,
+                },
+              ]}
             >
               Next
             </Text>
@@ -188,3 +187,74 @@ export default function GenderSetupScreen() {
     </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+    flex: 1,
+    justifyContent: "flex-start",
+    paddingHorizontal: 32,
+    paddingTop: 0,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 40,
+    width: "100%",
+  },
+  backButton: {
+    zIndex: 1,
+  },
+  content: {
+    alignItems: "center",
+    paddingTop: 40,
+    gap: 32,
+  },
+  questionBlock: {
+    alignItems: "center",
+    gap: 16,
+    width: "100%",
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  optionsList: {
+    flexDirection: "column",
+    gap: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    width: "100%",
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    width: "100%",
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  optionText: {
+    marginLeft: 16,
+    fontSize: 18,
+  },
+  nextButton: {
+    paddingVertical: 16,
+    marginTop: 32,
+    width: "100%",
+    borderRadius: 16,
+  },
+  nextButtonText: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

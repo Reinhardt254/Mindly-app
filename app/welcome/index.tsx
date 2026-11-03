@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -16,10 +16,10 @@ export default function WelcomeScreen() {
 
   return (
     <GradientBackground>
-      <View className="flex-1 justify-center items-center px-8">
-        <View className="items-center space-y-8">
+      <View style={styles.container}>
+        <View style={styles.content}>
           {/* Welcome Icon */}
-          <View className="mb-8">
+          <View style={styles.iconWrapper}>
             <Ionicons
               name="heart-circle"
               size={120}
@@ -28,27 +28,25 @@ export default function WelcomeScreen() {
           </View>
 
           {/* Welcome Text */}
-          <View className="items-center space-y-4">
+          <View style={styles.textBlock}>
             <Text
-              className="text-4xl font-bold text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 32,
-                fontWeight: "bold",
-              }}
+              style={[
+                styles.title,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               Welcome to Your Journey
             </Text>
 
             <Text
-              className="text-lg leading-7 text-center"
-              style={{
-                color: Colors[colorScheme ?? "light"].text,
-                fontSize: 18,
-                lineHeight: 28,
-                opacity: 0.8,
-                marginTop: 16,
-              }}
+              style={[
+                styles.description,
+                {
+                  color: Colors[colorScheme ?? "light"].text,
+                },
+              ]}
             >
               Discover daily affirmations tailored just for you. Transform your
               mindset, one positive thought at a time.
@@ -58,22 +56,20 @@ export default function WelcomeScreen() {
           {/* Get Started Button */}
           <TouchableOpacity
             onPress={handleGetStarted}
-            className="px-8 py-4 mt-12 rounded-full"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              paddingHorizontal: 48,
-              paddingVertical: 16,
-              borderRadius: 30,
-              marginTop: 48,
-            }}
+            style={[
+              styles.button,
+              {
+                backgroundColor: Colors[colorScheme ?? "light"].tabIconSelected,
+              },
+            ]}
           >
             <Text
-              className="text-lg font-semibold"
-              style={{
-                color: Colors[colorScheme ?? "light"].background,
-                fontSize: 18,
-                fontWeight: "600",
-              }}
+              style={[
+                styles.buttonText,
+                {
+                  color: Colors[colorScheme ?? "light"].background,
+                },
+              ]}
             >
               Get Started
             </Text>
@@ -81,13 +77,12 @@ export default function WelcomeScreen() {
 
           {/* Subtitle */}
           <Text
-            className="mt-4 text-sm text-center"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 14,
-              opacity: 0.6,
-              marginTop: 16,
-            }}
+            style={[
+              styles.subtitle,
+              {
+                color: Colors[colorScheme ?? "light"].text,
+              },
+            ]}
           >
             Just a few questions to personalize your experience
           </Text>
@@ -96,3 +91,51 @@ export default function WelcomeScreen() {
     </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    paddingHorizontal: 32,
+  },
+  content: {
+    alignItems: "center",
+    gap: 32,
+  },
+  iconWrapper: {
+    marginBottom: 32,
+  },
+  textBlock: {
+    alignItems: "center",
+    gap: 16,
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  description: {
+    textAlign: "center",
+    fontSize: 18,
+    lineHeight: 28,
+    opacity: 0.8,
+    marginTop: 16,
+  },
+  button: {
+    paddingHorizontal: 48,
+    paddingVertical: 16,
+    borderRadius: 30,
+    marginTop: 48,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 14,
+    opacity: 0.6,
+    marginTop: 16,
+  },
+});

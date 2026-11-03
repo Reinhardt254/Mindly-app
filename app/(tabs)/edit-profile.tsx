@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -192,95 +193,68 @@ export default function EditProfileScreen() {
     }
   };
 
+  const theme = Colors[colorScheme ?? "light"];
+
+  const getOptionStyle = (selected: boolean) => ({
+    backgroundColor: selected
+      ? theme.tabIconSelected + "20"
+      : theme.background,
+    borderColor: selected ? theme.tabIconSelected : theme.text + "20",
+  });
+
+  const getOptionTextStyle = (selected: boolean) => ({
+    color: selected ? theme.tabIconSelected : theme.text,
+    fontWeight: selected ? ("600" as const) : ("400" as const),
+  });
+
   if (!userProfile) {
     return (
       <View
-        className="items-center justify-center flex-1"
-        style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
       >
-        <Text style={{ color: Colors[colorScheme ?? "light"].text }}>
-          Loading...
-        </Text>
+        <Text style={{ color: theme.text }}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View
-      className="flex-1"
-      style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <SimpleHeader title="Edit Profile" />
 
-      <ScrollView className="flex-1 px-4 py-6">
+      <ScrollView style={styles.scrollView}>
         {/* Name Section */}
-        <View className="mb-6">
-          <Text
-            className="mb-3 text-lg font-semibold"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
-            Name
-          </Text>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Name</Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Enter your name"
-            placeholderTextColor={Colors[colorScheme ?? "light"].text + "60"}
-            className="p-4 rounded-xl"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 1,
-              borderColor: Colors[colorScheme ?? "light"].text + "20",
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 16,
-            }}
+            placeholderTextColor={theme.text + "60"}
+            style={[
+              styles.nameInput,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.text + "20",
+                color: theme.text,
+              },
+            ]}
           />
         </View>
 
         {/* Age Range Section */}
-        <View className="mb-6">
-          <Text
-            className="mb-3 text-lg font-semibold"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Age Range
           </Text>
-          <View className="flex-row flex-wrap gap-2">
+          <View style={styles.ageContainer}>
             {ageRanges.map((age) => (
               <TouchableOpacity
                 key={age}
                 onPress={() => setSelectedAge(age)}
-                className="px-4 py-3 rounded-xl"
-                style={{
-                  backgroundColor:
-                    selectedAge === age
-                      ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
-                      : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedAge === age
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].text + "20",
-                }}
+                style={[styles.ageOption, getOptionStyle(selectedAge === age)]}
               >
-                <Text
-                  style={{
-                    color:
-                      selectedAge === age
-                        ? Colors[colorScheme ?? "light"].tabIconSelected
-                        : Colors[colorScheme ?? "light"].text,
-                    fontWeight: selectedAge === age ? "600" : "400",
-                  }}
-                >
+                <Text style={getOptionTextStyle(selectedAge === age)}>
                   {age}
                 </Text>
               </TouchableOpacity>
@@ -289,43 +263,22 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Gender Section */}
-        <View className="mb-6">
-          <Text
-            className="mb-3 text-lg font-semibold"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Gender
           </Text>
-          <View className="gap-2">
+          <View style={styles.optionList}>
             {genderOptions.map((option) => (
               <TouchableOpacity
                 key={option.value}
                 onPress={() => setSelectedGender(option.value)}
-                className="flex-row items-center justify-between p-4 rounded-xl"
-                style={{
-                  backgroundColor:
-                    selectedGender === option.value
-                      ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
-                      : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedGender === option.value
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].text + "20",
-                }}
+                style={[
+                  styles.listOption,
+                  getOptionStyle(selectedGender === option.value),
+                ]}
               >
                 <Text
-                  style={{
-                    color:
-                      selectedGender === option.value
-                        ? Colors[colorScheme ?? "light"].tabIconSelected
-                        : Colors[colorScheme ?? "light"].text,
-                    fontWeight: selectedGender === option.value ? "600" : "400",
-                  }}
+                  style={getOptionTextStyle(selectedGender === option.value)}
                 >
                   {option.label}
                 </Text>
@@ -333,7 +286,7 @@ export default function EditProfileScreen() {
                   <Ionicons
                     name="checkmark-circle"
                     size={24}
-                    color={Colors[colorScheme ?? "light"].tabIconSelected}
+                    color={theme.tabIconSelected}
                   />
                 )}
               </TouchableOpacity>
@@ -342,44 +295,22 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Frequency Section */}
-        <View className="mb-6">
-          <Text
-            className="mb-3 text-lg font-semibold"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Daily Reminders
           </Text>
-          <View className="gap-2">
+          <View style={styles.optionList}>
             {frequencyOptions.map((option) => (
               <TouchableOpacity
                 key={option.value}
                 onPress={() => setSelectedFrequency(option.value)}
-                className="flex-row items-center justify-between p-4 rounded-xl"
-                style={{
-                  backgroundColor:
-                    selectedFrequency === option.value
-                      ? Colors[colorScheme ?? "light"].tabIconSelected + "20"
-                      : Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedFrequency === option.value
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].text + "20",
-                }}
+                style={[
+                  styles.listOption,
+                  getOptionStyle(selectedFrequency === option.value),
+                ]}
               >
                 <Text
-                  style={{
-                    color:
-                      selectedFrequency === option.value
-                        ? Colors[colorScheme ?? "light"].tabIconSelected
-                        : Colors[colorScheme ?? "light"].text,
-                    fontWeight:
-                      selectedFrequency === option.value ? "600" : "400",
-                  }}
+                  style={getOptionTextStyle(selectedFrequency === option.value)}
                 >
                   {option.label}
                 </Text>
@@ -387,7 +318,7 @@ export default function EditProfileScreen() {
                   <Ionicons
                     name="checkmark-circle"
                     size={24}
-                    color={Colors[colorScheme ?? "light"].tabIconSelected}
+                    color={theme.tabIconSelected}
                   />
                 )}
               </TouchableOpacity>
@@ -396,88 +327,51 @@ export default function EditProfileScreen() {
         </View>
 
         {/* Time Range Section */}
-        <View className="mb-6">
-          <Text
-            className="mb-3 text-lg font-semibold"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
             Active Hours
           </Text>
 
-          <View className="flex-row gap-4">
+          <View style={styles.timeRow}>
             {/* Start Time */}
-            <View className="flex-1">
-              <Text
-                className="mb-2 text-sm"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  opacity: 0.7,
-                }}
-              >
+            <View style={styles.timeColumn}>
+              <Text style={[styles.timeLabel, { color: theme.text }]}>
                 From
               </Text>
               <TouchableOpacity
                 onPress={() => setShowStartPicker(true)}
-                className="flex-row items-center justify-between p-4 rounded-xl"
-                style={{
-                  backgroundColor: Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor: Colors[colorScheme ?? "light"].text + "20",
-                }}
+                style={[
+                  styles.timeButton,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.text + "20",
+                  },
+                ]}
               >
-                <Text
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    fontSize: 16,
-                  }}
-                >
+                <Text style={[styles.timeText, { color: theme.text }]}>
                   {formatHour(startHour)}
                 </Text>
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={Colors[colorScheme ?? "light"].text}
-                />
+                <Ionicons name="time-outline" size={20} color={theme.text} />
               </TouchableOpacity>
             </View>
 
             {/* End Time */}
-            <View className="flex-1">
-              <Text
-                className="mb-2 text-sm"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  opacity: 0.7,
-                }}
-              >
-                To
-              </Text>
+            <View style={styles.timeColumn}>
+              <Text style={[styles.timeLabel, { color: theme.text }]}>To</Text>
               <TouchableOpacity
                 onPress={() => setShowEndPicker(true)}
-                className="flex-row items-center justify-between p-4 rounded-xl"
-                style={{
-                  backgroundColor: Colors[colorScheme ?? "light"].background,
-                  borderWidth: 1,
-                  borderColor: Colors[colorScheme ?? "light"].text + "20",
-                }}
+                style={[
+                  styles.timeButton,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.text + "20",
+                  },
+                ]}
               >
-                <Text
-                  style={{
-                    color: Colors[colorScheme ?? "light"].text,
-                    fontSize: 16,
-                  }}
-                >
+                <Text style={[styles.timeText, { color: theme.text }]}>
                   {formatHour(endHour)}
                 </Text>
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={Colors[colorScheme ?? "light"].text}
-                />
+                <Ionicons name="time-outline" size={20} color={theme.text} />
               </TouchableOpacity>
             </View>
           </View>
@@ -490,7 +384,7 @@ export default function EditProfileScreen() {
               is24Hour={false}
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={onStartTimeChange}
-              textColor={Colors[colorScheme ?? "light"].text}
+              textColor={theme.text}
             />
           )}
 
@@ -501,37 +395,26 @@ export default function EditProfileScreen() {
               is24Hour={false}
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={onEndTimeChange}
-              textColor={Colors[colorScheme ?? "light"].text}
+              textColor={theme.text}
             />
           )}
 
           {/* Info Text */}
           {startHour < endHour && (
             <View
-              className="p-3 mt-4 rounded-lg"
-              style={{
-                backgroundColor:
-                  Colors[colorScheme ?? "light"].tabIconSelected + "10",
-              }}
+              style={[
+                styles.infoBox,
+                {
+                  backgroundColor: theme.tabIconSelected + "10",
+                },
+              ]}
             >
-              <Text
-                className="text-sm text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  opacity: 0.8,
-                }}
-              >
+              <Text style={[styles.infoText, { color: theme.text }]}>
                 You&apos;ll receive {selectedFrequency} reminder
                 {selectedFrequency > 1 ? "s" : ""} between{" "}
                 {formatHour(startHour)} and {formatHour(endHour)}
               </Text>
-              <Text
-                className="mt-1 text-xs text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  opacity: 0.6,
-                }}
-              >
+              <Text style={[styles.infoSubtext, { color: theme.text }]}>
                 (Every {Math.floor((endHour - startHour) / selectedFrequency)}{" "}
                 hours approximately)
               </Text>
@@ -543,28 +426,22 @@ export default function EditProfileScreen() {
         <TouchableOpacity
           onPress={handleSave}
           disabled={isSaving || startHour >= endHour}
-          className="py-4 mt-4 mb-10 rounded-2xl"
-          style={{
-            backgroundColor:
-              !isSaving && startHour < endHour
-                ? Colors[colorScheme ?? "light"].highlight
-                : Colors[colorScheme ?? "light"].highlight + "40",
-            paddingVertical: 16,
-          }}
+          style={[
+            styles.saveButton,
+            {
+              backgroundColor:
+                !isSaving && startHour < endHour
+                  ? theme.highlight
+                  : theme.highlight + "40",
+            },
+          ]}
         >
-          <Text
-            className="text-lg font-semibold text-center"
-            style={{
-              color: Colors[colorScheme ?? "light"].background,
-              fontSize: 18,
-              fontWeight: "600",
-            }}
-          >
+          <Text style={[styles.saveButtonText, { color: theme.background }]}>
             {isSaving ? "Saving..." : "Save Changes"}
           </Text>
         </TouchableOpacity>
 
-        <View className="h-5"></View>
+        <View style={styles.bottomSpacer}></View>
       </ScrollView>
 
       {/* Popup */}
@@ -578,3 +455,108 @@ export default function EditProfileScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    marginBottom: 12,
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  nameInput: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  ageContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  ageOption: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  optionList: {
+    gap: 8,
+  },
+  listOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  timeRow: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  timeColumn: {
+    flex: 1,
+  },
+  timeLabel: {
+    marginBottom: 8,
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  timeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  timeText: {
+    fontSize: 16,
+  },
+  infoBox: {
+    padding: 12,
+    marginTop: 16,
+    borderRadius: 8,
+  },
+  infoText: {
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  infoSubtext: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: "center",
+    opacity: 0.6,
+  },
+  saveButton: {
+    paddingVertical: 16,
+    marginTop: 16,
+    marginBottom: 40,
+    borderRadius: 16,
+  },
+  saveButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  bottomSpacer: {
+    height: 20,
+  },
+});

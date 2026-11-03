@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Modal, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Dimensions,
+  StyleSheet,
+} from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -82,27 +89,31 @@ export const Popup: React.FC<PopupProps> = ({
           }}
         >
           <Text
-            className="mb-3 text-xl font-bold text-center"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              fontSize: 20,
-            }}
+            style={[
+              styles.title,
+              {
+                color: Colors[colorScheme ?? "light"].text,
+                fontSize: 20,
+              },
+            ]}
           >
             {title}
           </Text>
 
           <Text
-            className="mb-6 text-center text-md"
-            style={{
-              color: Colors[colorScheme ?? "light"].text,
-              lineHeight: 22,
-              fontSize: 16,
-            }}
+            style={[
+              styles.message,
+              {
+                color: Colors[colorScheme ?? "light"].text,
+                lineHeight: 22,
+                fontSize: 16,
+              },
+            ]}
           >
             {message}
           </Text>
 
-          <View className="w-auto space-y-3">
+          <View style={styles.buttonsContainer}>
             {buttons.map((button, index) => (
               <TouchableOpacity
                 key={index}
@@ -121,10 +132,12 @@ export const Popup: React.FC<PopupProps> = ({
                 }}
               >
                 <Text
-                  className="text-lg font-semibold"
-                  style={{
-                    color: "#FFFFFF",
-                  }}
+                  style={[
+                    styles.buttonText,
+                    {
+                      color: "#FFFFFF",
+                    },
+                  ]}
                 >
                   {button.text}
                 </Text>
@@ -136,3 +149,24 @@ export const Popup: React.FC<PopupProps> = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    marginBottom: 12,
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  message: {
+    marginBottom: 24,
+    textAlign: "center",
+    fontSize: 16,
+  },
+  buttonsContainer: {
+    gap: 12,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

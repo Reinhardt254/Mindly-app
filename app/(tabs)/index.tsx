@@ -9,10 +9,12 @@ import {
   TouchableOpacity,
   ImageBackground,
   Share,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Carousel from "react-native-reanimated-carousel";
 import { Sidebar } from "@/components/Sidebar";
+import { Redirect } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useBackground } from "@/contexts/BackgroundContext";
@@ -220,49 +222,30 @@ export default function AffirmationScreen() {
     <ViewShot
       ref={index === currentIndex ? viewShotRef : null}
       options={{ format: "jpg", quality: 0.9 }}
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-      }}
+      style={styles.viewShot}
     >
-      <View
-        className="flex-col items-end justify-end flex-1 w-full h-full px-8"
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          // backgroundColor: "rgba(0, 0, 0, 0.3)",
-          borderRadius: 20,
-          padding: 20,
-        }}
-      >
-        <View className="items-center space-y-6">
+      <View style={styles.carouselItem}>
+        <View style={styles.carouselContent}>
           {/* Quote Text */}
           <Text
-            className="text-6xl text-center"
-            style={{
-              fontStyle: "italic",
-              fontFamily: "serif",
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: 40,
-              lineHeight: 50,
-              letterSpacing: 1,
-              color: Colors[colorScheme ?? "light"].quoteText,
-            }}
+            style={[
+              styles.quoteText,
+              {
+                color: Colors[colorScheme ?? "light"].quoteText,
+              },
+            ]}
           >
             &ldquo;{item.text}&rdquo;
           </Text>
 
           {/* Attribution */}
           <Text
-            className="pt-10 text-xl font-bold text-center"
-            style={{
-              color: Colors[colorScheme ?? "light"].tint,
-            }}
+            style={[
+              styles.attributionText,
+              {
+                color: Colors[colorScheme ?? "light"].tint,
+              },
+            ]}
           >
             - {item.category.toUpperCase()}
           </Text>
@@ -272,11 +255,7 @@ export default function AffirmationScreen() {
   );
 
   if (!userProfile) {
-    return (
-      <View className="items-center justify-center flex-1 bg-purple-900">
-        <Text className="text-lg text-white">Loading...</Text>
-      </View>
-    );
+    return <Redirect href="/welcome/quote" />;
   }
 
   return (
@@ -287,25 +266,12 @@ export default function AffirmationScreen() {
             ? { uri: customBackground }
             : require("@/assets/images/home.jpg")
         }
-        style={{ flex: 1 }}
+        style={styles.background}
         resizeMode="cover"
       >
         {/* Dark Overlay */}
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.7)", // 50% dark overlay
-            zIndex: 1,
-          }}
-        />
-        <View
-          className="relative flex items-center justify-center flex-1 h-full"
-          style={{ zIndex: 2 }}
-        >
+        <View style={styles.overlay} />
+        <View style={styles.contentContainer}>
           {/* Sidebar */}
           <Sidebar
             isOpen={isSidebarOpen}
@@ -313,18 +279,7 @@ export default function AffirmationScreen() {
           />
 
           {/* Hamburger Menu */}
-          <TouchableOpacity
-            onPress={toggleSidebar}
-            className="absolute z-30 p-2 top-12 left-4"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0)",
-              borderRadius: 8,
-              position: "absolute",
-              top: 12,
-              left: 4,
-              zIndex: 30,
-            }}
-          >
+          <TouchableOpacity onPress={toggleSidebar} style={styles.menuButton}>
             <Ionicons
               name="menu"
               size={30}
@@ -333,13 +288,7 @@ export default function AffirmationScreen() {
           </TouchableOpacity>
 
           {/* Main Content - Centered Quote */}
-          <View
-            className="items-center justify-center flex-1 w-full h-full"
-            style={{
-              flex: 0.9,
-              height: "100%",
-            }}
-          >
+          <View style={styles.carouselContainer}>
             <Carousel
               loop
               vertical={true}
@@ -358,25 +307,11 @@ export default function AffirmationScreen() {
           </View>
 
           {/* Bottom Interactive Elements */}
-          <View
-            className="flex flex-row justify-center space-y-6 items-enter gap-y-6"
-            style={{
-              borderRadius: 20,
-              flex: 0.015,
-              minHeight: 100,
-              width: "100%",
-              gap: 10,
-            }}
-          >
+          <View style={styles.bottomActions}>
             {/* Like Button */}
             <TouchableOpacity
               onPress={handleLikePress}
-              className="flex items-center justify-center w-full h-full p-0"
-              style={{
-                marginBottom: 10,
-                height: 60,
-                width: 60,
-              }}
+              style={styles.likeButton}
             >
               <Ionicons
                 name={isLiked ? "heart" : "heart-outline"}
@@ -388,14 +323,7 @@ export default function AffirmationScreen() {
             {/* Practice Button */}
             <TouchableOpacity
               onPress={handlePracticePress}
-              className="flex items-center justify-center p-0"
-              style={{
-                marginBottom: 10,
-                height: 60,
-                width: 60,
-                backgroundColor: "#20B2AA",
-                borderRadius: 30,
-              }}
+              style={styles.practiceButton}
             >
               <Ionicons name="play" size={30} color="#FFFFFF" />
             </TouchableOpacity>
@@ -403,14 +331,7 @@ export default function AffirmationScreen() {
             {/* Refresh Button */}
             {/* <TouchableOpacity
               onPress={handleRefreshPress}
-              className="flex items-center justify-center p-0"
-              style={{
-                marginBottom: 10,
-                height: 60,
-                width: 60,
-                backgroundColor: "#279089",
-                borderRadius: 30,
-              }}
+              style={styles.refreshButton}
             >
               <Ionicons name="refresh" size={30} color="#FFFFFF" />
             </TouchableOpacity> */}
@@ -419,13 +340,7 @@ export default function AffirmationScreen() {
             <TouchableOpacity
               onPress={handleSharePress}
               disabled={isSharing}
-              className="flex items-center justify-center p-0"
-              style={{
-                marginBottom: 10,
-                height: 60,
-                width: 60,
-                opacity: isSharing ? 0.5 : 1,
-              }}
+              style={[styles.shareButton, { opacity: isSharing ? 0.5 : 1 }]}
             >
               <Ionicons
                 name={isSharing ? "hourglass" : "share-social"}
@@ -435,11 +350,7 @@ export default function AffirmationScreen() {
             </TouchableOpacity>
           </View>
 
-          <View
-            style={{
-              height: 10,
-            }}
-          />
+          <View style={styles.bottomSpacer} />
         </View>
       </ImageBackground>
 
@@ -472,3 +383,129 @@ export default function AffirmationScreen() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  viewShot: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  carouselItem: {
+    flexDirection: "column",
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+    borderRadius: 20,
+    padding: 20,
+  },
+  carouselContent: {
+    alignItems: "center",
+    gap: 24,
+  },
+  quoteText: {
+    fontStyle: "italic",
+    fontFamily: "serif",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 40,
+    lineHeight: 50,
+    letterSpacing: 1,
+  },
+  attributionText: {
+    paddingTop: 40,
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  background: {
+    flex: 1,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)", // 50% dark overlay
+    zIndex: 1,
+  },
+  contentContainer: {
+    position: "relative",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    height: "100%",
+    zIndex: 2,
+  },
+  menuButton: {
+    padding: 8,
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    borderRadius: 8,
+    position: "absolute",
+    top: 12,
+    left: 4,
+    zIndex: 30,
+  },
+  carouselContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    flex: 0.9,
+    height: "100%",
+  },
+  bottomActions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    borderRadius: 20,
+    flex: 0.015,
+    minHeight: 100,
+    width: "100%",
+    gap: 10,
+  },
+  likeButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    marginBottom: 10,
+    height: 60,
+    width: 60,
+  },
+  practiceButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    marginBottom: 10,
+    height: 60,
+    width: 60,
+    backgroundColor: "#20B2AA",
+    borderRadius: 30,
+  },
+  refreshButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    marginBottom: 10,
+    height: 60,
+    width: 60,
+    backgroundColor: "#279089",
+    borderRadius: 30,
+  },
+  shareButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    marginBottom: 10,
+    height: 60,
+    width: 60,
+  },
+  bottomSpacer: {
+    height: 10,
+  },
+});

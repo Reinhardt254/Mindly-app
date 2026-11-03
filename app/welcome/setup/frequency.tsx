@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  StyleSheet,
 } from "react-native";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -191,15 +192,11 @@ export default function FrequencySetupScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView className="flex-1">
-        <View className="relative justify-start flex-1 px-8 pt-10">
-          <View className="flex-row items-center justify-between w-full pb-10">
+      <ScrollView style={styles.flex}>
+        <View style={styles.container}>
+          <View style={styles.header}>
             {/* Back Button */}
-            <TouchableOpacity
-              onPress={handleBack}
-              className=""
-              style={{ zIndex: 1 }}
-            >
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
               <Ionicons
                 name="arrow-back"
                 size={24}
@@ -208,7 +205,7 @@ export default function FrequencySetupScreen() {
             </TouchableOpacity>
 
             {/* Progress Indicator */}
-            <View className="">
+            <View>
               <Text
                 style={{
                   color: Colors[colorScheme ?? "light"].text,
@@ -220,27 +217,27 @@ export default function FrequencySetupScreen() {
             </View>
           </View>
 
-          <View className="items-center pt-10 space-y-8">
+          <View style={styles.content}>
             {/* Question */}
-            <View className="items-center mb-4 space-y-4">
+            <View style={styles.questionBlock}>
               <Text
-                className="text-3xl font-bold text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 28,
-                  fontWeight: "bold",
-                }}
+                style={[
+                  styles.title,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 Set up your reminders
               </Text>
 
               <Text
-                className="text-lg text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 16,
-                  opacity: 0.7,
-                }}
+                style={[
+                  styles.subtitle,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 Choose how often and when you&apos;d like to receive
                 affirmations
@@ -248,38 +245,38 @@ export default function FrequencySetupScreen() {
             </View>
 
             {/* Frequency Options */}
-            <View className="w-full">
+            <View style={styles.fullWidth}>
               <Text
-                className="mb-3 text-lg font-semibold"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 18,
-                  fontWeight: "600",
-                }}
+                style={[
+                  styles.sectionTitle,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 How many times per day?
               </Text>
-              <View className="flex flex-col items-center justify-center w-full gap-2">
+              <View style={styles.optionsList}>
                 {frequencyOptions.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     onPress={() => setSelectedFrequency(option.value)}
-                    className="w-full p-5 rounded-2xl"
-                    style={{
-                      backgroundColor:
-                        selectedFrequency === option.value
-                          ? Colors[colorScheme ?? "light"].tabIconSelected +
-                            "20"
-                          : Colors[colorScheme ?? "light"].background,
-                      borderWidth: 1,
-                      borderColor:
-                        selectedFrequency === option.value
-                          ? Colors[colorScheme ?? "light"].tabIconSelected
-                          : Colors[colorScheme ?? "light"].text + "20",
-                      padding: 8,
-                    }}
+                    style={[
+                      styles.option,
+                      {
+                        backgroundColor:
+                          selectedFrequency === option.value
+                            ? Colors[colorScheme ?? "light"].tabIconSelected +
+                              "20"
+                            : Colors[colorScheme ?? "light"].background,
+                        borderColor:
+                          selectedFrequency === option.value
+                            ? Colors[colorScheme ?? "light"].tabIconSelected
+                            : Colors[colorScheme ?? "light"].text + "20",
+                      },
+                    ]}
                   >
-                    <View className="flex-row items-center gap-2">
+                    <View style={styles.optionRow}>
                       <Ionicons
                         name={option.icon as any}
                         size={28}
@@ -289,30 +286,32 @@ export default function FrequencySetupScreen() {
                             : Colors[colorScheme ?? "light"].text + "60"
                         }
                       />
-                      <View className="flex-1 ml-4">
+                      <View style={styles.optionTextBlock}>
                         <Text
-                          className="text-lg font-semibold"
-                          style={{
-                            color:
-                              selectedFrequency === option.value
-                                ? Colors[colorScheme ?? "light"].tabIconSelected
-                                : Colors[colorScheme ?? "light"].text,
-                            fontSize: 18,
-                            fontWeight: "600",
-                          }}
+                          style={[
+                            styles.optionLabel,
+                            {
+                              color:
+                                selectedFrequency === option.value
+                                  ? Colors[colorScheme ?? "light"]
+                                      .tabIconSelected
+                                  : Colors[colorScheme ?? "light"].text,
+                            },
+                          ]}
                         >
                           {option.label}
                         </Text>
                         <Text
-                          className="mt-1 text-sm"
-                          style={{
-                            color:
-                              selectedFrequency === option.value
-                                ? Colors[colorScheme ?? "light"]
-                                    .tabIconSelected + "80"
-                                : Colors[colorScheme ?? "light"].text + "60",
-                            fontSize: 14,
-                          }}
+                          style={[
+                            styles.optionDescription,
+                            {
+                              color:
+                                selectedFrequency === option.value
+                                  ? Colors[colorScheme ?? "light"]
+                                      .tabIconSelected + "80"
+                                  : Colors[colorScheme ?? "light"].text + "60",
+                            },
+                          ]}
                         >
                           {option.description}
                         </Text>
@@ -332,39 +331,41 @@ export default function FrequencySetupScreen() {
             </View>
 
             {/* Time Range Selection */}
-            <View className="w-full mt-6">
+            <View style={styles.timeSection}>
               <Text
-                className="mb-3 text-lg font-semibold"
-                style={{
-                  color: Colors[colorScheme ?? "light"].text,
-                  fontSize: 18,
-                  fontWeight: "600",
-                }}
+                style={[
+                  styles.sectionTitle,
+                  {
+                    color: Colors[colorScheme ?? "light"].text,
+                  },
+                ]}
               >
                 Active hours
               </Text>
 
-              <View className="flex-row w-full gap-4">
+              <View style={styles.timeRow}>
                 {/* Start Time */}
-                <View className="flex-1">
+                <View style={styles.flex}>
                   <Text
-                    className="mb-2 text-sm"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      opacity: 0.7,
-                    }}
+                    style={[
+                      styles.timeLabel,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     From
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowStartPicker(true)}
-                    className="flex-row items-center justify-between p-4 rounded-xl"
-                    style={{
-                      backgroundColor:
-                        Colors[colorScheme ?? "light"].background,
-                      borderWidth: 1,
-                      borderColor: Colors[colorScheme ?? "light"].text + "20",
-                    }}
+                    style={[
+                      styles.timeButton,
+                      {
+                        backgroundColor:
+                          Colors[colorScheme ?? "light"].background,
+                        borderColor: Colors[colorScheme ?? "light"].text + "20",
+                      },
+                    ]}
                   >
                     <Text
                       style={{
@@ -383,25 +384,27 @@ export default function FrequencySetupScreen() {
                 </View>
 
                 {/* End Time */}
-                <View className="flex-1">
+                <View style={styles.flex}>
                   <Text
-                    className="mb-2 text-sm"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      opacity: 0.7,
-                    }}
+                    style={[
+                      styles.timeLabel,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     To
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowEndPicker(true)}
-                    className="flex-row items-center justify-between p-4 rounded-xl"
-                    style={{
-                      backgroundColor:
-                        Colors[colorScheme ?? "light"].background,
-                      borderWidth: 1,
-                      borderColor: Colors[colorScheme ?? "light"].text + "20",
-                    }}
+                    style={[
+                      styles.timeButton,
+                      {
+                        backgroundColor:
+                          Colors[colorScheme ?? "light"].background,
+                        borderColor: Colors[colorScheme ?? "light"].text + "20",
+                      },
+                    ]}
                   >
                     <Text
                       style={{
@@ -446,29 +449,33 @@ export default function FrequencySetupScreen() {
               {/* Info Text */}
               {selectedFrequency && startHour < endHour && (
                 <View
-                  className="p-3 mt-4 rounded-lg"
-                  style={{
-                    backgroundColor:
-                      Colors[colorScheme ?? "light"].tabIconSelected + "10",
-                  }}
+                  style={[
+                    styles.infoBox,
+                    {
+                      backgroundColor:
+                        Colors[colorScheme ?? "light"].tabIconSelected + "10",
+                    },
+                  ]}
                 >
                   <Text
-                    className="text-sm text-center"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      opacity: 0.8,
-                    }}
+                    style={[
+                      styles.infoText,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     You&apos;ll receive {selectedFrequency} reminder
                     {selectedFrequency > 1 ? "s" : ""} between{" "}
                     {formatHour(startHour)} and {formatHour(endHour)}
                   </Text>
                   <Text
-                    className="mt-1 text-xs text-center"
-                    style={{
-                      color: Colors[colorScheme ?? "light"].text,
-                      opacity: 0.6,
-                    }}
+                    style={[
+                      styles.infoSubtext,
+                      {
+                        color: Colors[colorScheme ?? "light"].text,
+                      },
+                    ]}
                   >
                     (Every{" "}
                     {Math.floor((endHour - startHour) / selectedFrequency)}{" "}
@@ -481,23 +488,24 @@ export default function FrequencySetupScreen() {
             {/* Complete Button */}
             <TouchableOpacity
               onPress={handleComplete}
-              className="w-full py-4 mt-8 mb-10 rounded-2xl"
-              style={{
-                backgroundColor:
-                  selectedFrequency !== null && startHour < endHour
-                    ? Colors[colorScheme ?? "light"].tabIconSelected
-                    : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-                paddingVertical: 16,
-              }}
+              style={[
+                styles.completeButton,
+                {
+                  backgroundColor:
+                    selectedFrequency !== null && startHour < endHour
+                      ? Colors[colorScheme ?? "light"].tabIconSelected
+                      : Colors[colorScheme ?? "light"].tabIconSelected + "40",
+                },
+              ]}
               disabled={selectedFrequency === null || startHour >= endHour}
             >
               <Text
-                className="text-lg font-semibold text-center"
-                style={{
-                  color: Colors[colorScheme ?? "light"].background,
-                  fontSize: 18,
-                  fontWeight: "600",
-                }}
+                style={[
+                  styles.completeButtonText,
+                  {
+                    color: Colors[colorScheme ?? "light"].background,
+                  },
+                ]}
               >
                 Complete Setup
               </Text>
@@ -517,3 +525,133 @@ export default function FrequencySetupScreen() {
     </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  container: {
+    position: "relative",
+    justifyContent: "flex-start",
+    flex: 1,
+    paddingHorizontal: 32,
+    paddingTop: 0,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingBottom: 40,
+  },
+  backButton: {
+    zIndex: 1,
+  },
+  content: {
+    alignItems: "center",
+    paddingTop: 40,
+    gap: 32,
+  },
+  questionBlock: {
+    alignItems: "center",
+    gap: 16,
+  },
+  title: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  sectionTitle: {
+    marginBottom: 12,
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  optionsList: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    gap: 8,
+  },
+  option: {
+    width: "100%",
+    padding: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  optionTextBlock: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  optionLabel: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  optionDescription: {
+    marginTop: 4,
+    fontSize: 14,
+  },
+  timeSection: {
+    width: "100%",
+    marginTop: 24,
+  },
+  timeRow: {
+    flexDirection: "row",
+    width: "100%",
+    gap: 16,
+  },
+  timeLabel: {
+    marginBottom: 8,
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  timeButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  infoBox: {
+    padding: 12,
+    marginTop: 16,
+    borderRadius: 8,
+  },
+  infoText: {
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  infoSubtext: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: "center",
+    opacity: 0.6,
+  },
+  completeButton: {
+    width: "100%",
+    paddingVertical: 16,
+    marginTop: 32,
+    marginBottom: 40,
+    borderRadius: 16,
+  },
+  completeButtonText: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

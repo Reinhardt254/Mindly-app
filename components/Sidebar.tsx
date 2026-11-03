@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
@@ -33,25 +33,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <>
       {/* Overlay */}
-      <TouchableOpacity
-        className="absolute inset-0 z-40 bg-[#00000050] bg-opacity-50"
-        onPress={onClose}
-      />
+      <TouchableOpacity style={styles.overlay} onPress={onClose} />
 
       {/* Sidebar */}
       <View
-        className="absolute top-0 left-0 z-50 flex-col w-64 h-full"
-        style={{
-          backgroundColor: Colors[colorScheme ?? "light"].sidebarBackground,
-          paddingTop: 60,
-          paddingHorizontal: 20,
-        }}
+        style={[
+          styles.sidebar,
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].sidebarBackground,
+            paddingTop: 60,
+            paddingHorizontal: 20,
+          },
+        ]}
       >
         {/* Close Button */}
-        <TouchableOpacity
-          onPress={onClose}
-          className="absolute p-2 top-4 right-4"
-        >
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Ionicons
             name="close"
             size={24}
@@ -60,16 +56,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </TouchableOpacity>
 
         {/* Navigation Items */}
-        <View className="space-y-4">
+        <View style={styles.navList}>
           {navigationItems.map((item, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => handleNavigation(item.route)}
-              className="flex-row items-center p-4 rounded-lg"
-              style={{
-                backgroundColor:
-                  Colors[colorScheme ?? "light"].sidebarBackground,
-              }}
+              style={[
+                styles.navItem,
+                {
+                  backgroundColor:
+                    Colors[colorScheme ?? "light"].sidebarBackground,
+                },
+              ]}
             >
               <Ionicons
                 name={item.icon as any}
@@ -78,8 +76,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 style={{ marginRight: 16 }}
               />
               <Text
-                className="text-lg font-medium text-white"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
+                style={[
+                  styles.navText,
+                  { color: Colors[colorScheme ?? "light"].text },
+                ]}
               >
                 {item.name}
               </Text>
@@ -90,3 +90,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 40,
+    backgroundColor: "rgba(0,0,0,0.31)",
+  },
+  sidebar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 50,
+    flexDirection: "column",
+    width: 256,
+    height: "100%",
+  },
+  closeButton: {
+    position: "absolute",
+    padding: 8,
+    top: 16,
+    right: 16,
+  },
+  navList: {
+    gap: 16,
+  },
+  navItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 8,
+  },
+  navText: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#fff",
+  },
+});

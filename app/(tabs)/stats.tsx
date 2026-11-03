@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Colors } from "@/constants/Colors";
@@ -21,85 +21,81 @@ export default function StatsScreen() {
   const todayStats = getTodayStats();
   const streakInfo = getStreakInfo();
 
+  const theme = Colors[colorScheme ?? "light"];
+  const cardShadow =
+    colorScheme === "dark"
+      ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
+      : "0 0 10px 0 rgba(0, 0, 0, 0.1)";
+
+  const getAchievementBadgeStyle = (achievement: {
+    id: string;
+    unlocked: boolean;
+  }) => {
+    if (!achievement.unlocked) return styles.badgeLocked;
+    switch (achievement.id) {
+      case "first_steps":
+        return styles.badgeFirstSteps;
+      case "on_fire":
+        return styles.badgeOnFire;
+      case "affirmation_master":
+        return styles.badgeMaster;
+      case "heart_lover":
+        return styles.badgeHeartLover;
+      case "social_butterfly":
+        return styles.badgeSocial;
+      default:
+        return styles.badgeDefault;
+    }
+  };
+
   if (!userProfile) {
     return (
-      <View className="items-center justify-center flex-1 bg-gray-900">
-        <Text className="text-lg">Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View
-      className="flex-1"
-      style={{
-        backgroundColor: Colors[colorScheme ?? "light"].background,
-      }}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Simple Header */}
       <SimpleHeader title="Your Progress" />
 
-      <ScrollView className="flex-1 px-4 py-0">
+      <ScrollView style={styles.scrollView}>
         {/* Today's Progress */}
         <View
-          className="mb-6 rounded-lg"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 30,
-            paddingHorizontal: 20,
-            height: "auto",
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
+          style={[
+            styles.todayCard,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+              boxShadow: cardShadow,
+            },
+          ]}
         >
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
             Today&apos;s Progress
           </Text>
 
           <View
-            className="flex-row items-center justify-between"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              paddingTop: 10,
-            }}
+            style={[styles.todayRow, { backgroundColor: theme.background }]}
           >
-            <View className="items-center">
-              <Text className="text-3xl font-bold text-blue-500">
+            <View style={styles.todayStat}>
+              <Text style={[styles.todayNumber, styles.todayNumberBlue]}>
                 {todayStats?.affirmationsViewed || 0}
               </Text>
-              <Text
-                className=""
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
-                Viewed
-              </Text>
+              <Text style={{ color: theme.text }}>Viewed</Text>
             </View>
 
-            <View className="items-center">
-              <Text className="text-3xl font-bold text-green-500">
+            <View style={styles.todayStat}>
+              <Text style={[styles.todayNumber, styles.todayNumberGreen]}>
                 {userProfile.affirmationFrequency}
               </Text>
-              <Text
-                className=""
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
-                Goal
-              </Text>
+              <Text style={{ color: theme.text }}>Goal</Text>
             </View>
 
-            <View className="items-center">
-              <Text className="text-3xl font-bold text-yellow-500">
+            <View style={styles.todayStat}>
+              <Text style={[styles.todayNumber, styles.todayNumberYellow]}>
                 {todayStats
                   ? Math.round(
                       (todayStats.affirmationsViewed /
@@ -109,158 +105,82 @@ export default function StatsScreen() {
                   : 0}
                 %
               </Text>
-              <Text
-                className=""
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
-                Complete
-              </Text>
+              <Text style={{ color: theme.text }}>Complete</Text>
             </View>
           </View>
         </View>
 
         {/* Weekly Stats */}
         <View
-          className="p-6 mb-6 rounded-lg"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 30,
-            paddingHorizontal: 20,
-            paddingBottom: 10,
-            height: "auto",
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
+          style={[
+            styles.sectionCard,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+              boxShadow: cardShadow,
+            },
+          ]}
         >
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
             This Week
           </Text>
 
           <View
-            className="space-y-4"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 0,
-              margin: 0,
-              marginTop: 0,
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              width: "100%",
-              gap: 10,
-            }}
+            style={[
+              styles.listContainer,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+              },
+            ]}
           >
-            <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row items-center">
+            <View style={styles.statRow}>
+              <View style={styles.statLabelRow}>
                 <Ionicons
                   name="calendar"
                   size={20}
-                  color={Colors[colorScheme ?? "light"].background}
-                  style={{
-                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
-                    borderRadius: 100,
-                    padding: 7,
-                  }}
+                  color={theme.background}
+                  style={[styles.statIcon, { backgroundColor: theme.highlight }]}
                 />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    marginLeft: 10,
-                    color: Colors[colorScheme ?? "light"].text,
-                  }}
-                >
+                <Text style={[styles.statLabel, { color: theme.text }]}>
                   Days Active
                 </Text>
               </View>
-              <Text
-                style={{
-                  marginLeft: "auto",
-                  color: Colors[colorScheme ?? "light"].text,
-                }}
-                className="ml-auto text-lg font-semibold"
-              >
+              <Text style={[styles.statValue, { color: theme.text }]}>
                 {daysActive}
               </Text>
             </View>
 
-            <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row items-center">
+            <View style={styles.statRow}>
+              <View style={styles.statLabelRow}>
                 <Ionicons
                   name="heart"
                   size={20}
-                  color={Colors[colorScheme ?? "light"].background}
-                  style={{
-                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
-                    borderRadius: 100,
-                    padding: 7,
-                  }}
+                  color={theme.background}
+                  style={[styles.statIcon, { backgroundColor: theme.highlight }]}
                 />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    marginLeft: 10,
-                    color: Colors[colorScheme ?? "light"].text,
-                  }}
-                >
+                <Text style={[styles.statLabel, { color: theme.text }]}>
                   Total Affirmations
                 </Text>
               </View>
-              <Text
-                style={{
-                  marginLeft: "auto",
-                  color: Colors[colorScheme ?? "light"].text,
-                }}
-                className="text-lg font-semibold"
-              >
+              <Text style={[styles.statValue, { color: theme.text }]}>
                 {totalAffirmationsViewed}
               </Text>
             </View>
 
-            <View className="flex-row items-center justify-between w-full">
-              <View className="flex-row items-center">
+            <View style={styles.statRow}>
+              <View style={styles.statLabelRow}>
                 <Ionicons
                   name="trophy"
                   size={24}
-                  color={Colors[colorScheme ?? "light"].background}
-                  style={{
-                    backgroundColor: Colors[colorScheme ?? "light"].highlight,
-                    borderRadius: 100,
-                    padding: 7,
-                  }}
+                  color={theme.background}
+                  style={[styles.statIcon, { backgroundColor: theme.highlight }]}
                 />
-                <Text
-                  className="ml-4 text-lg"
-                  style={{
-                    marginLeft: 10,
-                    color: Colors[colorScheme ?? "light"].text,
-                  }}
-                >
+                <Text style={[styles.statLabel, { color: theme.text }]}>
                   Streak
                 </Text>
               </View>
-              <Text
-                className="text-lg font-semibold"
-                style={{
-                  marginLeft: "auto",
-                  color: Colors[colorScheme ?? "light"].text,
-                }}
-              >
+              <Text style={[styles.statValue, { color: theme.text }]}>
                 {streakInfo.current} days
               </Text>
             </View>
@@ -269,72 +189,41 @@ export default function StatsScreen() {
 
         {/* Achievements */}
         <View
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            height: "auto",
-            margin: 0,
-            marginTop: 0,
-            paddingVertical: 30,
-            paddingHorizontal: 20,
-            paddingBottom: 10,
-            marginBottom: 20,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
+          style={[
+            styles.achievementsCard,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+              boxShadow: cardShadow,
+            },
+          ]}
         >
-          <Text
-            className="mb-4 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
             Achievements
           </Text>
 
           <View
-            className="space-y-4"
-            style={{
-              backgroundColor: Colors[colorScheme ?? "light"].background,
-              borderWidth: 0,
-              borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-              borderRadius: 10,
-              borderStyle: "solid",
-              paddingVertical: 20,
-              paddingHorizontal: 0,
-              margin: 0,
-              marginTop: 0,
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              width: "100%",
-              gap: 10,
-            }}
+            style={[
+              styles.listContainer,
+              {
+                backgroundColor: theme.background,
+                borderColor: theme.tabIconSelected,
+              },
+            ]}
           >
             {achievements.map((achievement) => (
               <View
                 key={achievement.id}
-                className={`flex-row items-center ${achievement.unlocked ? "" : "opacity-50"}`}
+                style={[
+                  styles.achievementRow,
+                  !achievement.unlocked && styles.achievementLocked,
+                ]}
               >
                 <View
-                  className={`items-center justify-center w-12 h-12 rounded-full ${
-                    achievement.unlocked
-                      ? achievement.id === "first_steps"
-                        ? "bg-green-500"
-                        : achievement.id === "on_fire"
-                          ? "bg-blue-600"
-                          : achievement.id === "affirmation_master"
-                            ? "bg-purple-600"
-                            : achievement.id === "heart_lover"
-                              ? "bg-red-500"
-                              : achievement.id === "social_butterfly"
-                                ? "bg-pink-500"
-                                : "bg-yellow-500"
-                      : "bg-gray-500"
-                  }`}
+                  style={[
+                    styles.achievementBadge,
+                    getAchievementBadgeStyle(achievement),
+                  ]}
                 >
                   <Ionicons
                     name={achievement.icon as any}
@@ -344,26 +233,23 @@ export default function StatsScreen() {
                         ? "#FFFFFF" // White icon for unlocked achievements
                         : "#FFFFFF" // White icon for locked achievements too
                     }
-                    style={{
-                      backgroundColor: achievement.unlocked
-                        ? Colors[colorScheme ?? "light"].highlight // No background for unlocked (the parent View provides the colored background)
-                        : Colors[colorScheme ?? "light"].text, // No background for locked either
-                      borderRadius: 100,
-                      padding: 7,
-                    }}
+                    style={[
+                      styles.achievementIcon,
+                      {
+                        backgroundColor: achievement.unlocked
+                          ? theme.highlight // No background for unlocked (the parent View provides the colored background)
+                          : theme.text, // No background for locked either
+                      },
+                    ]}
                   />
                 </View>
-                <View style={{ marginLeft: 10 }} className="flex-1 ml-4">
+                <View style={styles.achievementTextContainer}>
                   <Text
-                    className="text-lg font-semibold"
-                    style={{ color: Colors[colorScheme ?? "light"].text }}
+                    style={[styles.achievementTitle, { color: theme.text }]}
                   >
                     {achievement.title}
                   </Text>
-                  <Text
-                    className=""
-                    style={{ color: Colors[colorScheme ?? "light"].text }}
-                  >
+                  <Text style={{ color: theme.text }}>
                     {achievement.description}
                   </Text>
                 </View>
@@ -374,65 +260,37 @@ export default function StatsScreen() {
 
         {/* Insights */}
         <View
-          className="p-6 mb-6 rounded-lg"
-          style={{
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            borderWidth: 0,
-            borderColor: Colors[colorScheme ?? "light"].tabIconSelected,
-            borderRadius: 10,
-            borderStyle: "solid",
-            paddingVertical: 30,
-            paddingHorizontal: 20,
-            paddingBottom: 10,
-            height: "auto",
-            margin: 0,
-            marginTop: 0,
-            boxShadow:
-              colorScheme === "dark"
-                ? "0 0 2px 0 rgba(255, 255, 255, 0.055)"
-                : "0 0 10px 0 rgba(0, 0, 0, 0.1)",
-          }}
+          style={[
+            styles.sectionCard,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.tabIconSelected,
+              boxShadow: cardShadow,
+            },
+          ]}
         >
-          <Text
-            className="pl-5 mb-4 ml-5 text-xl font-semibold"
-            style={{ color: Colors[colorScheme ?? "light"].text }}
-          >
+          <Text style={[styles.insightsTitle, { color: theme.text }]}>
             Insights
           </Text>
 
-          <View className="space-y-4">
+          <View style={styles.insightsList}>
             <View
-              className="py-4 rounded-lg"
-              style={{
-                backgroundColor: Colors[colorScheme ?? "light"].background,
-              }}
+              style={[styles.insightItem, { backgroundColor: theme.background }]}
             >
-              <Text
-                className="mb-2 text-xl font-semibold text-blue-400"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Text style={[styles.insightTitle, { color: theme.text }]}>
                 💡 Tip of the Day
               </Text>
-              <Text
-                className=""
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Text style={{ color: theme.text }}>
                 Consistency is key! Try to read your affirmations at the same
                 time each day to build a lasting habit.
               </Text>
             </View>
 
-            <View className="py-4 rounded-lg bg-green-500/20">
-              <Text
-                className="mb-2 text-xl font-semibold text-green-400"
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+            <View style={[styles.insightItem, styles.goalInsight]}>
+              <Text style={[styles.insightTitle, { color: theme.text }]}>
                 🎯 Your Goal
               </Text>
-              <Text
-                className=""
-                style={{ color: Colors[colorScheme ?? "light"].text }}
-              >
+              <Text style={{ color: theme.text }}>
                 You&apos;re{" "}
                 {Math.max(
                   0,
@@ -448,3 +306,191 @@ export default function StatsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 0,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    backgroundColor: "#111827",
+  },
+  loadingText: {
+    fontSize: 18,
+  },
+  cardTitle: {
+    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  todayCard: {
+    marginBottom: 24,
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    height: "auto",
+    margin: 0,
+    marginTop: 0,
+  },
+  todayRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 10,
+  },
+  todayStat: {
+    alignItems: "center",
+  },
+  todayNumber: {
+    fontSize: 30,
+    fontWeight: "700",
+  },
+  todayNumberBlue: {
+    color: "#3b82f6",
+  },
+  todayNumberGreen: {
+    color: "#22c55e",
+  },
+  todayNumberYellow: {
+    color: "#eab308",
+  },
+  sectionCard: {
+    marginBottom: 24,
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    height: "auto",
+    margin: 0,
+    marginTop: 0,
+  },
+  listContainer: {
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    paddingVertical: 20,
+    paddingHorizontal: 0,
+    margin: 0,
+    marginTop: 0,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    width: "100%",
+    gap: 10,
+  },
+  statRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  statLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  statIcon: {
+    borderRadius: 100,
+    padding: 7,
+  },
+  statLabel: {
+    marginLeft: 10,
+    fontSize: 18,
+  },
+  statValue: {
+    marginLeft: "auto",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  achievementsCard: {
+    borderWidth: 0,
+    borderRadius: 10,
+    borderStyle: "solid",
+    height: "auto",
+    margin: 0,
+    marginTop: 0,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    marginBottom: 20,
+  },
+  achievementRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  achievementLocked: {
+    opacity: 0.5,
+  },
+  achievementBadge: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 48,
+    height: 48,
+    borderRadius: 9999,
+  },
+  badgeFirstSteps: {
+    backgroundColor: "#22c55e",
+  },
+  badgeOnFire: {
+    backgroundColor: "#2563eb",
+  },
+  badgeMaster: {
+    backgroundColor: "#9333ea",
+  },
+  badgeHeartLover: {
+    backgroundColor: "#ef4444",
+  },
+  badgeSocial: {
+    backgroundColor: "#ec4899",
+  },
+  badgeDefault: {
+    backgroundColor: "#eab308",
+  },
+  badgeLocked: {
+    backgroundColor: "#6b7280",
+  },
+  achievementIcon: {
+    borderRadius: 100,
+    padding: 7,
+  },
+  achievementTextContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  achievementTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  insightsTitle: {
+    paddingLeft: 20,
+    marginBottom: 16,
+    marginLeft: 20,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  insightsList: {
+    gap: 16,
+  },
+  insightItem: {
+    paddingVertical: 16,
+    borderRadius: 8,
+  },
+  insightTitle: {
+    marginBottom: 8,
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  goalInsight: {
+    backgroundColor: "rgba(34,197,94,0.2)",
+  },
+});
