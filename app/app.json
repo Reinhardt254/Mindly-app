@@ -1,0 +1,79 @@
+{
+  "expo": {
+    "name": "Moodly",
+    "slug": "mood-affirmation-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "moodly",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE"
+      ],
+      "edgeToEdgeEnabled": true,
+      "package": "com.reinhardt_kl.moodaffirmationapp"
+    },
+    "notification": {
+      "icon": "./assets/images/icon.png",
+      "color": "#3B82F6",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Moodly"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#3B82F6",
+          "defaultChannel": "affirmations"
+        }
+      ],
+      "expo-secure-store",
+      "expo-audio",
+      [
+        "@bittingz/expo-widgets",
+        {
+          "android": {
+            "src": "./widgets/android",
+            "widgets": [
+              {
+                "name": "DailyAffirmationWidget",
+                "resourceName": "@xml/daily_affirmation_widget_info"
+              }
+            ],
+            "distPlaceholder": "com.reinhardt_kl.moodaffirmationapp"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

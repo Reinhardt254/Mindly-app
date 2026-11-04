@@ -1,0 +1,223 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Better Auth ----------
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  isPremium     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  stats              UserStats?
+  favorites          Favorite[]
+  customAffirmations CustomAffirmation[]
+  moodEntries        MoodEntry[]
+  activityDays       ActivityDay[]
+  voiceRecordings    VoiceRecording[]
+  aiGenerations      AiGeneration[]
+  entitlements       Entitlement[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ---------- Content ----------
+
+model Category {
+  id           String        @id
+  name         String
+  icon         String
+  color        String
+  description  String
+  isPremium    Boolean       @default(false)
+  sortOrder    Int           @default(0)
+  affirmations Affirmation[]
+
+  @@map("category")
+}
+
+model Affirmation {
+  id         String     @id @default(cuid())
+  text       String
+  categoryId String
+  category   Category   @relation(fields: [categoryId], references: [id])
+  moods      String[]
+  tags       String[]
+  lang       String     @default("en")
+  isPremium  Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  favorites  Favorite[]
+
+  @@index([categoryId])
+  @@index([lang])
+  @@map("affirmation")
+}
+
+// ---------- User data ----------
+
+model UserStats {
+  userId         String  @id
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak  Int     @default(0)
+  longestStreak  Int     @default(0)
+  lastActiveDate String?
+
+  @@map("user_stats")
+}
+
+model Favorite {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  affirmationId String
+  affirmation   Affirmation @relation(fields: [affirmationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, affirmationId])
+  @@map("favorite")
+}
+
+model CustomAffirmation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId  String?
+  text      String
+  source    String   @default("user")
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, clientId])
+  @@index([userId])
+  @@map("custom_affirmation")
+}
+
+model MoodEntry {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood          String
+  note          String?
+  affirmationId String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("mood_entry")
+}
+
+model ActivityDay {
+  id               String @id @default(cuid())
+  userId           String
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             String
+  viewed           Int    @default(0)
+  liked            Int    @default(0)
+  shared           Int    @default(0)
+  practiceSessions Int    @default(0)
+
+  @@unique([userId, date])
+  @@map("activity_day")
+}
+
+model VoiceRecording {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  objectKey       String   @unique
+  mimeType        String
+  durationMs      Int
+  affirmationId   String?
+  affirmationText String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@map("voice_recording")
+}
+
+model AiGeneration {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt    String
+  result    Json
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("ai_generation")
+}
+
+model Entitlement {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entitlementId String
+  source        String    @default("revenuecat")
+  productId     String?
+  expiresAt     DateTime?
+  isActive      Boolean   @default(false)
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([userId, entitlementId])
+  @@map("entitlement")
+}
