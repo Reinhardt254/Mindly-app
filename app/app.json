@@ -72,7 +72,8 @@
             "distPlaceholder": "com.reinhardt_kl.moodaffirmationapp"
           }
         }
-      ]
+      ],
+      "./plugins/withSingleWidgetsModule.js"
     ],
     "experiments": {
       "typedRoutes": true
