@@ -1,6 +1,6 @@
 # Moodly API
 
-NestJS + Prisma (Postgres) + Better Auth + MinIO + DeepSeek + RevenueCat.
+NestJS + Prisma (Postgres) + Better Auth + SeaweedFS + DeepSeek + RevenueCat.
 
 ## Local development
 
@@ -12,6 +12,12 @@ npx prisma migrate deploy
 npm run seed
 npm run start:dev
 node scripts/smoke.mjs      # end-to-end check against http://localhost:3000
+```
+
+Voice uploads need a SeaweedFS S3 gateway on port 8333 (the defaults in `.env.example`):
+
+```bash
+docker run -d --name seaweedfs -p 8333:8333 -e AWS_ACCESS_KEY_ID=admin -e AWS_SECRET_ACCESS_KEY=secret -e S3_BUCKET=moodly chrislusf/seaweedfs
 ```
 
 Affirmation content lives in `prisma/content.ts`. After editing it, run `npm run seed` (server) and
@@ -29,13 +35,14 @@ All three resources go in the same Coolify project so they share the internal Do
 2. Copy the **Postgres URL (internal)**; this becomes `DATABASE_URL` (append `?schema=public`).
 3. Enable scheduled backups (S3 destination) under **Backups**.
 
-### 2. MinIO (file storage)
+### 2. SeaweedFS (file storage)
 
-1. **+ New > Service > MinIO**.
-2. Give the S3 API port a public domain, e.g. `https://s3.yourdomain.com` (the console can get another, e.g. `https://minio.yourdomain.com`).
+1. **+ New > Service > SeaweedFS**.
+2. Assign a public domain to the **S3** port (`8333`), e.g. `https://s3.yourdomain.com`. Leave the admin UI (`23646`) on its own domain or private.
    The S3 domain must be public because the app uploads and plays voice recordings via presigned URLs.
-3. In the MinIO console create an access key for the API (or use the root credentials) and a **private** bucket `moodly`.
-   The API also creates the bucket on startup if it is missing.
+3. Copy the generated S3 user and password (`SERVICE_USER_S3` / `SERVICE_PASSWORD_S3`) into `S3_ACCESS_KEY` and `S3_SECRET_KEY`.
+   The API creates the private bucket `moodly` on startup.
+4. Coolify's default S3 config allows anonymous reads. Open the service compose file and delete the `anonymous` identity from `base-config.json`, leaving only `admin`, then redeploy. Voice files stay readable only through URLs the API signs.
 
 ### 3. API
 
@@ -52,8 +59,8 @@ All three resources go in the same Coolify project so they share the internal Do
 | `APP_SCHEME` | `moodly` (must match `scheme` in `app.json`) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google Cloud OAuth **Web** client |
 | `DEEPSEEK_API_KEY` | from platform.deepseek.com |
-| `S3_ENDPOINT` | `https://s3.yourdomain.com` |
-| `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_BUCKET` | from step 2 |
+| `S3_ENDPOINT` | public SeaweedFS S3 URL from step 2, e.g. `https://s3.yourdomain.com` |
+| `S3_ACCESS_KEY` / `S3_SECRET_KEY` / `S3_BUCKET` | S3 user, S3 password, and `moodly` |
 | `REVENUECAT_WEBHOOK_SECRET` | any long random string |
 | `REVENUECAT_SECRET_API_KEY` | RevenueCat secret key (`sk_...`) |
 
@@ -91,6 +98,6 @@ All routes need a Better Auth session cookie unless noted.
 | `POST /activity/checkin`, `GET /activity/streak` | streak = consecutive local days with activity |
 | `POST /sync/import` | one-time upload of pre-account local data (idempotent) |
 | `POST /ai/affirmations`, `GET /ai/usage` | premium, DeepSeek, `AI_DAILY_LIMIT` per 24h |
-| `POST /voice/upload-url`, `POST/GET /voice`, `DELETE /voice/:id` | premium, MinIO presigned URLs |
+| `POST /voice/upload-url`, `POST/GET /voice`, `DELETE /voice/:id` | premium, SeaweedFS presigned URLs |
 | `POST /billing/refresh` | re-check entitlement with RevenueCat after a purchase |
 | `POST /webhooks/revenuecat` | public, Authorization header checked |

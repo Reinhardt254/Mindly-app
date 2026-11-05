@@ -20,6 +20,9 @@ export class StorageService implements OnModuleInit {
     region: env.S3_REGION,
     forcePathStyle: true,
     credentials: { accessKeyId: env.S3_ACCESS_KEY, secretAccessKey: env.S3_SECRET_KEY },
+    // SeaweedFS rejects the default CRC32 checksum headers on presigned uploads.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
 
   async onModuleInit() {
