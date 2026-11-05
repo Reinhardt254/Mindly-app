@@ -15,7 +15,7 @@ import type { PurchasesPackage } from "react-native-purchases";
 import { PrimaryButton } from "@/components/ui/Kit";
 import { Fonts, Radius, usePalette } from "@/constants/Theme";
 import { buy, getPackages, purchasesAvailable, restore } from "@/lib/purchases";
-import { usePremiumStore } from "@/stores/premiumStore";
+import { useIsPremium, usePremiumStore } from "@/stores/premiumStore";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -49,7 +49,8 @@ export default function PaywallScreen() {
   const palette = usePalette();
   const router = useRouter();
   const qc = useQueryClient();
-  const { isPremium, setStorePremium } = usePremiumStore();
+  const isPremium = useIsPremium();
+  const setStorePremium = usePremiumStore((s) => s.setStorePremium);
   const [selected, setSelected] = useState<PurchasesPackage | null>(null);
   const [busy, setBusy] = useState<"buy" | "restore" | null>(null);
   const [message, setMessage] = useState<string | null>(null);

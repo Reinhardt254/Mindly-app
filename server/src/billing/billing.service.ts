@@ -69,7 +69,7 @@ export class BillingService {
     const expiresAt = ent?.expires_date ? new Date(ent.expires_date) : null;
     const isActive = !!ent && (!expiresAt || expiresAt > new Date());
     await this.save(userId, isActive, expiresAt, ent?.product_identifier);
-    return isActive;
+    return this.premium.isPremium(userId);
   }
 
   private async applyEvent(userId: string, event: RevenueCatEvent) {

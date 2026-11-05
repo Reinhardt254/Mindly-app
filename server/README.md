@@ -57,6 +57,7 @@ All three resources go in the same Coolify project so they share the internal Do
 | `BETTER_AUTH_SECRET` | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | `https://api.yourdomain.com` |
 | `APP_SCHEME` | `moodly` (must match `scheme` in `app.json`) |
+| `ADMIN_EMAILS` | comma-separated emails that start as admins |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google Cloud OAuth **Web** client |
 | `DEEPSEEK_API_KEY` | from platform.deepseek.com |
 | `S3_ENDPOINT` | public SeaweedFS S3 URL from step 2, e.g. `https://s3.yourdomain.com` |

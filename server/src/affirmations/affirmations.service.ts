@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { createHash } from "crypto";
-import { Prisma } from "@prisma/client";
-import { PrismaService } from "../prisma/prisma.service";
+import { Prisma } from "../generated/prisma/client";
 import { PremiumService } from "../premium/premium.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { StorageService } from "../storage/storage.service";
+
+const IMAGE_URL_TTL = 60 * 60 * 24;
 
 const SELECT = {
   id: true,
@@ -12,6 +15,7 @@ const SELECT = {
   tags: true,
   isPremium: true,
   lang: true,
+  imageKey: true,
 } satisfies Prisma.AffirmationSelect;
 
 export type AffirmationDto = Prisma.AffirmationGetPayload<{ select: typeof SELECT }>;
@@ -27,7 +31,13 @@ export class AffirmationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly premium: PremiumService,
+    private readonly storage: StorageService,
   ) {}
+
+  private async withImageUrl<T extends { imageKey: string | null }>(row: T) {
+    const { imageKey, ...rest } = row;
+    return { ...rest, imageUrl: imageKey ? await this.storage.downloadUrl(imageKey, IMAGE_URL_TTL) : null };
+  }
 
   private async accessWhere(userId: string | undefined, filter: ListFilter): Promise<Prisma.AffirmationWhereInput> {
     const isPremium = userId ? await this.premium.isPremium(userId) : false;
@@ -47,29 +57,32 @@ export class AffirmationsService {
       }),
       userId ? this.premium.isPremium(userId) : Promise.resolve(false),
     ]);
-    return categories.map(({ _count, ...c }) => ({
-      ...c,
-      count: _count.affirmations,
-      locked: c.isPremium && !isPremium,
-    }));
+    return Promise.all(
+      categories.map(async ({ _count, ...category }) => ({
+        ...(await this.withImageUrl(category)),
+        count: _count.affirmations,
+        locked: category.isPremium && !isPremium,
+      })),
+    );
   }
 
-  async list(userId: string | undefined, filter: ListFilter): Promise<AffirmationDto[]> {
-    return this.prisma.affirmation.findMany({
+  async list(userId: string | undefined, filter: ListFilter) {
+    const items = await this.prisma.affirmation.findMany({
       where: await this.accessWhere(userId, filter),
       select: SELECT,
       orderBy: { id: "asc" },
     });
+    return Promise.all(items.map((item) => this.withImageUrl(item)));
   }
 
-  async random(userId: string | undefined, filter: ListFilter): Promise<AffirmationDto | null> {
+  async random(userId: string | undefined, filter: ListFilter) {
     const items = await this.list(userId, filter);
     if (items.length === 0) return null;
     return items[Math.floor(Math.random() * items.length)];
   }
 
   /** Same affirmation for a given user and calendar day. */
-  async daily(userId: string | undefined, date: string, lang?: string): Promise<AffirmationDto> {
+  async daily(userId: string | undefined, date: string, lang?: string) {
     const items = await this.list(userId, { lang });
     if (items.length === 0) throw new NotFoundException("No affirmations available");
     const hash = createHash("sha256").update(`${userId ?? "anon"}:${date}`).digest();

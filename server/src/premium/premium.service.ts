@@ -7,11 +7,15 @@ export class PremiumService {
   constructor(private readonly prisma: PrismaService) {}
 
   async isPremium(userId: string): Promise<boolean> {
-    const entitlement = await this.prisma.entitlement.findUnique({
-      where: {
-        userId_entitlementId: { userId, entitlementId: env.REVENUECAT_ENTITLEMENT_ID },
-      },
-    });
+    const [user, entitlement] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } }),
+      this.prisma.entitlement.findUnique({
+        where: {
+          userId_entitlementId: { userId, entitlementId: env.REVENUECAT_ENTITLEMENT_ID },
+        },
+      }),
+    ]);
+    if (user?.role === "ADMIN") return true;
     if (!entitlement?.isActive) return false;
     return !entitlement.expiresAt || entitlement.expiresAt > new Date();
   }

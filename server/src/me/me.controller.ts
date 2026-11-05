@@ -21,14 +21,16 @@ export class MeController {
   async me(@Session() session: UserSession, @Query("date") date?: string) {
     const userId = session.user.id;
     const today = date && DATE_RE.test(date) ? date : toDateString(new Date());
-    const [isPremium, streak, customCount, favoritesCount] = await Promise.all([
+    const [isPremium, streak, customCount, favoritesCount, account] = await Promise.all([
       this.premium.isPremium(userId),
       this.activity.getStreak(userId, today),
       this.prisma.customAffirmation.count({ where: { userId } }),
       this.prisma.favorite.count({ where: { userId } }),
+      this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } }),
     ]);
     return {
       user: { id: userId, name: session.user.name, email: session.user.email, image: session.user.image },
+      role: account?.role ?? "USER",
       isPremium,
       streak,
       limits: { customAffirmations: isPremium ? null : env.FREE_CUSTOM_AFFIRMATION_LIMIT },

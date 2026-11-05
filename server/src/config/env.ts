@@ -29,6 +29,18 @@ const schema = z.object({
   REVENUECAT_ENTITLEMENT_ID: z.string().default("premium"),
 
   FREE_CUSTOM_AFFIRMATION_LIMIT: z.coerce.number().int().nonnegative().default(5),
+
+  ADMIN_EMAILS: z
+    .string()
+    .default("")
+    .transform((value) => [
+      ...new Set(
+        value
+          .split(",")
+          .map((email) => email.trim().toLowerCase())
+          .filter(Boolean),
+      ),
+    ]),
 });
 
 export type Env = z.infer<typeof schema>;

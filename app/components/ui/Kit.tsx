@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { Fonts, Radius, usePalette } from "@/constants/Theme";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -66,12 +66,20 @@ export function ScreenHeader({
   onBack?: () => void;
 }) {
   const router = useRouter();
+  const navigation = useNavigation();
   const palette = usePalette();
 
   const handleBack = () => {
     if (onBack) return onBack();
-    if (router.canGoBack()) router.back();
-    else router.replace("/(tabs)");
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace("/(tabs)");
   };
 
   return (

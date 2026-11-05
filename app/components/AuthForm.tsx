@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -16,6 +16,7 @@ import { Fonts, Radius, usePalette } from "@/constants/Theme";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { authClient } from "@/lib/auth-client";
 import { APP_NAME } from "@/lib/config";
+import { consumeSuspendedNotice, subscribeSuspended } from "@/lib/suspension";
 
 type Mode = "sign-in" | "sign-up";
 
@@ -29,6 +30,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState<"email" | "google" | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const existing = consumeSuspendedNotice();
+    if (existing) setError(existing);
+    return subscribeSuspended(setError);
+  }, []);
 
   const isSignUp = mode === "sign-up";
   const canSubmit =

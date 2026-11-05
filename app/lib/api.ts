@@ -1,5 +1,6 @@
 import { authClient } from "./auth-client";
 import { API_URL } from "./config";
+import { notifySuspended } from "./suspension";
 
 export class ApiError extends Error {
   constructor(
@@ -44,8 +45,11 @@ export async function api<T = unknown>(
   const data = text ? safeJson(text) : undefined;
 
   if (!res.ok) {
-    const message = (data && (data.message as string)) || `Request failed (${res.status})`;
-    throw new ApiError(res.status, Array.isArray(message) ? message.join(", ") : message, data?.code);
+    const code = typeof data?.code === "string" ? data.code : undefined;
+    const raw = data?.message;
+    const message = Array.isArray(raw) ? raw.join(", ") : typeof raw === "string" ? raw : `Request failed (${res.status})`;
+    if (code === "ACCOUNT_SUSPENDED") notifySuspended(message);
+    throw new ApiError(res.status, message, code);
   }
   return data as T;
 }

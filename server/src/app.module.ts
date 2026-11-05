@@ -1,10 +1,12 @@
 import { Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 import { ActivityModule } from "./activity/activity.module";
+import { AdminModule } from "./admin/admin.module";
 import { AffirmationsModule } from "./affirmations/affirmations.module";
 import { AiModule } from "./ai/ai.module";
+import { AccountStatusInterceptor } from "./auth/account-status.interceptor";
 import { auth } from "./auth/auth";
 import { BillingModule } from "./billing/billing.module";
 import { CustomAffirmationsModule } from "./custom-affirmations/custom-affirmations.module";
@@ -38,8 +40,12 @@ import { VoiceModule } from "./voice/voice.module";
     AiModule,
     VoiceModule,
     BillingModule,
+    AdminModule,
   ],
   controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_INTERCEPTOR, useClass: AccountStatusInterceptor },
+  ],
 })
 export class AppModule {}

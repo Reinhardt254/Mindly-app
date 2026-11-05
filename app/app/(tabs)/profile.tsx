@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useStatsStore } from "@/stores/statsStore";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -152,7 +152,8 @@ export default function ProfileScreen() {
             {me.data?.user.email ?? `${totalAffirmationsViewed} read`}
           </Text>
           <Text style={styles.heroMeta}>
-            {streak.current} day streak{isPremium ? " · Premium" : ""}
+            {streak.current} day streak
+            {me.data?.role === "ADMIN" ? " · Admin" : isPremium ? " · Premium" : ""}
           </Text>
         </View>
         <TouchableOpacity
@@ -210,6 +211,21 @@ export default function ProfileScreen() {
           isLast
         />
       </Card>
+
+      {me.data?.role === "ADMIN" && (
+        <>
+          <SectionLabel>Admin</SectionLabel>
+          <Card>
+            <ListRow
+              icon="shield-checkmark-outline"
+              label="Admin"
+              subtitle="Categories, affirmations and accounts"
+              onPress={() => router.push("/admin" as Href)}
+              isLast
+            />
+          </Card>
+        </>
+      )}
 
       <SectionLabel>Settings</SectionLabel>
       <Card>

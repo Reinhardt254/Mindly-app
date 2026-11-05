@@ -1,8 +1,8 @@
 import "../src/load-env";
-import { PrismaClient } from "@prisma/client";
+import { createPrismaClient } from "../src/prisma/client";
 import { AFFIRMATION_SEEDS, CATEGORY_SEEDS } from "./content";
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 async function main() {
   for (const category of CATEGORY_SEEDS) {

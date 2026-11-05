@@ -1,3 +1,4 @@
+import { useMe } from "@/hooks/useApi";
 import { create } from "zustand";
 
 interface PremiumState {
@@ -20,4 +21,9 @@ export const usePremiumStore = create<PremiumState>((set) => ({
   reset: () => set({ storePremium: false, serverPremium: false, isPremium: false }),
 }));
 
-export const useIsPremium = () => usePremiumStore((s) => s.isPremium);
+/** RevenueCat, the API premium flag, or an admin role. */
+export const useIsPremium = () => {
+  const storePremium = usePremiumStore((s) => s.isPremium);
+  const me = useMe();
+  return storePremium || me.data?.isPremium === true || me.data?.role === "ADMIN";
+};

@@ -18,6 +18,7 @@ export interface ApiAffirmation {
   categoryId: string;
   moods: string[];
   isPremium: boolean;
+  imageUrl?: string | null;
 }
 
 export interface CustomAffirmationDto {
@@ -37,6 +38,7 @@ export interface Streak {
 
 export interface Me {
   user: { id: string; name: string; email: string; image: string | null };
+  role: "USER" | "ADMIN";
   isPremium: boolean;
   streak: Streak;
   limits: { customAffirmations: number | null };
@@ -89,6 +91,7 @@ export const toAffirmation = (a: ApiAffirmation): Affirmation => ({
   category: a.categoryId,
   moods: a.moods,
   isPremium: a.isPremium,
+  imageUrl: a.imageUrl,
 });
 
 const customToAffirmation = (c: CustomAffirmationDto): Affirmation => ({
@@ -109,6 +112,8 @@ export const queryKeys = {
   insights: (range: string) => ["moods", "insights", range] as const,
   voice: ["voice"] as const,
   aiUsage: ["ai", "usage"] as const,
+  adminOverview: ["admin", "overview"] as const,
+  adminUsers: (query: string) => ["admin", "users", query] as const,
 };
 
 export function useMe(enabled = true) {
@@ -116,7 +121,8 @@ export function useMe(enabled = true) {
     queryKey: queryKeys.me,
     queryFn: () => api<Me>("/me", { query: { date: localDate() } }),
     enabled,
-    staleTime: 60_000,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 }
 
@@ -146,7 +152,7 @@ export function useDailyAffirmation() {
   return useQuery({
     queryKey: queryKeys.daily(date),
     queryFn: async () => toAffirmation(await api<ApiAffirmation>("/affirmations/daily", { query: { date } })),
-    staleTime: Infinity,
+    staleTime: 60 * 60_000,
   });
 }
 
@@ -305,6 +311,188 @@ export function useAiUsage(enabled: boolean) {
     queryFn: () => api<{ used: number; limit: number; remaining: number }>("/ai/usage"),
     enabled,
   });
+}
+
+// ---------- Admin ----------
+
+export interface AdminOverview {
+  users: number;
+  newUsers7d: number;
+  admins: number;
+  premium: number;
+  moodCheckins7d: number;
+  aiGenerationsToday: number;
+  voiceRecordings: number;
+  signups: { date: string; count: number }[];
+}
+
+export interface AdminAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: "USER" | "ADMIN";
+  status: "ACTIVE" | "SUSPENDED";
+  premium: boolean;
+  createdAt: string;
+}
+
+export interface AdminCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  isPremium: boolean;
+  sortOrder: number;
+  imageKey: string | null;
+  imageUrl: string | null;
+  count: number;
+}
+
+export interface AdminAffirmation {
+  id: string;
+  text: string;
+  categoryId: string;
+  moods: string[];
+  isPremium: boolean;
+  imageKey: string | null;
+  imageUrl: string | null;
+  createdAt: string;
+}
+
+export function useAdminOverview(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.adminOverview,
+    queryFn: () => api<AdminOverview>("/admin/overview"),
+    enabled,
+  });
+}
+
+export function useAdminUsers(query: string, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.adminUsers(query),
+    queryFn: () => api<{ items: AdminAccount[] }>("/admin/users", { query: { query: query || undefined } }),
+    enabled,
+  });
+}
+
+export function useAdminRoleMutations() {
+  const qc = useQueryClient();
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["admin"] });
+    qc.invalidateQueries({ queryKey: queryKeys.me });
+  };
+  return {
+    promote: useMutation({
+      mutationFn: (email: string) => api<AdminAccount>("/admin/admins", { method: "POST", body: { email } }),
+      onSuccess: refresh,
+    }),
+    demote: useMutation({
+      mutationFn: (userId: string) => api(`/admin/admins/${userId}`, { method: "DELETE" }),
+      onSuccess: refresh,
+    }),
+    suspend: useMutation({
+      mutationFn: (userId: string) => api(`/admin/users/${userId}/suspend`, { method: "POST" }),
+      onSuccess: refresh,
+    }),
+    activate: useMutation({
+      mutationFn: (userId: string) => api(`/admin/users/${userId}/activate`, { method: "POST" }),
+      onSuccess: refresh,
+    }),
+    remove: useMutation({
+      mutationFn: (userId: string) => api(`/admin/users/${userId}`, { method: "DELETE" }),
+      onSuccess: refresh,
+    }),
+  };
+}
+
+function refreshContent(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ["admin"] });
+  qc.invalidateQueries({ queryKey: queryKeys.categories });
+  qc.invalidateQueries({ queryKey: queryKeys.affirmations });
+  qc.invalidateQueries({ queryKey: ["daily"] });
+}
+
+export function useAdminCategories(enabled: boolean) {
+  return useQuery({
+    queryKey: ["admin", "categories"] as const,
+    queryFn: () => api<AdminCategory[]>("/admin/categories"),
+    enabled,
+  });
+}
+
+export function useAdminAffirmations(enabled: boolean) {
+  return useQuery({
+    queryKey: ["admin", "affirmations"] as const,
+    queryFn: () => api<AdminAffirmation[]>("/admin/affirmations"),
+    enabled,
+  });
+}
+
+export interface CategoryDraft {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  isPremium: boolean;
+  imageKey: string;
+}
+
+export interface AffirmationDraft {
+  text: string;
+  categoryId: string;
+  moods: string[];
+  isPremium: boolean;
+  imageKey: string;
+}
+
+export function useAdminContentMutations() {
+  const qc = useQueryClient();
+  const refresh = () => refreshContent(qc);
+  return {
+    saveCategory: useMutation({
+      mutationFn: (input: { editing: boolean; draft: CategoryDraft }) =>
+        input.editing
+          ? api(`/admin/categories/${input.draft.id}`, {
+              method: "PATCH",
+              body: {
+                name: input.draft.name,
+                icon: input.draft.icon,
+                color: input.draft.color,
+                description: input.draft.description,
+                isPremium: input.draft.isPremium,
+                ...(input.draft.imageKey ? { imageKey: input.draft.imageKey } : {}),
+              },
+            })
+          : api("/admin/categories", { method: "POST", body: input.draft }),
+      onSuccess: refresh,
+    }),
+    deleteCategory: useMutation({
+      mutationFn: (id: string) => api(`/admin/categories/${id}`, { method: "DELETE" }),
+      onSuccess: refresh,
+    }),
+    saveAffirmation: useMutation({
+      mutationFn: (input: { id?: string; draft: AffirmationDraft }) =>
+        input.id
+          ? api(`/admin/affirmations/${input.id}`, {
+              method: "PATCH",
+              body: {
+                text: input.draft.text,
+                categoryId: input.draft.categoryId,
+                moods: input.draft.moods,
+                isPremium: input.draft.isPremium,
+                ...(input.draft.imageKey ? { imageKey: input.draft.imageKey } : {}),
+              },
+            })
+          : api("/admin/affirmations", { method: "POST", body: input.draft }),
+      onSuccess: refresh,
+    }),
+    deleteAffirmation: useMutation({
+      mutationFn: (id: string) => api(`/admin/affirmations/${id}`, { method: "DELETE" }),
+      onSuccess: refresh,
+    }),
+  };
 }
 
 export function useAiGenerate() {

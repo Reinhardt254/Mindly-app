@@ -22,6 +22,7 @@ export type AuthUser = {
   image?: string | null;
   emailVerified: boolean;
   isPremium?: boolean;
+  role?: "USER" | "ADMIN";
 };
 
 export type AuthSession = {

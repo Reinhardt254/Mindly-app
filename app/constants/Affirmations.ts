@@ -44,6 +44,7 @@ export interface CategoryInfo {
   description: string;
   isPremium?: boolean;
   locked?: boolean;
+  imageUrl?: string | null;
 }
 
 export const ALL_CATEGORY: CategoryInfo = {

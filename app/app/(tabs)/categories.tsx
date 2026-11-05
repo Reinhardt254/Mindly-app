@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { withAlpha } from "@/lib/color";
 import { useCategoryStore } from "@/stores/categoryStore";
 import { useIsPremium } from "@/stores/premiumStore";
 import { CategoryInfo } from "@/constants/Affirmations";
@@ -25,7 +26,7 @@ export default function CategoriesScreen() {
       return;
     }
     setSelectedCategory(category.id);
-    router.push("/(tabs)");
+    router.dismissTo("/(tabs)");
   };
 
   const free = categories.filter((c) => !c.isPremium);
@@ -76,6 +77,8 @@ function CategoryCard({
 }) {
   const palette = usePalette();
   const icon = category.icon as React.ComponentProps<typeof Ionicons>["name"];
+  const photo = !!category.imageUrl;
+  const light = selected || photo;
 
   const body = (
     <>
@@ -83,29 +86,17 @@ function CategoryCard({
         style={[
           styles.iconCircle,
           {
-            backgroundColor: selected
-              ? "rgba(255,255,255,0.22)"
-              : palette.accentSoft,
+            backgroundColor: light ? "rgba(255,255,255,0.22)" : palette.accentSoft,
           },
         ]}
       >
-        <Ionicons
-          name={icon}
-          size={22}
-          color={selected ? "#FFFFFF" : palette.accent}
-        />
+        <Ionicons name={icon} size={22} color={light ? "#FFFFFF" : palette.accent} />
       </View>
-      <Text
-        style={[styles.name, { color: selected ? "#FFFFFF" : palette.text }]}
-        numberOfLines={1}
-      >
+      <Text style={[styles.name, { color: light ? "#FFFFFF" : palette.text }]} numberOfLines={1}>
         {category.name}
       </Text>
       <Text
-        style={[
-          styles.description,
-          { color: selected ? "rgba(255,255,255,0.8)" : palette.textMuted },
-        ]}
+        style={[styles.description, { color: light ? "rgba(255,255,255,0.86)" : palette.textMuted }]}
         numberOfLines={2}
       >
         {category.description}
@@ -123,31 +114,32 @@ function CategoryCard({
     </>
   );
 
+  const card = photo ? (
+    <ImageBackground source={{ uri: category.imageUrl! }} style={styles.card} imageStyle={styles.cardImage}>
+      <LinearGradient
+        colors={[withAlpha(category.color, 0.2), withAlpha(category.color, 0.88)]}
+        style={StyleSheet.absoluteFill}
+      />
+      {body}
+    </ImageBackground>
+  ) : selected ? (
+    <LinearGradient colors={palette.accentGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
+      {body}
+    </LinearGradient>
+  ) : (
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: palette.surface, borderColor: palette.border, borderWidth: StyleSheet.hairlineWidth },
+      ]}
+    >
+      {body}
+    </View>
+  );
+
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85} style={styles.cell}>
-      {selected ? (
-        <LinearGradient
-          colors={palette.accentGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.card}
-        >
-          {body}
-        </LinearGradient>
-      ) : (
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: palette.surface,
-              borderColor: palette.border,
-              borderWidth: StyleSheet.hairlineWidth,
-            },
-          ]}
-        >
-          {body}
-        </View>
-      )}
+      {card}
     </TouchableOpacity>
   );
 }
@@ -173,6 +165,10 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     padding: 16,
     justifyContent: "flex-end",
+    overflow: "hidden",
+  },
+  cardImage: {
+    borderRadius: Radius.lg,
   },
   iconCircle: {
     position: "absolute",

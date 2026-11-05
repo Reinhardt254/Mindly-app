@@ -7,7 +7,13 @@ import {
   Animated,
   ImageBackground,
   StyleSheet,
+  Platform,
+  StatusBar as RNStatusBar,
 } from "react-native";
+import {
+  initialWindowMetrics,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { AFFIRMATIONS } from "@/constants/Affirmations";
 import { Ionicons } from "@expo/vector-icons";
 import { useBackground } from "@/contexts/BackgroundContext";
@@ -29,6 +35,16 @@ export const AffirmationsPracticeSession: React.FC<
 > = ({ visible, duration, onClose, onRestart }) => {
   const { customBackground } = useBackground();
   const { logActivity } = useStatsStore();
+  const insets = useSafeAreaInsets();
+  const topInset = Math.max(
+    insets.top,
+    initialWindowMetrics?.insets.top ?? 0,
+    Platform.OS === "android" ? RNStatusBar.currentHeight || 24 : 0
+  );
+  const bottomInset = Math.max(
+    insets.bottom,
+    initialWindowMetrics?.insets.bottom ?? 0
+  );
   // Calculate total affirmations based on duration (6 per minute)
   const totalAffirmations = duration * 6;
   const affirmationDuration = 10; // 10 seconds per affirmation
@@ -198,6 +214,7 @@ export const AffirmationsPracticeSession: React.FC<
       visible={visible}
       transparent={false}
       animationType="fade"
+      statusBarTranslucent
       onRequestClose={stopSession}
     >
       <ImageBackground
@@ -223,7 +240,7 @@ export const AffirmationsPracticeSession: React.FC<
           style={{
             flex: 1,
             zIndex: 2,
-            paddingTop: 15,
+            paddingTop: topInset + 8,
             paddingHorizontal: 20,
           }}
         >
@@ -259,10 +276,14 @@ export const AffirmationsPracticeSession: React.FC<
 
             {/* Affirmation Counter */}
             <Text
+              numberOfLines={1}
               style={{
+                flex: 1,
+                marginLeft: 12,
                 color: "#FFFFFF",
                 fontSize: 16,
                 fontWeight: "500",
+                textAlign: "right",
               }}
             >
               {affirmationsCompleted + 1} of {totalAffirmations} affirmations
@@ -514,7 +535,7 @@ export const AffirmationsPracticeSession: React.FC<
             <View
               style={{
                 position: "absolute",
-                bottom: 40,
+                bottom: bottomInset + 24,
                 right: 20,
               }}
             >

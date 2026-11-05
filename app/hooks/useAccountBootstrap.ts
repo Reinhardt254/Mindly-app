@@ -47,7 +47,7 @@ export function useAccountBootstrap() {
   }, [userId, qc, reset, setStorePremium]);
 
   useEffect(() => {
-    if (me.data) setServerPremium(me.data.isPremium);
+    if (me.data) setServerPremium(me.data.isPremium || me.data.role === "ADMIN");
   }, [me.data, setServerPremium]);
 
   useEffect(() => {

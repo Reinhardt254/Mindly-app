@@ -17,6 +17,7 @@ export interface Affirmation {
   moods?: string[];
   tags?: string[];
   isPremium?: boolean;
+  imageUrl?: string | null;
   /** Set for the user's own affirmations. */
   isCustom?: boolean;
 }

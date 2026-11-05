@@ -32,8 +32,10 @@ import { BackgroundProvider } from "@/contexts/BackgroundContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import { useAccountBootstrap } from "@/hooks/useAccountBootstrap";
+import { subscribeSuspended } from "@/lib/suspension";
+import { usePremiumStore } from "@/stores/premiumStore";
 
 function AppContent() {
   const { userProfile, isLoading: isProfileLoading } = useLocalStorage();
@@ -57,6 +59,17 @@ function AppContent() {
     rootSegment === "(tabs)" &&
     (segments.length === 1 || (segments[1] as string) === "index");
   const palette = Palette[colorScheme ?? "light"];
+
+  useEffect(() => {
+    return subscribeSuspended(() => {
+      void (async () => {
+        await signOut().catch(() => undefined);
+        queryClient.clear();
+        usePremiumStore.getState().reset();
+        router.replace("/auth/sign-in");
+      })();
+    });
+  }, [router]);
 
   useEffect(() => {
     if (!loaded || isLoading || !navigationState?.key) return;
@@ -95,6 +108,7 @@ function AppContent() {
         >
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="admin" options={{ headerShown: false }} />
             <Stack.Screen name="welcome" options={{ headerShown: false }} />
             <Stack.Screen name="auth" options={{ headerShown: false }} />
             <Stack.Screen

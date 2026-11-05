@@ -37,6 +37,7 @@ import { Popup } from "@/components/Popup";
 import { AffirmationsPracticePopup } from "@/components/AffirmationsPracticePopup";
 import { AffirmationsPracticeSession } from "@/components/AffirmationsPracticeSession";
 import { Fonts, Palette } from "@/constants/Theme";
+import { withAlpha } from "@/lib/color";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -245,8 +246,8 @@ export default function AffirmationScreen() {
         : item.id === feed.dailyId
           ? "Today's affirmation"
           : null;
-    return (
-      <View style={styles.slide}>
+    const content = (
+      <>
         {label && <Text style={styles.dailyLabel}>{label}</Text>}
         <LinearGradient
           colors={Palette.light.accentGradient}
@@ -254,17 +255,28 @@ export default function AffirmationScreen() {
           end={{ x: 1, y: 1 }}
           style={styles.badge}
         >
-          <Ionicons
-            name={(category?.icon as IconName) ?? "heart"}
-            size={30}
-            color="#FFFFFF"
-          />
+          <Ionicons name={(category?.icon as IconName) ?? "heart"} size={30} color="#FFFFFF" />
         </LinearGradient>
         <Text style={styles.quoteText}>{item.text}</Text>
-        {category && (
-          <Text style={styles.categoryText}>{category.name}</Text>
-        )}
-      </View>
+        {category && <Text style={styles.categoryText}>{category.name}</Text>}
+      </>
+    );
+
+    if (!item.imageUrl) return <View style={styles.slide}>{content}</View>;
+
+    const wash = category?.color ?? "#161030";
+    return (
+      <ImageBackground
+        source={{ uri: item.imageUrl }}
+        style={[styles.slide, { width: screenWidth, height: carouselHeight }]}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={[withAlpha(wash, 0.28), withAlpha(wash, 0.82)]}
+          style={StyleSheet.absoluteFill}
+        />
+        {content}
+      </ImageBackground>
     );
   };
 
@@ -564,6 +576,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 40,
+    overflow: "hidden",
   },
   badge: {
     width: 72,
