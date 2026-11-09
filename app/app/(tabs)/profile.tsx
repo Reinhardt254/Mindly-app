@@ -48,7 +48,7 @@ export default function ProfileScreen() {
       text: string;
       onPress: () => void;
       style?: "default" | "destructive" | "cancel";
-    }[]
+    }[],
   ) => {
     setPopupConfig({ title, message, buttons });
     setIsPopupVisible(true);
@@ -62,10 +62,11 @@ export default function ProfileScreen() {
     ? { current: me.data.streak.currentStreak }
     : localStreak;
 
-  const premiumRoute = (route: "/(tabs)/insights" | "/(tabs)/ai" | "/(tabs)/voice") =>
-    router.push(isPremium ? route : "/paywall");
+  const premiumRoute = (
+    route: "/(tabs)/insights" | "/(tabs)/ai" | "/(tabs)/voice",
+  ) => router.push(isPremium ? route : "/paywall");
   const lock = isPremium ? undefined : (
-    <Ionicons name="lock-closed" size={16} color={palette.accent} />
+    <Ionicons name="lock-closed" size={16} color={palette.iconAccent} />
   );
 
   const clearDevice = async () => {
@@ -97,7 +98,7 @@ export default function ProfileScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -116,18 +117,22 @@ export default function ProfileScreen() {
               await clearDevice();
             } catch (error) {
               console.error("Error deleting account:", error);
-              showPopup("Error", "Failed to delete your account. Please try again.", [
-                { text: "OK", onPress: () => {} },
-              ]);
+              showPopup(
+                "Error",
+                "Failed to delete your account. Please try again.",
+                [{ text: "OK", onPress: () => {} }],
+              );
             }
           },
         },
-      ]
+      ],
     );
   };
 
   if (!userProfile) {
-    return <View style={[styles.flex, { backgroundColor: palette.background }]} />;
+    return (
+      <View style={[styles.flex, { backgroundColor: palette.background }]} />
+    );
   }
 
   return (
@@ -153,7 +158,11 @@ export default function ProfileScreen() {
           </Text>
           <Text style={styles.heroMeta}>
             {streak.current} day streak
-            {me.data?.role === "ADMIN" ? " · Admin" : isPremium ? " · Premium" : ""}
+            {me.data?.role === "ADMIN"
+              ? " · Admin"
+              : isPremium
+                ? " · Premium"
+                : ""}
           </Text>
         </View>
         <TouchableOpacity
@@ -173,7 +182,11 @@ export default function ProfileScreen() {
           activeOpacity={0.85}
           style={[styles.upgrade, { backgroundColor: palette.accentSoft }]}
         >
-          <Ionicons name="diamond-outline" size={22} color={palette.accent} />
+          <Ionicons
+            name="diamond-outline"
+            size={22}
+            color={palette.iconAccent}
+          />
           <View style={styles.heroText}>
             <Text style={[styles.upgradeTitle, { color: palette.text }]}>
               Go Premium
@@ -182,7 +195,11 @@ export default function ProfileScreen() {
               AI affirmations, your voice, insights and all packs
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color={palette.accent} />
+          <Ionicons
+            name="chevron-forward"
+            size={18}
+            color={palette.iconAccent}
+          />
         </TouchableOpacity>
       )}
 
@@ -351,7 +368,7 @@ const styles = StyleSheet.create({
     gap: 14,
     padding: 18,
     borderRadius: Radius.lg,
-    boxShadow: "0 12px 28px rgba(124, 92, 252, 0.28)",
+    boxShadow: "0 12px 28px rgba(154, 114, 104, 0.08)",
   },
   avatar: {
     width: 52,

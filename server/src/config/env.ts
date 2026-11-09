@@ -10,8 +10,12 @@ const schema = z.object({
   APP_SCHEME: z.string().default("moodly"),
   TRUSTED_ORIGINS: z.string().default(""),
 
+  // Web OAuth client (required). Used for code flow + idToken audience checks.
   GOOGLE_CLIENT_ID: z.string().default(""),
   GOOGLE_CLIENT_SECRET: z.string().default(""),
+  // Optional native OAuth client IDs so idTokens from Android/iOS SDKs verify.
+  GOOGLE_ANDROID_CLIENT_ID: z.string().default(""),
+  GOOGLE_IOS_CLIENT_ID: z.string().default(""),
 
   DEEPSEEK_API_KEY: z.string().default(""),
   DEEPSEEK_BASE_URL: z.string().url().default("https://api.deepseek.com"),
@@ -27,6 +31,12 @@ const schema = z.object({
   REVENUECAT_WEBHOOK_SECRET: z.string().default(""),
   REVENUECAT_SECRET_API_KEY: z.string().default(""),
   REVENUECAT_ENTITLEMENT_ID: z.string().default("premium"),
+
+  // When false, all premium-gated API routes and limits treat every user as premium.
+  PREMIUM_ENABLED: z
+    .string()
+    .default("true")
+    .transform((v) => v !== "false" && v !== "0"),
 
   FREE_CUSTOM_AFFIRMATION_LIMIT: z.coerce.number().int().nonnegative().default(5),
 

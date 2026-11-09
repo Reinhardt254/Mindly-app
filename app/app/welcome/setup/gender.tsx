@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
+import { OnboardingNextButton } from "@/components/OnboardingNextButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -158,30 +159,7 @@ export default function GenderSetupScreen() {
             ))}
           </View>
 
-          {/* Next Button */}
-          <TouchableOpacity
-            onPress={handleNext}
-            style={[
-              styles.nextButton,
-              {
-                backgroundColor: selectedGender
-                  ? Colors[colorScheme ?? "light"].tabIconSelected
-                  : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-              },
-            ]}
-            disabled={!selectedGender}
-          >
-            <Text
-              style={[
-                styles.nextButtonText,
-                {
-                  color: Colors[colorScheme ?? "light"].background,
-                },
-              ]}
-            >
-              Next
-            </Text>
-          </TouchableOpacity>
+          <OnboardingNextButton ready={!!selectedGender} onPress={handleNext} />
         </View>
       </View>
     </GradientBackground>
@@ -208,12 +186,12 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    paddingTop: 40,
-    gap: 32,
+    paddingTop: 24,
+    gap: 20,
   },
   questionBlock: {
     alignItems: "center",
-    gap: 16,
+    gap: 12,
     width: "100%",
   },
   title: {
@@ -231,7 +209,7 @@ const styles = StyleSheet.create({
     gap: 12,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 12,
     width: "100%",
   },
   option: {
@@ -245,16 +223,5 @@ const styles = StyleSheet.create({
   optionText: {
     marginLeft: 16,
     fontSize: 18,
-  },
-  nextButton: {
-    paddingVertical: 16,
-    marginTop: 32,
-    width: "100%",
-    borderRadius: 16,
-  },
-  nextButtonText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "600",
   },
 });

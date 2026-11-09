@@ -51,7 +51,7 @@ export const ALL_CATEGORY: CategoryInfo = {
   id: "all",
   name: "All Affirmations",
   icon: "apps",
-  color: "#8B5CF6",
+  color: "#003049",
   description: "A mix from every category",
 };
 
@@ -59,7 +59,7 @@ export const CUSTOM_CATEGORY: CategoryInfo = {
   id: "custom",
   name: "Your Affirmations",
   icon: "create",
-  color: "#7C5CFC",
+  color: "#003049",
   description: "The ones you wrote",
 };
 

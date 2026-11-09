@@ -8,7 +8,7 @@ import { useAiGenerate, useAiUsage, useCustomAffirmationMutations } from "@/hook
 import { ApiError } from "@/lib/api";
 import { useIsPremium } from "@/stores/premiumStore";
 
-const LANGUAGES = ["English", "Swahili", "French"] as const;
+const LANGUAGES = ["English", "French"] as const;
 const EXAMPLES = ["I have a job interview tomorrow", "I feel behind my friends", "My exams start next week"];
 
 export default function AiScreen() {
@@ -43,7 +43,7 @@ export default function AiScreen() {
     <Screen title="AI Affirmations">
       <PremiumGate
         title="Affirmations written for you"
-        description="Describe what's going on and get affirmations tailored to your situation, in English, Swahili or French."
+        description="Describe what's going on and get affirmations tailored to your situation, in English or French."
       >
         <Text style={[styles.intro, { color: palette.textMuted }]}>
           What's on your mind? Be as specific as you like.

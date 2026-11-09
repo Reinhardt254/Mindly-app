@@ -12,13 +12,13 @@ import { withAlpha } from "@/lib/color";
 import { pickContentImage } from "@/lib/content-image";
 
 const ICONS = ["sparkles", "heart", "leaf", "flame", "shield-checkmark", "fitness", "trending-up", "cloud", "briefcase", "people", "diamond", "school", "happy", "rocket", "bandage", "sunny", "moon", "star"] as const;
-const COLORS = ["#8B5CF6", "#3B82F6", "#EC4899", "#14B8A6", "#F97316", "#F59E0B", "#EF4444", "#10B981", "#6366F1", "#0EA5E9", "#DB2777", "#22C55E"];
+const COLORS = ["#003049", "#0A4A66", "#e6cfc9", "#14B8A6", "#F97316", "#F59E0B", "#EF4444", "#10B981", "#001F2E", "#0EA5E9", "#DB2777", "#22C55E"];
 
 const empty = (): CategoryDraft => ({
   id: "",
   name: "",
   icon: "sparkles",
-  color: "#8B5CF6",
+  color: "#003049",
   description: "",
   isPremium: false,
   imageKey: "",

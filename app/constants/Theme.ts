@@ -9,6 +9,8 @@ export type PaletteColors = {
   border: string;
   accent: string;
   accentSoft: string;
+  /** Decorative icons on soft/light surfaces (brown in light, blue in dark). */
+  iconAccent: string;
   accentGradient: readonly [string, string, ...string[]];
   danger: string;
   dangerSoft: string;
@@ -17,32 +19,34 @@ export type PaletteColors = {
 
 export const Palette: Record<"light" | "dark", PaletteColors> = {
   light: {
-    background: "#F5F4FB",
+    background: "#FAF6F4",
     surface: "#FFFFFF",
-    surfaceMuted: "#F0EEF8",
-    text: "#1B1730",
-    textMuted: "#8B87A1",
-    border: "#ECEAF4",
-    accent: "#7C5CFC",
-    accentSoft: "#EEE9FF",
-    accentGradient: ["#9B8AFB", "#7C5CFC", "#A855F7"],
+    surfaceMuted: "#F3E8E4",
+    text: "#11181C",
+    textMuted: "#7A746E",
+    border: "#EDE4E0",
+    accent: "#003049",
+    accentSoft: "#e6cfc9",
+    iconAccent: "#9A7268",
+    accentGradient: ["#0A4A66", "#003049", "#001F2E"],
     danger: "#E5484D",
     dangerSoft: "#FDECEC",
-    iconRing: "#E6E3F0",
+    iconRing: "#E6CFC9",
   },
   dark: {
-    background: "#0E0C16",
-    surface: "#191626",
-    surfaceMuted: "#221E33",
+    background: "#0C0F14",
+    surface: "#161B24",
+    surfaceMuted: "#1E2633",
     text: "#F4F2FA",
-    textMuted: "#8F8AA6",
-    border: "#2A2639",
-    accent: "#9B87FF",
-    accentSoft: "#2A2347",
-    accentGradient: ["#8B7CF6", "#6D4AF0", "#9D4EDD"],
+    textMuted: "#9AA3B2",
+    border: "#2A3342",
+    accent: "#4A82F0",
+    accentSoft: "#1A2F55",
+    iconAccent: "#4A82F0",
+    accentGradient: ["#0A4A66", "#003049", "#001F2E"],
     danger: "#FF6369",
     dangerSoft: "#3A1C22",
-    iconRing: "#332E47",
+    iconRing: "#2A3F66",
   },
 };
 

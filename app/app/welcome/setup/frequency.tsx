@@ -10,6 +10,7 @@ import {
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { GradientBackground } from "@/components/GradientBackground";
+import { OnboardingNextButton } from "@/components/OnboardingNextButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -485,31 +486,12 @@ export default function FrequencySetupScreen() {
               )}
             </View>
 
-            {/* Complete Button */}
-            <TouchableOpacity
+            <OnboardingNextButton
+              label="Complete Setup"
+              ready={selectedFrequency !== null && startHour < endHour}
               onPress={handleComplete}
-              style={[
-                styles.completeButton,
-                {
-                  backgroundColor:
-                    selectedFrequency !== null && startHour < endHour
-                      ? Colors[colorScheme ?? "light"].tabIconSelected
-                      : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-                },
-              ]}
-              disabled={selectedFrequency === null || startHour >= endHour}
-            >
-              <Text
-                style={[
-                  styles.completeButtonText,
-                  {
-                    color: Colors[colorScheme ?? "light"].background,
-                  },
-                ]}
-              >
-                Complete Setup
-              </Text>
-            </TouchableOpacity>
+              style={styles.completeButton}
+            />
           </View>
         </View>
       </ScrollView>
@@ -552,12 +534,12 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    paddingTop: 40,
-    gap: 32,
+    paddingTop: 24,
+    gap: 20,
   },
   questionBlock: {
     alignItems: "center",
-    gap: 16,
+    gap: 12,
   },
   title: {
     textAlign: "center",
@@ -643,15 +625,6 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   completeButton: {
-    width: "100%",
-    paddingVertical: 16,
-    marginTop: 32,
     marginBottom: 40,
-    borderRadius: 16,
-  },
-  completeButtonText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "600",
   },
 });

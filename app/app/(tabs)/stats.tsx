@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   hero: {
     borderRadius: Radius.lg,
     padding: 20,
-    boxShadow: "0 12px 28px rgba(124, 92, 252, 0.28)",
+    boxShadow: "0 12px 28px rgba(154, 114, 104, 0.28)",
   },
   heroLabel: {
     color: "rgba(255,255,255,0.8)",

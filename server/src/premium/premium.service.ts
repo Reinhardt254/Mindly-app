@@ -7,6 +7,8 @@ export class PremiumService {
   constructor(private readonly prisma: PrismaService) {}
 
   async isPremium(userId: string): Promise<boolean> {
+    if (!env.PREMIUM_ENABLED) return true;
+
     const [user, entitlement] = await Promise.all([
       this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } }),
       this.prisma.entitlement.findUnique({

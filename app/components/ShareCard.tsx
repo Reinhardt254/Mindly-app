@@ -12,7 +12,7 @@ export const ShareCard = forwardRef<View, { text: string; category?: string }>(f
 ) {
   return (
     <View ref={ref} collapsable={false} style={styles.offscreen}>
-      <LinearGradient colors={["#2B1D5C", "#5B3FD9", "#A855F7"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
+      <LinearGradient colors={["#001F2E", "#003049", "#e6cfc9"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
         <View style={styles.quoteMark}>
           <Ionicons name="sparkles" size={26} color="rgba(255,255,255,0.9)" />
         </View>

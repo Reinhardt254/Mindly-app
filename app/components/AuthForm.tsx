@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,18 +13,35 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PrimaryButton } from "@/components/ui/Kit";
 import { Fonts, Radius, usePalette } from "@/constants/Theme";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { authClient } from "@/lib/auth-client";
 import { APP_NAME } from "@/lib/config";
+import { googleSignInErrorMessage, signInWithGoogleNative } from "@/lib/google-auth";
 import { consumeSuspendedNotice, subscribeSuspended } from "@/lib/suspension";
 
 type Mode = "sign-in" | "sign-up";
 
+const SOCIAL_SIGN_IN_TIMEOUT_MS = 30_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return Promise.race([
+    promise.finally(() => {
+      if (timer) clearTimeout(timer);
+    }),
+    new Promise<T>((_, reject) => {
+      timer = setTimeout(() => reject(new Error(message)), ms);
+    }),
+  ]);
+}
+
 export function AuthForm({ mode }: { mode: Mode }) {
   const palette = usePalette();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { userProfile } = useLocalStorage();
   const [name, setName] = useState(userProfile?.name ?? "");
   const [email, setEmail] = useState("");
@@ -37,6 +56,17 @@ export function AuthForm({ mode }: { mode: Mode }) {
     return subscribeSuspended(setError);
   }, []);
 
+  const showError = (message: string) => {
+    setError(message);
+    // Android Google Sign-In can leave Activity null briefly; Alert would be a no-op.
+    const present = () => Alert.alert("Sign-in failed", message);
+    if (Platform.OS === "android") {
+      setTimeout(present, 450);
+    } else {
+      present();
+    }
+  };
+
   const isSignUp = mode === "sign-up";
   const canSubmit =
     /\S+@\S+\.\S+/.test(email) && password.length >= 8 && (!isSignUp || name.trim().length > 0);
@@ -48,9 +78,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
       const { error } = isSignUp
         ? await authClient.signUp.email({ name: name.trim(), email: email.trim(), password })
         : await authClient.signIn.email({ email: email.trim(), password });
-      if (error) setError(error.message ?? "Something went wrong");
+      if (error) showError(error.message ?? "Something went wrong");
     } catch {
-      setError("Can't reach the server. Check your connection.");
+      showError("Can't reach the server. Check your connection.");
     } finally {
       setLoading(null);
     }
@@ -60,10 +90,32 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setError(null);
     setLoading("google");
     try {
-      const { error } = await authClient.signIn.social({ provider: "google", callbackURL: "/" });
-      if (error) setError(error.message ?? "Google sign-in failed");
-    } catch {
-      setError("Google sign-in failed. Please try again.");
+      const google = await signInWithGoogleNative();
+      if (google.cancelled) return;
+
+      const { error } = await withTimeout(
+        authClient.signIn.social({
+          provider: "google",
+          idToken: {
+            token: google.idToken,
+            accessToken: google.accessToken,
+          },
+        }),
+        SOCIAL_SIGN_IN_TIMEOUT_MS,
+        "Better Auth Google sign-in timed out while exchanging the ID token with the API.",
+      );
+      if (error) {
+        showError(
+          error.message
+            ? `Auth API: ${error.message}${error.code ? ` (code=${error.code})` : ""}`
+            : "Auth API rejected Google sign-in.",
+        );
+        return;
+      }
+      router.replace(userProfile ? "/(tabs)" : "/welcome/quote");
+    } catch (error) {
+      const message = await googleSignInErrorMessage(error);
+      if (message) showError(message);
     } finally {
       setLoading(null);
     }
@@ -76,13 +128,28 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
       style={[styles.flex, { backgroundColor: palette.background }]}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <View style={[styles.logo, { backgroundColor: palette.accentSoft }]}>
-          <Ionicons name="sparkles" size={30} color={palette.accent} />
-        </View>
+      <ScrollView
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: Math.max(insets.top, 24),
+            paddingBottom: Math.max(insets.bottom, 24) + 24,
+          },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
+        bounces
+      >
+        <Image
+          source={require("../assets/images/moodly-icon.png")}
+          style={styles.logo}
+          accessibilityLabel={`${APP_NAME} logo`}
+        />
         <Text style={[styles.title, { color: palette.text }]}>
           {isSignUp ? "Create your account" : `Welcome back to ${APP_NAME}`}
         </Text>
@@ -100,7 +167,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
         >
           <Ionicons name="logo-google" size={18} color={palette.text} />
           <Text style={[styles.googleText, { color: palette.text }]}>
-            {loading === "google" ? "Opening Google..." : "Continue with Google"}
+            {loading === "google" ? "Signing in..." : "Continue with Google"}
           </Text>
         </TouchableOpacity>
 
@@ -180,15 +247,13 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 24,
+    paddingHorizontal: 24,
     gap: 12,
   },
   logo: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 72,
+    height: 72,
+    borderRadius: 18,
     alignSelf: "center",
     marginBottom: 8,
   },

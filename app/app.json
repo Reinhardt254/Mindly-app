@@ -10,16 +10,15 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.kirix.moodly",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#e6cfc9"
       },
       "permissions": [
         "android.permission.SCHEDULE_EXACT_ALARM",
@@ -29,15 +28,16 @@
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "edgeToEdgeEnabled": true,
-      "package": "com.reinhardt_kl.moodaffirmationapp"
+      "package": "com.kirix.moodly"
     },
     "notification": {
       "icon": "./assets/images/icon.png",
-      "color": "#3B82F6",
+      "color": "#003049",
       "androidMode": "default",
       "androidCollapsedTitle": "Moodly"
     },
     "plugins": [
+      "expo-dev-client",
       "expo-router",
       [
         "expo-splash-screen",
@@ -45,18 +45,19 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#e6cfc9"
         }
       ],
       [
         "expo-notifications",
         {
           "icon": "./assets/images/icon.png",
-          "color": "#3B82F6",
+          "color": "#003049",
           "defaultChannel": "affirmations"
         }
       ],
       "expo-secure-store",
+      "expo-web-browser",
       "expo-audio",
       [
         "@bittingz/expo-widgets",
@@ -69,7 +70,7 @@
                 "resourceName": "@xml/daily_affirmation_widget_info"
               }
             ],
-            "distPlaceholder": "com.reinhardt_kl.moodaffirmationapp"
+            "distPlaceholder": "com.kirix.moodly"
           }
         }
       ],

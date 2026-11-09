@@ -229,7 +229,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               color: "#F3F4F6",
             }}
             selectedItemLabelStyle={{
-              color: "#3B82F6",
+              color: "#003049",
               fontWeight: "bold",
             }}
             selectedItemContainerStyle={{
@@ -280,7 +280,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               color: "#F3F4F6",
             }}
             selectedItemLabelStyle={{
-              color: "#3B82F6",
+              color: "#003049",
               fontWeight: "bold",
             }}
             selectedItemContainerStyle={{
@@ -331,7 +331,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ onComplete }) => {
               color: "#F3F4F6",
             }}
             selectedItemLabelStyle={{
-              color: "#3B82F6",
+              color: "#003049",
               fontWeight: "bold",
             }}
             selectedItemContainerStyle={{

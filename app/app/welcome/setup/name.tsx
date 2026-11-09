@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { GradientBackground } from "@/components/GradientBackground";
+import { OnboardingNextButton } from "@/components/OnboardingNextButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -126,30 +127,7 @@ export default function NameSetupScreen() {
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
             </View>
 
-            {/* Next Button */}
-            <TouchableOpacity
-              onPress={handleNext}
-              style={[
-                styles.nextButton,
-                {
-                  backgroundColor: name.trim()
-                    ? Colors[colorScheme ?? "light"].tabIconSelected
-                    : Colors[colorScheme ?? "light"].tabIconSelected + "40",
-                },
-              ]}
-              disabled={!name.trim()}
-            >
-              <Text
-                style={[
-                  styles.nextButtonText,
-                  {
-                    color: Colors[colorScheme ?? "light"].background,
-                  },
-                ]}
-              >
-                Next
-              </Text>
-            </TouchableOpacity>
+            <OnboardingNextButton ready={!!name.trim()} onPress={handleNext} />
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -180,12 +158,12 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    paddingTop: 40,
-    gap: 32,
+    paddingTop: 24,
+    gap: 20,
   },
   questionBlock: {
     alignItems: "center",
-    gap: 16,
+    gap: 12,
   },
   title: {
     textAlign: "center",
@@ -199,7 +177,7 @@ const styles = StyleSheet.create({
   },
   inputBlock: {
     width: "100%",
-    gap: 16,
+    gap: 8,
   },
   input: {
     width: "100%",
@@ -208,22 +186,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     fontSize: 18,
-    marginTop: 10,
+    marginTop: 0,
   },
   errorText: {
     color: "#EF4444",
     fontSize: 14,
     marginLeft: 8,
-  },
-  nextButton: {
-    width: "100%",
-    paddingVertical: 16,
-    marginTop: 32,
-    borderRadius: 16,
-  },
-  nextButtonText: {
-    textAlign: "center",
-    fontSize: 18,
-    fontWeight: "600",
   },
 });

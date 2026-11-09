@@ -7,10 +7,11 @@ import { prisma } from "../prisma/prisma.service";
 
 const trustedOrigins = [
   `${env.APP_SCHEME}://`,
+  `${env.APP_SCHEME}://*`,
   ...env.TRUSTED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean),
 ];
 if (env.NODE_ENV !== "production") {
-  trustedOrigins.push("exp://");
+  trustedOrigins.push("exp://", "exp://**", "exp://192.168.*.*:*/**");
 }
 
 export const auth = betterAuth({
@@ -27,7 +28,12 @@ export const auth = betterAuth({
     env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
       ? {
           google: {
-            clientId: env.GOOGLE_CLIENT_ID,
+            // First entry is used for browser OAuth; the full list verifies native idTokens.
+            clientId: [
+              env.GOOGLE_CLIENT_ID,
+              env.GOOGLE_ANDROID_CLIENT_ID,
+              env.GOOGLE_IOS_CLIENT_ID,
+            ].filter(Boolean),
             clientSecret: env.GOOGLE_CLIENT_SECRET,
           },
         }

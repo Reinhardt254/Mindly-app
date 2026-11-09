@@ -1,4 +1,4 @@
-package com.reinhardt_kl.moodaffirmationapp
+package com.kirix.moodly
 
 import android.app.Application
 import android.content.res.Configuration

@@ -1,4 +1,4 @@
-package com.reinhardt_kl.moodaffirmationapp
+package com.kirix.moodly
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

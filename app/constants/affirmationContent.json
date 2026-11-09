@@ -14,7 +14,7 @@
       "id": "confidence",
       "name": "Confidence",
       "icon": "shield-checkmark",
-      "color": "#3B82F6",
+      "color": "#003049",
       "description": "Build self-confidence and belief",
       "isPremium": false,
       "sortOrder": 1
@@ -77,7 +77,7 @@
       "id": "anxiety",
       "name": "Anxiety Relief",
       "icon": "cloud",
-      "color": "#6366F1",
+      "color": "#4A82F0",
       "description": "Ease worry and come back to the present",
       "isPremium": true,
       "sortOrder": 20
@@ -104,7 +104,7 @@
       "id": "self-worth",
       "name": "Self-Worth",
       "icon": "diamond",
-      "color": "#A855F7",
+      "color": "#003049",
       "description": "Know your value",
       "isPremium": true,
       "sortOrder": 23

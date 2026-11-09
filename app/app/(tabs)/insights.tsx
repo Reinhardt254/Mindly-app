@@ -10,7 +10,7 @@ import { useIsPremium } from "@/stores/premiumStore";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
 
-const SCORE_COLORS = ["#E5484D", "#F97316", "#F59E0B", "#14B8A6", "#7C5CFC"];
+const SCORE_COLORS = ["#E5484D", "#F97316", "#F59E0B", "#14B8A6", "#003049"];
 const scoreColor = (score: number) => SCORE_COLORS[Math.min(4, Math.max(0, Math.round(score) - 1))];
 
 export default function InsightsScreen() {

@@ -90,7 +90,7 @@ function CategoryCard({
           },
         ]}
       >
-        <Ionicons name={icon} size={22} color={light ? "#FFFFFF" : palette.accent} />
+        <Ionicons name={icon} size={22} color={light ? "#FFFFFF" : palette.iconAccent} />
       </View>
       <Text style={[styles.name, { color: light ? "#FFFFFF" : palette.text }]} numberOfLines={1}>
         {category.name}
@@ -108,7 +108,7 @@ function CategoryCard({
       )}
       {locked && (
         <View style={[styles.check, { backgroundColor: palette.accentSoft }]}>
-          <Ionicons name="lock-closed" size={11} color={palette.accent} />
+          <Ionicons name="lock-closed" size={11} color={palette.iconAccent} />
         </View>
       )}
     </>

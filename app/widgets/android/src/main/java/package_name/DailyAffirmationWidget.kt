@@ -1,4 +1,4 @@
-package com.reinhardt_kl.moodaffirmationapp
+package com.kirix.moodly
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager

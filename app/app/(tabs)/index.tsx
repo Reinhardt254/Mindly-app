@@ -585,7 +585,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 36,
-    boxShadow: "0 10px 30px rgba(124, 92, 252, 0.45)",
+    boxShadow: "0 10px 30px rgba(0, 48, 73, 0.35)",
   },
   quoteText: {
     color: "#FFFFFF",

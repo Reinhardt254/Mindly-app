@@ -14,6 +14,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PurchasesPackage } from "react-native-purchases";
 import { PrimaryButton } from "@/components/ui/Kit";
 import { Fonts, Radius, usePalette } from "@/constants/Theme";
+import { PREMIUM_ENABLED } from "@/lib/config";
 import { buy, getPackages, purchasesAvailable, restore } from "@/lib/purchases";
 import { useIsPremium, usePremiumStore } from "@/stores/premiumStore";
 
@@ -58,9 +59,15 @@ export default function PaywallScreen() {
   const packages = useQuery({
     queryKey: ["rc-packages"],
     queryFn: getPackages,
-    enabled: purchasesAvailable(),
+    enabled: PREMIUM_ENABLED && purchasesAvailable(),
     staleTime: 10 * 60_000,
   });
+
+  useEffect(() => {
+    if (!PREMIUM_ENABLED) {
+      router.replace("/(tabs)");
+    }
+  }, [router]);
 
   useEffect(() => {
     if (!selected && packages.data?.length) {

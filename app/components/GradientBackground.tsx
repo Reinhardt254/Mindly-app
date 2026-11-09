@@ -1,6 +1,7 @@
 import React from "react";
 import { ViewStyle, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { gradientColorsLight, gradientColorsDark } from "@/constants/Colors";
 
@@ -14,11 +15,13 @@ export const GradientBackground: React.FC<GradientBackgroundProps> = ({
   style,
 }) => {
   const colorScheme = useColorScheme();
+  const insets = useSafeAreaInsets();
+  const contentStyle = { flex: 1, paddingTop: insets.top };
 
   if (colorScheme === "dark") {
     return (
       <View style={[{ flex: 1, backgroundColor: "#000" }, style]}>
-        {children}
+        <View style={contentStyle}>{children}</View>
       </View>
     );
   }
@@ -30,7 +33,7 @@ export const GradientBackground: React.FC<GradientBackgroundProps> = ({
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
-      {children}
+      <View style={contentStyle}>{children}</View>
     </LinearGradient>
   );
 };
