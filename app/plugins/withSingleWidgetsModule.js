@@ -1,9 +1,12 @@
 const fs = require("fs");
 const path = require("path");
-const { withDangerousMod, AndroidConfig } = require("@expo/config-plugins");
+const { withFinalizedMod, AndroidConfig } = require("@expo/config-plugins");
 
 function withSingleWidgetsModule(config) {
-  return withDangerousMod(config, [
+  // expo-widgets writes Module.kt from a dangerous mod. Those mods run in
+  // reverse plugin order, so a later dangerous mod deletes the file and then
+  // expo-widgets writes it back. Finalized mods run after that write.
+  return withFinalizedMod(config, [
     "android",
     async (nextConfig) => {
       const packageName = AndroidConfig.Package.getPackage(nextConfig);
@@ -24,6 +27,7 @@ function withSingleWidgetsModule(config) {
       const contents = fs.readFileSync(modulePath, "utf8");
       if (contents.includes("class ExpoWidgetsModule")) {
         fs.unlinkSync(modulePath);
+        console.log("Removed duplicate ExpoWidgetsModule from", modulePath);
       }
 
       return nextConfig;
